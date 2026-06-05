@@ -1,0 +1,36 @@
+# ──────────────────────────────────────────────────────────────
+#  Caddyfile
+#  Listens on :80 (Caddy auto-redirects to HTTPS in production;
+#  for local dev the HTTP-only block below is more convenient).
+# ──────────────────────────────────────────────────────────────
+
+:80 {
+    # ── API → FastAPI backend ──────────────────────────────────
+    handle /api/* {
+        uri strip_prefix /api
+        reverse_proxy backend:8000
+    }
+
+    # ── Frontend → Vue dev server (development) ───────────────
+    #    Switch to `frontend:80` for the production nginx stage.
+    handle {
+        reverse_proxy frontend:5173
+    }
+
+    # ── Logging ───────────────────────────────────────────────
+    log {
+        output stdout
+        format console
+    }
+}
+
+# ── Production HTTPS example (uncomment & set your domain) ───
+# yourdomain.com {
+#     handle /api/* {
+#         uri strip_prefix /api
+#         reverse_proxy backend:8000
+#     }
+#     handle {
+#         reverse_proxy frontend:80
+#     }
+# }
