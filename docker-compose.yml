@@ -44,11 +44,15 @@ services:
   frontend:
     build:
       context: ./frontend
-      target: ${FRONTEND_BUILD_TARGET:-development}
     container_name: app_frontend
     restart: unless-stopped
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+    volumes:
+      - ./frontend/app:/app                # Mount the full frontend directory
+      - /app/node_modules              # Protect container node_modules from being overwritten
+    ports:
+      - "5173:5173"                    # Expose Vite's port if you want direct access from the host browser
     depends_on:
       - backend
     networks:

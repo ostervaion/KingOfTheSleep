@@ -190,3 +190,8 @@ clean: down ## Remove containers, images, and build cache for this project
 prune: ## Remove ALL unused Docker resources system-wide (use with care)
 	@echo "$(YELLOW)Pruning all unused Docker resources…$(RESET)"
 	docker system prune -af --volumes
+
+.PHONY: open-vite
+open-vite: ## Opens the browser into the vite main page
+	@echo "$(YELLOW)Starting vite in browser$(RESET)"
+	xdg-open http://localhost:5173/
