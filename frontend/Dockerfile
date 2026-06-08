@@ -14,7 +14,7 @@ RUN corepack enable pnpm
 
 
 # Cache dependencies
-COPY package.json pnpm-lock.yaml* ./
+#COPY package.json pnpm-lock.yaml* ./
 #RUN pnpm install
 
 # Copy your source code (will be overridden by compose bind-mount during dev)
