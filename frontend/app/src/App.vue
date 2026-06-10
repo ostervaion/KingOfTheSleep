@@ -1,85 +1,72 @@
 <script setup>
+import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+
+const mobileMenuOpen = ref(false)
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div class="min-h-screen bg-[var(--web-bg)] font-mono flex flex-col">
+    <!-- Navbar horizontal -->
+    <header class="bg-[var(--web-bg)] border-b border-[color:var(--border)]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo izquierda -->
+          <div class="flex-shrink-0">
+            <img src="/KOTS_logo.png" alt="King of the Sleep" class="h-14 w-auto" />
+          </div>
 
-    <div class="wrapper">
-      <HelloWorld msg="did it!" />
+          <!-- Menú desktop -->
+          <nav class="hidden md:flex items-center gap-8">
+            <RouterLink to="/login"
+              class="text-xs tracking-[2px] uppercase text-[color:var(--muted)] hover:text-[color:var(--accent)] transition-colors duration-150 pb-0.5 border-b-2 border-transparent hover:border-[color:var(--accent)]"
+              active-class="!text-[color:var(--accent)] !border-[color:var(--accent)]">
+              Login
+            </RouterLink>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
+            <RouterLink to="/register"
+              class="text-xs tracking-[2px] uppercase text-[color:var(--muted)] hover:text-[color:var(--accent)] transition-colors duration-150 pb-0.5 border-b-2 border-transparent hover:border-[color:var(--accent)]"
+              active-class="!text-[color:var(--accent)] !border-[color:var(--accent)]">
+              Register
+            </RouterLink>
+          </nav>
 
-  <RouterView />
+          <button
+            class="md:hidden text-[color:var(--accent)] text-2xl leading-none hover:text-[color:var(--accent)]/80 transition-colors"
+            @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Toggle menu">
+            {{ mobileMenuOpen ? '✕' : '☰' }}
+          </button>
+        </div>
+      </div>
+
+
+      <div v-if="mobileMenuOpen" class="md:hidden bg-[color:var(--surface-soft)] border-t border-[color:var(--border)]">
+        <nav class="flex flex-col gap-1 px-4 py-3">
+          <RouterLink to="/login"
+            class="px-3 py-2 text-xs tracking-[2px] uppercase text-[color:var(--muted)] hover:text-[color:var(--accent)] hover:bg-[color:var(--accent-soft)]/10 transition-all duration-150 rounded border-l-2 border-transparent hover:border-[color:var(--accent)]"
+            active-class="!text-[color:var(--accent)] !border-[color:var(--accent)] bg-[color:var(--accent)]/10"
+            @click="mobileMenuOpen = false">
+            Login
+          </RouterLink>
+
+          <RouterLink to="/register"
+            class="px-3 py-2 text-xs tracking-[2px] uppercase text-[color:var(--muted)] hover:text-[color:var(--accent)] hover:bg-[color:var(--accent-soft)]/10 transition-all duration-150 rounded border-l-2 border-transparent hover:border-[color:var(--accent)]"
+            active-class="!text-[color:var(--accent)] !border-[color:var(--accent)] bg-[color:var(--accent)]/10"
+            @click="mobileMenuOpen = false">
+            Register
+          </RouterLink>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full">
+      <RouterView />
+    </main>
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.router-link-exact-active {
+  color: var(--accent);
 }
 </style>
