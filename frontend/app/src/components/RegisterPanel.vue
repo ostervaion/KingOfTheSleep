@@ -16,7 +16,6 @@ const password = ref('')
 const mensaje = ref('')
 const loading = ref(false)
 
-
 async function register(event) {
   event.preventDefault()
   if (loading.value) return

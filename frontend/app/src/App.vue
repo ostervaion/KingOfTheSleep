@@ -18,48 +18,60 @@ const mobileMenuOpen = ref(false)
 
           <!-- Menú desktop -->
           <nav class="hidden md:flex items-center gap-8">
-            <RouterLink to="/login"
+            <RouterLink
+              to="/login"
               class="text-xs tracking-[2px] uppercase text-[color:var(--muted)] hover:text-[color:var(--accent)] transition-colors duration-150 pb-0.5 border-b-2 border-transparent hover:border-[color:var(--accent)]"
-              active-class="!text-[color:var(--accent)] !border-[color:var(--accent)]">
+              active-class="!text-[color:var(--accent)] !border-[color:var(--accent)]"
+            >
               Login
             </RouterLink>
 
-            <RouterLink to="/register"
+            <RouterLink
+              to="/register"
               class="text-xs tracking-[2px] uppercase text-[color:var(--muted)] hover:text-[color:var(--accent)] transition-colors duration-150 pb-0.5 border-b-2 border-transparent hover:border-[color:var(--accent)]"
-              active-class="!text-[color:var(--accent)] !border-[color:var(--accent)]">
+              active-class="!text-[color:var(--accent)] !border-[color:var(--accent)]"
+            >
               Register
             </RouterLink>
           </nav>
 
           <button
             class="md:hidden text-[color:var(--accent)] text-2xl leading-none hover:text-[color:var(--accent)]/80 transition-colors"
-            @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Toggle menu">
+            @click="mobileMenuOpen = !mobileMenuOpen"
+            aria-label="Toggle menu"
+          >
             {{ mobileMenuOpen ? '✕' : '☰' }}
           </button>
         </div>
       </div>
 
-
-      <div v-if="mobileMenuOpen" class="md:hidden bg-[color:var(--surface-soft)] border-t border-[color:var(--border)]">
+      <div
+        v-if="mobileMenuOpen"
+        class="md:hidden bg-[color:var(--surface-soft)] border-t border-[color:var(--border)]"
+      >
         <nav class="flex flex-col gap-1 px-4 py-3">
-          <RouterLink to="/login"
+          <RouterLink
+            to="/login"
             class="px-3 py-2 text-xs tracking-[2px] uppercase text-[color:var(--muted)] hover:text-[color:var(--accent)] hover:bg-[color:var(--accent-soft)]/10 transition-all duration-150 rounded border-l-2 border-transparent hover:border-[color:var(--accent)]"
             active-class="!text-[color:var(--accent)] !border-[color:var(--accent)] bg-[color:var(--accent)]/10"
-            @click="mobileMenuOpen = false">
+            @click="mobileMenuOpen = false"
+          >
             Login
           </RouterLink>
 
-          <RouterLink to="/register"
+          <RouterLink
+            to="/register"
             class="px-3 py-2 text-xs tracking-[2px] uppercase text-[color:var(--muted)] hover:text-[color:var(--accent)] hover:bg-[color:var(--accent-soft)]/10 transition-all duration-150 rounded border-l-2 border-transparent hover:border-[color:var(--accent)]"
             active-class="!text-[color:var(--accent)] !border-[color:var(--accent)] bg-[color:var(--accent)]/10"
-            @click="mobileMenuOpen = false">
+            @click="mobileMenuOpen = false"
+          >
             Register
           </RouterLink>
         </nav>
       </div>
     </header>
 
-    <main class="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full">
+    <main class="flex-1 mx-auto w-full">
       <RouterView />
     </main>
   </div>

@@ -10,12 +10,10 @@ const password = ref('')
 const mensaje = ref('')
 const loading = ref(false)
 
-
 async function login(event) {
   event.preventDefault()
   if (loading.value) return
   const button = event.currentTarget.querySelector('button[type="submit"]') || event.currentTarget
-  
 
   loading.value = true
   mensaje.value = ''
