@@ -16,7 +16,7 @@ import Lobby from '@/components/dashboard/Lobby.vue'
     <NextBattle />
 
     <div
-      class="mx-auto grid w-full flex-1 min-h-0 gap-4 md:grid-cols-[1fr_1.2fr_1.2fr] items-stretch"
+      class="mx-auto grid w-full flex-1 min-h-0 gap-4 lg:grid-cols-[1fr_1.2fr_1.2fr] items-stretch"
     >
       <section class="flex flex-col gap-4 min-h-0">
         <Lobby />

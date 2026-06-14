@@ -1,9 +1,11 @@
 @import './base.css';
 @import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
 
 @theme {
-  --bg: #05050b;
-  --web-bg: #0d0f18;
+  --font-inter: "Inter", sans-serif;
+  --bg: #1F1F1D;
+  --web-bg: #1F1F1D;
   --surface: #11151f;
   --surface-soft: #131825;
   --surface-strong: #161a2d;
@@ -14,4 +16,6 @@
   --accent-soft: #6ab8ff;
   --button: #6e54d0;
   --button-hover: #8367ff;
+  --kots-background-color: #1F1F1D;
+  --kots-blocks-color: #171715;
 }
