@@ -30,7 +30,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex items-center justify-between bg-(--surface) border border-(--border) p-4 rounded-xl">
+  <div
+    class="font-inter text-sm text-heading flex items-center justify-between bg-(--kots-blocks-color) p-4 rounded-xl"
+  >
     <div class="flex items-center gap-2">
       <span class="text-4xl text-yellow-400">#4</span>
       <div>
@@ -38,7 +40,9 @@ onUnmounted(() => {
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <span class="inline-flex items-center text-sm font-bold bg-yellow-400 rounded-md px-2 py-2 text-gray-800 leading-none">NEXT BATTLE IN</span>
+      <span
+        class="inline-flex items-center text-sm font-bold bg-yellow-400 rounded-md px-2 py-2 text-gray-800 leading-none"
+        >NEXT BATTLE IN</span>
       <span class="text-2xl">{{ formatTime(nextBattleSeconds) }}</span>
     </div>
     <div class="flex items-center">
