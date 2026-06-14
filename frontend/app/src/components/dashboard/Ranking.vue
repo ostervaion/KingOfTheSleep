@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 </script>
 
 <template>
-	<div class="flex-1 min-h-0 bg-(--surface) border border-(--border) p-6 rounded-xl overflow-auto">
-		RANKINGS
-	</div>
+  <div class="flex-1 min-h-0 bg-(--surface) border border-(--border) p-6 rounded-xl overflow-auto">
+    RANKINGS
+  </div>
 </template>
