@@ -6,6 +6,7 @@ from config import settings
 from database import engine, Base
 from routers import items
 
+print("asdasd")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

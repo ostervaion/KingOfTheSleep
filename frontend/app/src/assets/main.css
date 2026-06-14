@@ -1,35 +1,21 @@
 @import './base.css';
+@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+@theme {
+  --font-inter: "Inter", sans-serif;
+  --bg: #1F1F1D;
+  --web-bg: #1F1F1D;
+  --surface: #11151f;
+  --surface-soft: #131825;
+  --surface-strong: #161a2d;
+  --border: #2a2d44;
+  --text: #d8dbe8;
+  --muted: #8f96b3;
+  --accent: #8f6eff;
+  --accent-soft: #6ab8ff;
+  --button: #6e54d0;
+  --button-hover: #8367ff;
+  --kots-background-color: #1F1F1D;
+  --kots-blocks-color: #171715;
 }
