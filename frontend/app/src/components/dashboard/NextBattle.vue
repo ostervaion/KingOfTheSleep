@@ -42,7 +42,8 @@ onUnmounted(() => {
     <div class="flex items-center gap-2">
       <span
         class="inline-flex items-center text-sm font-bold bg-yellow-400 rounded-md px-2 py-2 text-gray-800 leading-none"
-        >NEXT BATTLE IN</span>
+        >NEXT BATTLE IN</span
+      >
       <span class="text-2xl">{{ formatTime(nextBattleSeconds) }}</span>
     </div>
     <div class="flex items-center">

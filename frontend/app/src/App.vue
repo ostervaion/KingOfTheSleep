@@ -69,7 +69,7 @@ const mobileMenuOpen = ref(false)
           </RouterLink>
         </nav>
       </div>
-    </header>
+    </header> 
 
     <main class="flex-1 mx-auto w-full">
       <RouterView />
