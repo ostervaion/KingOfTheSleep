@@ -4,12 +4,11 @@ import example from '@/assets/example.jpg'
 
 <template>
   <div
-    class="font-inter flex flex-col flex-1 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) shadow-md shadow-black/20"
+    class="font-inter flex flex-col flex-1 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >
     <div class="px-6 pb-4 pt-4">
       <div class="flex items-center justify-between">
         <h2 class="text-base font-medium text-heading">Rankings</h2>
-
         <div class="flex rounded-full bg-(--kots-background-color) p-1">
           <button
             class="rounded-full bg-(--kots-blocks-color) px-4 py-1.5 text-xs font-medium text-white transition"

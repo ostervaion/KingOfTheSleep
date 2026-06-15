@@ -6,7 +6,7 @@ const mobileMenuOpen = ref(false)
 </script>
 
 <template>
-  <div class="min-h-screen bg-[var(--web-bg)] font-mono flex flex-col">
+  <div class="min-h-screen bg-[var(--kots-background-color)] font-mono flex flex-col">
     <!-- Navbar horizontal -->
     <header class="bg-[var(--web-bg)] border-b border-[color:var(--border)]">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -8,7 +8,7 @@ import ThumbsDownIcon from '@/assets/thumbs-down-svgrepo-com.svg'
 
 <template>
   <div
-    class="font-inter flex flex-col flex-1 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) shadow-md shadow-black/20"
+    class="font-inter flex flex-col flex-1 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) shadow-md shadow-black/20 border-b border-[color:var(--border)]"
   >
     <div class="px-6 pb-4 pt-4">
       <div class="flex items-center justify-between">
