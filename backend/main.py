@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-
+from datetime import datetime, time, timedelta
 from config import settings
 from database import engine, Base
 from routers import items
 
-print("asdasd")
+horadestino = time(20, 0, 0)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -36,6 +36,20 @@ app.add_middleware(
 
 app.include_router(items.router, prefix="/items", tags=["items"])
 
+
+@app.get("/nextbattle")
+def nextbattle():
+    now = datetime.now()
+    
+    meta = datetime.combine(now.date(), horadestino)
+    
+    if now >= meta:
+        meta += timedelta(days=1)
+        
+    diferencia = meta - now
+
+    segundos = int(diferencia.total_seconds())
+    return {"nextbattle": segundos}
 
 @app.get("/health")
 async def health():

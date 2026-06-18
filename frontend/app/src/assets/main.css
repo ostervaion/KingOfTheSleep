@@ -3,9 +3,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
 
 @theme {
-  --font-inter: "Inter", sans-serif;
-  --bg: #1F1F1D;
-  --web-bg: #1F1F1D;
+  --font-inter: 'Inter', sans-serif;
+  --bg: #1f1f1d;
+  --web-bg: #1f1f1d;
   --surface: #11151f;
   --surface-soft: #131825;
   --surface-strong: #161a2d;
@@ -16,6 +16,6 @@
   --accent-soft: #6ab8ff;
   --button: #6e54d0;
   --button-hover: #8367ff;
-  --kots-background-color: #1F1F1D;
+  --kots-background-color: #1f1f1d;
   --kots-blocks-color: #171715;
 }

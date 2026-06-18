@@ -8,9 +8,7 @@ import example from '@/assets/example.jpg'
   >
     <div class="px-6 pb-4 pt-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-base font-medium text-heading">
-          Rankings
-        </h2>
+        <h2 class="text-base font-medium text-heading">Rankings</h2>
 
         <div class="flex rounded-full bg-(--kots-background-color) p-1">
           <button
@@ -19,24 +17,18 @@ import example from '@/assets/example.jpg'
             today
           </button>
 
-          <button
-            class="rounded-full px-4 py-1.5 text-xs text-body transition hover:text-heading"
-          >
+          <button class="rounded-full px-4 py-1.5 text-xs text-body transition hover:text-heading">
             week
           </button>
 
-          <button
-            class="rounded-full px-4 py-1.5 text-xs text-body transition hover:text-heading"
-          >
+          <button class="rounded-full px-4 py-1.5 text-xs text-body transition hover:text-heading">
             global
           </button>
         </div>
       </div>
     </div>
 
-    <div
-      class="grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body"
-    >
+    <div class="grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body">
       <div>#</div>
       <div>player</div>
       <div class="text-right">points</div>
@@ -46,9 +38,7 @@ import example from '@/assets/example.jpg'
     <div class="flex-1 min-h-0 overflow-y-auto">
       <ul>
         <li class="odd:bg-white/[0.015] even:bg-transparent">
-          <div
-            class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5"
-          >
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
             <div class="text-sm text-heading">1</div>
 
             <div class="flex items-center gap-3">
@@ -63,9 +53,7 @@ import example from '@/assets/example.jpg'
         </li>
 
         <li class="odd:bg-white/[0.015] even:bg-transparent">
-          <div
-            class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5"
-          >
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
             <div class="text-sm text-heading">2</div>
 
             <div class="flex items-center gap-3">
@@ -80,9 +68,7 @@ import example from '@/assets/example.jpg'
         </li>
 
         <li class="odd:bg-white/[0.015] even:bg-transparent">
-          <div
-            class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5"
-          >
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
             <div class="text-sm text-heading">3</div>
 
             <div class="flex items-center gap-3">
@@ -97,9 +83,7 @@ import example from '@/assets/example.jpg'
         </li>
 
         <li class="odd:bg-white/[0.015] even:bg-transparent">
-          <div
-            class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5"
-          >
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
             <div class="text-sm text-heading">4</div>
 
             <div class="flex items-center gap-3">
@@ -114,9 +98,7 @@ import example from '@/assets/example.jpg'
         </li>
 
         <li class="odd:bg-white/[0.015] even:bg-transparent">
-          <div
-            class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5"
-          >
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
             <div class="text-sm text-heading">5</div>
 
             <div class="flex items-center gap-3">
@@ -131,9 +113,7 @@ import example from '@/assets/example.jpg'
         </li>
 
         <li class="odd:bg-white/[0.015] even:bg-transparent">
-          <div
-            class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5"
-          >
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
             <div class="text-sm text-heading">6</div>
 
             <div class="flex items-center gap-3">
@@ -148,9 +128,7 @@ import example from '@/assets/example.jpg'
         </li>
 
         <li class="odd:bg-white/[0.015] even:bg-transparent">
-          <div
-            class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5"
-          >
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
             <div class="text-sm text-heading">7</div>
 
             <div class="flex items-center gap-3">
@@ -165,9 +143,7 @@ import example from '@/assets/example.jpg'
         </li>
 
         <li class="odd:bg-white/[0.015] even:bg-transparent">
-          <div
-            class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5"
-          >
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
             <div class="text-sm text-heading">8</div>
 
             <div class="flex items-center gap-3">
