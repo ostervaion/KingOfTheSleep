@@ -77,9 +77,15 @@ const chartOptions = {
 </script>
 
 <template>
-  <div class="font-inter flex-2 min-h-0  bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20 rounded-xl p-6">
+  <div
+    class="font-inter flex-2 min-h-0 bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20 rounded-xl p-6"
+  >
     <div class="flex h-full min-h-0 flex-col">
-       <h2 class="text-base font-medium text-heading">Sleep Score</h2>
+      <div class="flex items-center justify-between">
+        <div class="border border-cyan-100 rounded-md px-2 py-0.5 text-gray-800 leading-none">
+          <h2 class="text-cyan-100 text-sm font-medium text-heading">Sleep score</h2>
+        </div>
+      </div>
       <div class="flex-1 min-h-0">
         <Line class="h-full w-full" :data="chartData" :options="chartOptions" />
       </div>

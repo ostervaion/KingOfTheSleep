@@ -12,20 +12,21 @@ import ThumbsDownIcon from '@/assets/thumbs-down-svgrepo-com.svg'
   >
     <div class="px-6 pb-4 pt-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-base font-medium text-heading">Protocols</h2>
-
-        <div class="flex rounded-full bg-(--kots-background-color) p-1">
+        <div class="border border-cyan-100 rounded-md px-2 py-0.5 text-gray-800 leading-none">
+          <h2 class="text-cyan-100 text-sm font-medium text-heading">Protocols</h2>
+        </div>
+        <div class="flex rounded-full bg-(--kots-background-color) px-1.25 py-0.75">
           <button
-            class="rounded-full bg-(--kots-blocks-color) px-4 py-1.5 text-xs font-medium text-white transition"
+            class="rounded-full bg-(--kots-blocks-color) px-3 py-1.5 text-xs font-medium text-white transition"
           >
             today
           </button>
 
-          <button class="rounded-full px-4 py-1.5 text-xs text-body transition hover:text-heading">
+          <button class="rounded-full px-3 py-1.5 text-xs text-body transition hover:text-heading">
             week
           </button>
 
-          <button class="rounded-full px-4 py-1.5 text-xs text-body transition hover:text-heading">
+          <button class="rounded-full px-3 py-1.5 text-xs text-body transition hover:text-heading">
             global
           </button>
         </div>
@@ -50,8 +51,8 @@ import ThumbsDownIcon from '@/assets/thumbs-down-svgrepo-com.svg'
             <div class="flex items-center gap-3">
               <span class="text-sm text-heading">DreamWalker</span>
             </div>
-            <div class="text-right text-sm text-heading">%  61</div>
-            <div class="text-right text-sm font-medium text-green-400">%  85</div>
+            <div class="text-right text-sm text-heading">% 61</div>
+            <div class="text-right text-sm font-medium text-green-400">% 85</div>
           </div>
         </li>
 
@@ -104,7 +105,7 @@ import ThumbsDownIcon from '@/assets/thumbs-down-svgrepo-com.svg'
 
             <div class="text-right text-sm text-heading">% 61</div>
 
-            <div class="text-right text-sm font-medium text-green-400">%  35</div>
+            <div class="text-right text-sm font-medium text-green-400">% 35</div>
           </div>
         </li>
       </ul>
