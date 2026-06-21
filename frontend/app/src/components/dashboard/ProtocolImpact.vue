@@ -5,7 +5,9 @@ import { useAuthStore } from '@/stores/auth'
 </script>
 
 <template>
-  <div class="font-inter text-sm text-heading flex-2 min-h-0  bg-(--kots-blocks-color)  rounded-xl p-6 overflow-auto">
+  <div
+    class="font-inter text-sm text-heading flex-2 min-h-0 bg-(--kots-blocks-color) rounded-xl p-6 overflow-auto"
+  >
     Protocol Impact
   </div>
 </template>

@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 </script>
 
 <template>
-  <div class="font-inter text-sm text-heading flex-6 min-h-0 bg-(--kots-blocks-color) p-6 rounded-xl overflow-auto">
-  </div>
+  <div
+    class="font-inter text-sm text-heading flex-6 min-h-0 bg-(--kots-blocks-color) p-6 rounded-xl overflow-auto"
+  ></div>
 </template>
