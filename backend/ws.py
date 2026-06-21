@@ -2,8 +2,8 @@ import json
 from fastapi import WebSocket, WebSocketDisconnect
 from sqlmodel import Session
 
-from .database import engine
-from .security import verify_token
+from database import engine
+from security import verify_token
 
 connections: dict[WebSocket, str] = {}
 users: dict[str, WebSocket] = {}
