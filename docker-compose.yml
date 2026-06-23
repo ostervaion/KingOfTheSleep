@@ -32,7 +32,7 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-appuser}:${POSTGRES_PASSWORD:-apppassword}@db:5432/${POSTGRES_DB:-appdb}
       APP_ENV: ${APP_ENV:-development}
     volumes:
-      - ./backend:/app
+      - ./backend/app:/app
     depends_on:
       db:
         condition: service_healthy
@@ -55,8 +55,8 @@ services:
     volumes:
       - ./frontend/app:/app                # Mount the full frontend directory
       - /app/node_modules              # Protect container node_modules from being overwritten
-    ports:
-      - "5173:5173"                    # Expose Vite's port if you want direct access from the host browser
+    #ports:
+    #  - "5173:5173"                    # Expose Vite's port if you want direct access from the host browser
     depends_on:
       - backend
     networks:
