@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 
-const API_WS_URL = "api/ws";
+const API_WS_URL = 'api/ws'
 const emit = defineEmits(['close'])
 const props = defineProps({
   to_user: {
@@ -29,11 +29,13 @@ function sendMessage() {
   }
   if (!messageText.value.trim()) return
 
-  ws.value.send(JSON.stringify({
-    type: 'message',
-    to: props.to_user,
-    text: messageText.value.trim()
-  }))
+  ws.value.send(
+    JSON.stringify({
+      type: 'message',
+      to: props.to_user,
+      text: messageText.value.trim(),
+    }),
+  )
   messageText.value = ''
 }
 
@@ -41,11 +43,13 @@ onMounted(() => {
   ws.value = new WebSocket(API_WS_URL)
 
   ws.value.onopen = () => {
-    ws.value.send(JSON.stringify({
-      type: 'auth',
-      token: localStorage.getItem('token'),
-      to: props.to_user
-    }))
+    ws.value.send(
+      JSON.stringify({
+        type: 'auth',
+        token: localStorage.getItem('token'),
+        to: props.to_user,
+      }),
+    )
   }
 
   ws.value.onmessage = (event) => {
@@ -70,13 +74,19 @@ onUnmounted(() => {
 
 <template>
   <div class="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-    <div class="w-full max-w-md bg-[#1a1a1f] border border-[#2a2a2f] rounded-2xl overflow-hidden shadow-2xl">
-
-<button @click="emit('close')" class="ml-auto text-[#555] hover:text-[#aaa] transition-colors">
-  ✕
-</button>
+    <div
+      class="w-full max-w-md bg-[#1a1a1f] border border-[#2a2a2f] rounded-2xl overflow-hidden shadow-2xl"
+    >
+      <button
+        @click="emit('close')"
+        class="ml-auto text-[#555] hover:text-[#aaa] transition-colors"
+      >
+        ✕
+      </button>
       <div class="flex items-center gap-3 px-5 py-3 bg-[#16161a] border-b border-[#2a2a2f]">
-        <div class="w-8 h-8 rounded-full bg-[#2a2a3a] flex items-center justify-center text-[#8888cc] text-sm">
+        <div
+          class="w-8 h-8 rounded-full bg-[#2a2a3a] flex items-center justify-center text-[#8888cc] text-sm"
+        >
           {{ props.to_user[0].toUpperCase() }}
         </div>
         <div>
@@ -97,23 +107,20 @@ onUnmounted(() => {
         <div
           v-for="(msg, index) in messages"
           :key="index"
-          :class="[
-            'flex',
-            msg.from === props.to_user ? 'justify-start' : 'justify-end'
-          ]"
+          :class="['flex', msg.from === props.to_user ? 'justify-start' : 'justify-end']"
         >
           <div
             :class="[
               'max-w-[75%] px-3 py-2',
               msg.from === props.to_user
                 ? 'bg-[#25252e] rounded-tl rounded-tr-xl rounded-br-xl rounded-bl-xl'
-                : 'bg-[#2d2d4a] rounded-tl-xl rounded-tr rounded-br-xl rounded-bl-xl'
+                : 'bg-[#2d2d4a] rounded-tl-xl rounded-tr rounded-br-xl rounded-bl-xl',
             ]"
           >
             <p
               :class="[
                 'text-[10px] mb-1',
-                msg.from === props.to_user ? 'text-[#555]' : 'text-[#8888aa] text-right'
+                msg.from === props.to_user ? 'text-[#555]' : 'text-[#8888aa] text-right',
               ]"
             >
               {{ msg.from === props.to_user ? msg.from : 'tú' }}
@@ -139,7 +146,6 @@ onUnmounted(() => {
           ➤
         </button>
       </div>
-
     </div>
   </div>
 </template>

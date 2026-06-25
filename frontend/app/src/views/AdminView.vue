@@ -31,26 +31,44 @@ onMounted(() => {
 
 <template>
   <div class="min-h-full px-4 py-8 sm:px-6 md:px-8">
-<Chat
-      v-if="selectedUser"
-      :to_user="selectedUser"
-      @close="selectedUser = null"
-    />
-    <div class="relative w-full bg-[#111] border-2 border-[#1a1a1a] outline outline-1 outline-[#2a2a2a] px-6 py-8 sm:px-8 font-mono">
-      <span class="absolute top-[-2px] left-[-2px] w-3 h-3 border-t-2 border-l-2 border-[#9d6fe8]" />
-      <span class="absolute top-[-2px] right-[-2px] w-3 h-3 border-t-2 border-r-2 border-[#9d6fe8]" />
-      <span class="absolute bottom-[-2px] left-[-2px] w-3 h-3 border-b-2 border-l-2 border-[#9d6fe8]" />
-      <span class="absolute bottom-[-2px] right-[-2px] w-3 h-3 border-b-2 border-r-2 border-[#9d6fe8]" />
-      <h2 class="text-[#9d6fe8] text-xs sm:text-sm tracking-[4px] uppercase font-normal mb-6 before:content-['[_'] after:content-['_]']">
+    <Chat v-if="selectedUser" :to_user="selectedUser" @close="selectedUser = null" />
+    <div
+      class="relative w-full bg-[#111] border-2 border-[#1a1a1a] outline outline-1 outline-[#2a2a2a] px-6 py-8 sm:px-8 font-mono"
+    >
+      <span
+        class="absolute top-[-2px] left-[-2px] w-3 h-3 border-t-2 border-l-2 border-[#9d6fe8]"
+      />
+      <span
+        class="absolute top-[-2px] right-[-2px] w-3 h-3 border-t-2 border-r-2 border-[#9d6fe8]"
+      />
+      <span
+        class="absolute bottom-[-2px] left-[-2px] w-3 h-3 border-b-2 border-l-2 border-[#9d6fe8]"
+      />
+      <span
+        class="absolute bottom-[-2px] right-[-2px] w-3 h-3 border-b-2 border-r-2 border-[#9d6fe8]"
+      />
+      <h2
+        class="text-[#9d6fe8] text-xs sm:text-sm tracking-[4px] uppercase font-normal mb-6 before:content-['[_'] after:content-['_]']"
+      >
         Usuarios
       </h2>
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-xs sm:text-sm">
           <thead>
             <tr class="border-b-2 border-[#9d6fe8]/30 text-left">
-              <th class="px-4 py-3 text-[10px] tracking-[2px] uppercase text-[#444] font-normal w-12">#</th>
-              <th class="px-4 py-3 text-[10px] tracking-[2px] uppercase text-[#444] font-normal">Username</th>
-              <th class="px-4 py-3 text-[10px] tracking-[2px] uppercase text-[#444] font-normal w-36">Acción</th>
+              <th
+                class="px-4 py-3 text-[10px] tracking-[2px] uppercase text-[#444] font-normal w-12"
+              >
+                #
+              </th>
+              <th class="px-4 py-3 text-[10px] tracking-[2px] uppercase text-[#444] font-normal">
+                Username
+              </th>
+              <th
+                class="px-4 py-3 text-[10px] tracking-[2px] uppercase text-[#444] font-normal w-36"
+              >
+                Acción
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -60,7 +78,9 @@ onMounted(() => {
               class="border-b border-[#1a1a1a] hover:bg-[#9d6fe8]/[0.04] transition-colors duration-100 group"
             >
               <td class="px-4 py-3 text-[#333]">{{ index + 1 }}</td>
-              <td class="px-4 py-3 text-gray-400 group-hover:text-gray-200 transition-colors duration-100">
+              <td
+                class="px-4 py-3 text-gray-400 group-hover:text-gray-200 transition-colors duration-100"
+              >
                 <span class="text-[#9d6fe8]/40 mr-2 text-[10px]">▶</span>
                 {{ usuario.username }}
               </td>
@@ -80,7 +100,10 @@ onMounted(() => {
               </td>
             </tr>
             <tr v-if="usuarios.length === 0">
-              <td colspan="3" class="px-4 py-8 text-center text-[#333] tracking-[2px] uppercase text-[11px]">
+              <td
+                colspan="3"
+                class="px-4 py-8 text-center text-[#333] tracking-[2px] uppercase text-[11px]"
+              >
                 // sin usuarios
               </td>
             </tr>

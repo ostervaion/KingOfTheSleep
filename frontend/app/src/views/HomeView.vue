@@ -2,12 +2,14 @@
 import { ref } from 'vue'
 import LoginPanel from '@/components/LoginPanel.vue'
 import RegisterPanel from '@/components/RegisterPanel.vue'
+import SleepDataForm from '@/components/SleepDataForm.vue'
 
 const mode = ref('default')
 const homeEmail = ref('')
 </script>
 
 <template>
+  <SleepDataForm />
   <div class="min-h-screen text-(--text) px-4 py-8 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto grid gap-6 lg:grid-cols-[1.2fr_0.9fr] items-start">
       <!-- Left content -->
