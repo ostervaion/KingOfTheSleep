@@ -3,6 +3,21 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import LambBattleIcon from '@/assets/lamb_battle.svg'
+import BoxingGlove from '@/assets/boxing-glove.svg'
+import TriangleUp from '@/assets/triangle-up.svg'
+import TriangleDown from '@/assets/triangle-down.svg'
+import BattleLog from '@/components/dashboard/battleLogPopUp.vue'
+
+
+const dialog = ref(null)
+
+function openDialog() {
+  dialog.value.showModal()
+} 
+
+function closeDialog() {
+  dialog.value.close()
+} 
 </script>
 
 <template>
@@ -16,32 +31,30 @@ import LambBattleIcon from '@/assets/lamb_battle.svg'
           </div>
           <div class="flex rounded-full px-1.25 text-right">
             <div class="flex rounded-full px-1.25 py-0.75 bg-(--kots-background-color) ">
-              <button class="p5 px-2 py-1 leading-none text-xs font-medium text-white text-heading">
+              <button @click="openDialog" class="p5 px-2 py-1 leading-none text-xs font-medium text-white text-heading">
                 see all
               </button>
             </div>
-
           </div>
         </div>
       <div class="pt-2 px-5 flex items-center justify-between">
         <div class="pt-3 items-center">
-          <LambBattleIcon class="text-center -mt-0.5 w-10 h-10" />
+          <BoxingGlove class="text-center -mt-0.5 w-7 h-7 mb-1" />
           <p class="text-center text-xs font-medium  text-body">battles</p>
           <p class="text-center mb-2 text-xl font-light text-white">18</p>
         </div>
         <div class="pt-3 items-center">
-          <LambBattleIcon class="text-center -mt-0.5 w-10 h-10" />
+          <TriangleUp class="text-center -mt-0.5 w-8 h-8 mb-0.5" />
           <p class="text-center text-xs font-medium  text-body">wins</p>
           <p class="text-center mb-2 text-xl font-light text-white">14</p>
         </div>
         <div class="pt-3 items-center">
-          <LambBattleIcon class="text-center -mt-0.5 w-10 h-10" />
+          <TriangleDown class="text-center -mt-0.5 w-8 h-8 mb-0.5" />
           <p class="text-center text-xs font-medium  text-body">looses</p>
           <p class="text-center mb-2 text-xl font-light text-white">4</p>
         </div>
                 <div class="pt-3 items-center">
-          <LambBattleIcon class="text-center -mt-0.5 w-10 h-10" />
-          <p class="text-center text-xs font-medium  text-body">win rate</p>
+          <p class="text-center text-xs font-medium  text-body mb-0.5">win rate</p>
           <p class="text-center mb-2 text-xl font-light text-green-400">% 70</p>
         </div>
 </div>
@@ -50,5 +63,21 @@ import LambBattleIcon from '@/assets/lamb_battle.svg'
 
 
   </div>
+  <Teleport to="body">
+  <dialog
+    ref="dialog"
+    class="m-auto w-[600px] max-w-[90vw] rounded-xl border-none p-0"
+  >
+    <BattleLog @close="closeDialog" />
+  </dialog>
+</Teleport>
+
 </template>
 
+
+<style scoped>
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(1px);
+}
+</style>
