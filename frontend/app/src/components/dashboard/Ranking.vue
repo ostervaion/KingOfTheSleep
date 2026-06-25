@@ -68,7 +68,8 @@ function buttonClass(ranking) {
           <button class="rounded-full px-4 py-1.5 text-xs text-body transition hover:text-heading">
             global
           </button>
-        </div>https://github.com/ostervaion/KingOfTheSleep/pull/8/conflict?name=frontend%252Fapp%252Fsrc%252Fcomponents%252Fdashboard%252FRanking.vue&ancestor_oid=6f1e34e1c630340d625c1c8bdd075ac9bf7e1a71&base_oid=c8172f200f655b4cd584561cf7bbbadf3a021f76&head_oid=8f4f69fed2f38e8495871c18592f7e3c7be86330
+        </div>
+        
       </div>
     </div>
 

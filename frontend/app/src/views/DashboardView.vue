@@ -7,15 +7,14 @@ import SleepScore from '@/components/dashboard/SleepScore.vue'
 import Profile from '@/components/dashboard/Profile.vue'
 import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Lobby from '@/components/dashboard/Lobby.vue'
-import { ref, onMounted } from 'vue' 
+import { ref, onMounted } from 'vue'
 import { useAppStore } from '@/stores/app'
 
 const appStore = useAppStore()
 
 onMounted(() => {
-  appStore.onDashboard = true;
+  appStore.onDashboard = true
 })
-
 </script>
 
 <template>

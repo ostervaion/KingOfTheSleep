@@ -13,12 +13,8 @@ const props = defineProps({
 <template>
   <li class="odd:bg-white/[0.015] even:bg-transparent">
     <div class="grid grid-cols-[60px_1fr_120px] items-center px-6 py-2">
-
       <!-- Victory / Defeat -->
-      <div
-        class="text-sm font-semibold"
-        :class="props.victory ? 'text-green-400' : 'text-red-400'"
-      >
+      <div class="text-sm font-semibold" :class="props.victory ? 'text-green-400' : 'text-red-400'">
         {{ props.victory ? 'VICTORY' : 'LOSS' }}
       </div>
 
@@ -39,7 +35,6 @@ const props = defineProps({
       <div class="text-right text-sm text-heading">
         {{ props.enemy_stats.wins }}W · {{ props.enemy_stats.losses }}L
       </div>
-
     </div>
   </li>
 </template>

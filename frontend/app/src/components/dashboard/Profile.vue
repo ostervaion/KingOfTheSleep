@@ -16,11 +16,11 @@ const dialog = ref(null)
 
 function openDialog() {
   dialog.value.showModal()
-} 
+}
 
 function closeDialog() {
   dialog.value.close()
-} 
+}
 
 onMounted(() => {
   loadUsersData()
@@ -43,14 +43,11 @@ function loadUsersData() {
     Player Profile
   </div>
 
-<Teleport to="body">
-  <dialog
-    ref="dialog"
-    class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none p-0"
-  >
-    <LogOut @close="closeDialog" />
-  </dialog>
-</Teleport>
+  <Teleport to="body">
+    <dialog ref="dialog" class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none p-0">
+      <LogOut @close="closeDialog" />
+    </dialog>
+  </Teleport>
 </template>
 
 <style scoped>
