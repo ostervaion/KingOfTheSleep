@@ -9,6 +9,7 @@ const props = defineProps({
 })
 
 const nextBattleSeconds = ref(props.nextBattle.seconds)
+const endDaySeconds = ref(props.nextBattle.endDay)
 
 let countdownInterval = null
 
@@ -24,7 +25,12 @@ onMounted(() => {
     if (nextBattleSeconds.value > 0) {
       nextBattleSeconds.value -= 1
     } else {
-      window.clearInterval(countdownInterval)
+      nextBattleSeconds.value = 0
+    }
+    if (endDaySeconds.value > 0) {
+      endDaySeconds.value -= 1
+    } else {
+      endDaySeconds.value = 0
     }
   }, 1000)
 })
@@ -41,10 +47,10 @@ onUnmounted(() => {
     class="font-inter text-sm text-heading flex items-center justify-between bg-(--kots-blocks-color) p-4 rounded-full border-b border-[color:var(--border)]"
   >
     <div class="flex items-center gap-2">
-      <span class="text-4xl text-yellow-400">#4</span>
+      <span class="text-4xl text-yellow-400">{{ '#' + nextBattle.currentRanking }}</span>
       <div>
         current ranking
-        <span class="text-xl text-green-400 ml-2">{{ nextBattle.currentRanking }}</span> since last
+        <span class="text-xl text-green-400 ml-2">{{ nextBattle.deltaRanking }}</span> since last
         battle
       </div>
     </div>
@@ -56,7 +62,8 @@ onUnmounted(() => {
       <span class="text-2xl">{{ formatTime(nextBattleSeconds) }}</span>
     </div>
     <div class="flex items-center">
-      DAY ENDS IN <span class="text-2xl ml-2 mr-2">15:12:34</span> until daily reset
+      DAY ENDS IN <span class="text-2xl ml-2 mr-2">{{ formatTime(endDaySeconds) }}</span> until
+      daily reset
     </div>
   </div>
 </template>

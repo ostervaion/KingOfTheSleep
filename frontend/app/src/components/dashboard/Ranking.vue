@@ -69,7 +69,6 @@ function buttonClass(ranking) {
             global
           </button>
         </div>
-        
       </div>
     </div>
 

@@ -11,6 +11,8 @@ import Lobby from '@/components/dashboard/Lobby.vue'
 const nextBattle = {
   currentRanking: 12,
   seconds: 999999,
+  endDay: 1234,
+  deltaRanking: 34,
 }
 import { ref, onMounted } from 'vue'
 import { useAppStore } from '@/stores/app'
