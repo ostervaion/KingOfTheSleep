@@ -113,3 +113,19 @@ def delete_user(username: str, current_user=Depends(get_current_active_user), se
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     session.delete(user)
     session.commit()
+
+
+@router.get("/dashboard")
+def dashboard_fake():
+    return {
+        "nextBattle": {
+            "currentRanking": 12,
+            "seconds": 999999,
+            "endDay": 1234,
+            "deltaRanking": 34,
+        },
+        "sleepScore": {
+            "labels": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+            "scores": [75, 80, 70, 90, 73, 82, 80],
+        },
+    }

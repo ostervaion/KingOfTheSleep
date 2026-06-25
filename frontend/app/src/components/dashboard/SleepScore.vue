@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+
 import {
   Chart as ChartJS,
   Tooltip,
@@ -12,11 +14,21 @@ import { Line } from 'vue-chartjs'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip)
 
-const chartData = {
-  labels: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SUN'],
+const props = defineProps({
+  sleepScore: {
+    type: Object,
+    default: () => ({
+      labels: [],
+      scores: [],
+    }),
+  },
+})
+
+const chartData = computed(() => ({
+  labels: props.sleepScore?.labels ?? [],
   datasets: [
     {
-      data: [75, 80, 70, 90, 73, 80],
+      data: props.sleepScore?.scores ?? [],
       borderColor: 'rgba(104, 166, 43, 1)',
       backgroundColor: 'rgba(104, 166, 43, 1)',
       pointStyle: 'circle',
@@ -24,7 +36,7 @@ const chartData = {
       pointHoverRadius: 15,
     },
   ],
-}
+}))
 
 const chartOptions = {
   responsive: true,
@@ -68,9 +80,7 @@ const chartOptions = {
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      labels: {
-        color: '#ffffff',
-      },
+      display: false,
     },
   },
 }
@@ -83,11 +93,18 @@ const chartOptions = {
     <div class="flex h-full min-h-0 flex-col">
       <div class="flex items-center justify-between">
         <div class="border border-cyan-100 rounded-md px-2 py-0.5 text-gray-800 leading-none">
-          <h2 class="text-cyan-100 text-sm font-medium text-heading">Sleep score</h2>
+          <h2 class="text-cyan-100 text-sm font-medium text-heading">
+            Sleep score
+          </h2>
         </div>
       </div>
+
       <div class="flex-1 min-h-0">
-        <Line class="h-full w-full" :data="chartData" :options="chartOptions" />
+        <Line
+          class="h-full w-full"
+          :data="chartData"
+          :options="chartOptions"
+        />
       </div>
     </div>
   </div>
