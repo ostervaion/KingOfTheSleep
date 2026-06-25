@@ -9,8 +9,9 @@ import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Lobby from '@/components/dashboard/Lobby.vue'
 
 const nextBattle = {
-  "currentRanking": 12,
-  "seconds": 999999};
+  currentRanking: 12,
+  seconds: 999999,
+}
 </script>
 
 <template>

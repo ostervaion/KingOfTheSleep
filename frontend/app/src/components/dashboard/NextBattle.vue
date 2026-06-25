@@ -5,7 +5,7 @@ const props = defineProps({
   nextBattle: {
     type: Object,
     default: null,
-  }
+  },
 })
 
 const nextBattleSeconds = ref(props.nextBattle.seconds)
@@ -43,7 +43,9 @@ onUnmounted(() => {
     <div class="flex items-center gap-2">
       <span class="text-4xl text-yellow-400">#4</span>
       <div>
-        current ranking <span class="text-xl text-green-400 ml-2">{{ nextBattle.currentRanking }}</span> since last battle
+        current ranking
+        <span class="text-xl text-green-400 ml-2">{{ nextBattle.currentRanking }}</span> since last
+        battle
       </div>
     </div>
     <div class="flex items-center gap-2">
