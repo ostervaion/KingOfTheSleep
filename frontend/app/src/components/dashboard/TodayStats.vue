@@ -22,46 +22,9 @@ function closeDialog() {
 
 <template>
   <div
-    class="font-inter flex flex-col flex-2 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) shadow-md shadow-black/20 border-b border-[color:var(--border)]"
+    class="font-inter text-base font-medium text-heading flex-1 min-h-0 bg-(--kots-blocks-color) rounded-xl p-6 overflow-auto"
   >
-  <div class="px-6 pb-4 pt-5">
-    <div class="flex items-center justify-between">
-          <div class="border border-cyan-100 rounded-md px-2 py-0.5 text-gray-800 leading-none">
-            <h2 class="text-cyan-100 text-sm font-medium text-heading">Today's Stats</h2>
-          </div>
-          <div class="flex rounded-full px-1.25 text-right">
-            <div class="flex rounded-full px-1.25 py-0.75 bg-(--kots-background-color) ">
-              <button @click="openDialog" class="p5 px-2 py-1 leading-none text-xs font-medium text-white text-heading">
-                see all
-              </button>
-            </div>
-          </div>
-        </div>
-      <div class="pt-2 px-5 flex items-center justify-between">
-        <div class="pt-3 items-center">
-          <BoxingGlove class="text-center -mt-0.5 w-7 h-7 mb-1" />
-          <p class="text-center text-xs font-medium  text-body">battles</p>
-          <p class="text-center mb-2 text-xl font-light text-white">18</p>
-        </div>
-        <div class="pt-3 items-center">
-          <TriangleUp class="text-center -mt-0.5 w-8 h-8 mb-0.5" />
-          <p class="text-center text-xs font-medium  text-body">wins</p>
-          <p class="text-center mb-2 text-xl font-light text-white">14</p>
-        </div>
-        <div class="pt-3 items-center">
-          <TriangleDown class="text-center -mt-0.5 w-8 h-8 mb-0.5" />
-          <p class="text-center text-xs font-medium  text-body">looses</p>
-          <p class="text-center mb-2 text-xl font-light text-white">4</p>
-        </div>
-                <div class="pt-3 items-center">
-          <p class="text-center text-xs font-medium  text-body mb-0.5">win rate</p>
-          <p class="text-center mb-2 text-xl font-light text-green-400">% 70</p>
-        </div>
-</div>
-      </div>
-
-
-
+    Today's Stats
   </div>
   <Teleport to="body">
   <dialog
