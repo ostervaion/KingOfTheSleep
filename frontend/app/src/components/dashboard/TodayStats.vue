@@ -66,7 +66,7 @@ function closeDialog() {
   <Teleport to="body">
   <dialog
     ref="dialog"
-    class="m-auto w-[600px] max-w-[90vw] rounded-xl border-none p-0"
+    class="m-auto w-[500px] max-w-[90vw] rounded-xl border-none p-0"
   >
     <BattleLog @close="closeDialog" />
   </dialog>
@@ -79,5 +79,11 @@ function closeDialog() {
 dialog::backdrop {
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(1px);
+}
+
+dialog {
+  background: transparent;
+  padding: 0;
+  border: none;
 }
 </style>

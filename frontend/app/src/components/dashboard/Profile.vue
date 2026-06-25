@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import LogOut from '@/components/dashboard/logOut.vue'
 
 var usersData = ref({
   rank: '',
@@ -10,6 +11,16 @@ var usersData = ref({
   nextxp: '',
   todaysSleepScore: '',
 })
+
+const dialog = ref(null)
+
+function openDialog() {
+  dialog.value.showModal()
+} 
+
+function closeDialog() {
+  dialog.value.close()
+} 
 
 onMounted(() => {
   loadUsersData()
@@ -29,7 +40,7 @@ function loadUsersData() {
   <div
     class="font-inter flex flex-col flex-2 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >
-    <!-- Header Section -->
+ 
     <div class="px-6 pb-1 pt-3">
       <div class="flex items-center justify-between">
         <div class="border border-cyan-100 rounded-md px-2 py-0.5 text-gray-800 leading-none">
@@ -46,7 +57,8 @@ function loadUsersData() {
             class="flex border border-red-950 rounded-full px-1.25 py-0.75 bg-(--kots-background-color) m-2"
           >
             <button
-              class="p5 px-2 py-0.5 leading-none text-xs font-medium text-red-950 text-heading"
+            @click="openDialog" 
+              class="p5 px-2 py-0.5 leading-none text-xs font-medium text-red-900 text-heading"
             >
               log out
             </button>
@@ -55,7 +67,7 @@ function loadUsersData() {
       </div>
     </div>
 
-    <!-- Existing content here -->
+  
     <div class="flex-1 min-h-0 flex items-center gap-10 px-6 py-4 overflow-auto">
       <div class="w-80 shrink-0">
         <p class="text-xs font-medium tracking-wide text-body">rank</p>
@@ -71,7 +83,7 @@ function loadUsersData() {
         <p class="text-xs font-light text-neutral-300">{{ usersData.currentxp }} / {{ usersData.nextxp }} xp</p>
       </div>
 
-      <!-- Circle score -->
+
       <div class="relative size-32 shrink-0">
         <svg class="size-full -rotate-90" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="42" fill="none" stroke-width="6" class="stroke-neutral-800" />
@@ -95,4 +107,25 @@ function loadUsersData() {
       </div>
     </div>
   </div>
+
+<Teleport to="body">
+  <dialog
+    ref="dialog"
+    class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none p-0"
+  >
+    <LogOut @close="closeDialog" />
+  </dialog>
+</Teleport>
 </template>
+
+<style scoped>
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(1px);
+}
+dialog {
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+</style>
