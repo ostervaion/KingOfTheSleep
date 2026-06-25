@@ -7,6 +7,11 @@ import SleepScore from '@/components/dashboard/SleepScore.vue'
 import Profile from '@/components/dashboard/Profile.vue'
 import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Lobby from '@/components/dashboard/Lobby.vue'
+
+const nextBattle = {
+  currentRanking: 12,
+  seconds: 999999,
+}
 import { ref, onMounted } from 'vue'
 import { useAppStore } from '@/stores/app'
 
@@ -21,7 +26,7 @@ onMounted(() => {
   <div
     class="h-[calc(100dvh-64px)] text-(--text) mt-5 px-4 py-4 sm:px-6 lg:px-8 overflow-hidden flex flex-col gap-3"
   >
-    <NextBattle />
+    <NextBattle :nextBattle="nextBattle" />
 
     <div
       class="mx-auto grid w-full flex-1 min-h-0 gap-4 lg:grid-cols-[1fr_1.2fr_1.2fr] items-stretch"
