@@ -7,11 +7,20 @@ import SleepScore from '@/components/dashboard/SleepScore.vue'
 import Profile from '@/components/dashboard/Profile.vue'
 import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Lobby from '@/components/dashboard/Lobby.vue'
+import { ref, onMounted } from 'vue' 
+import { useAppStore } from '@/stores/app'
+
+const appStore = useAppStore()
+
+onMounted(() => {
+  appStore.onDashboard = true;
+})
+
 </script>
 
 <template>
   <div
-    class="h-[calc(100dvh-64px)] text-(--text) px-4 py-4 sm:px-6 lg:px-8 overflow-hidden flex flex-col gap-3"
+    class="h-[calc(100dvh-64px)] text-(--text) mt-5 px-4 py-4 sm:px-6 lg:px-8 overflow-hidden flex flex-col gap-3"
   >
     <NextBattle />
 
