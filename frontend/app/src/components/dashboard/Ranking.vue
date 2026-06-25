@@ -1,10 +1,54 @@
 <script setup>
 import example from '@/assets/example.jpg'
+import { ref, onMounted } from 'vue'
+import RankingUser from '@/components/dashboard/rankingUsers.vue'
+
+const selectedRanking = ref('today')
+var usersRanking = ref([])
+
+onMounted(() => {
+  loadUsers()
+})
+
+function loadUsers() {
+  usersRanking.value = [
+    {
+      ranking: '1',
+      name: 'Martin',
+      points: '2500',
+      posChange: '3',
+    },
+    {
+      ranking: '1',
+      name: 'Martin',
+      points: '2500',
+      posChange: '3',
+    },
+    {
+      ranking: '1',
+      name: 'Martin',
+      points: '2500',
+      posChange: '4',
+    },
+  ]
+  ///llamar a funcion back para tener todos los usaurios y sus datos en descendiente por punto
+}
+
+function updateButtonColor(ranking) {
+  selectedRanking.value = ranking
+}
+
+function buttonClass(ranking) {
+  return {
+    clickedButton: selectedRanking.value === ranking,
+    unclickedButton: selectedRanking.value !== ranking,
+  }
+}
 </script>
 
 <template>
   <div
-    class="font-inter flex flex-col flex-1 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) shadow-sm shadow-black/20"
+    class="font-inter flex flex-col flex-1 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >
     <div class="px-6 pb-4 pt-4">
       <div class="flex items-center justify-between">
@@ -25,6 +69,7 @@ import example from '@/assets/example.jpg'
             global
           </button>
         </div>
+        
       </div>
     </div>
 
@@ -160,3 +205,34 @@ import example from '@/assets/example.jpg'
     </div>
   </div>
 </template>
+
+<style scoped>
+@reference "@/assets/main.css";
+
+.clickedButton {
+  @apply rounded-full px-3 py-1.5 text-xs font-medium text-white transition;
+  background-color: var(--kots-blocks-color);
+}
+
+.unclickedButton {
+  @apply rounded-full px-3 py-1.5 text-xs font-medium text-white transition;
+  background-color: var(--kots-background-color);
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+</style>

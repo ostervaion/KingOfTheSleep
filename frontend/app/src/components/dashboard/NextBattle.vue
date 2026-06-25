@@ -38,7 +38,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="font-inter text-sm text-heading flex items-center justify-between bg-(--kots-blocks-color) p-4 rounded-xl"
+    class="font-inter text-sm text-heading flex items-center justify-between bg-(--kots-blocks-color) p-4 rounded-full border-b border-[color:var(--border)]"
   >
     <div class="flex items-center gap-2">
       <span class="text-4xl text-yellow-400">#4</span>
