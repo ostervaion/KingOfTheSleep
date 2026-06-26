@@ -52,15 +52,20 @@ function buttonClass(ranking) {
   >
     <div class="px-6 pb-4 pt-4">
       <div class="flex items-center justify-between">
-        <div class="border border-cyan-100 rounded-md px-2 py-0.5 text-gray-800 leading-none">
-          <h2 class="text-cyan-100 text-sm font-medium text-heading">Rankings</h2>
-        </div>
-        <div class="flex rounded-full bg-(--kots-background-color) px-1.25 py-0.75">
-          <button :class="buttonClass('today')" @click="updateButtonColor('today')">today</button>
+        <h2 class="text-base font-medium text-heading">Rankings</h2>
 
-          <button :class="buttonClass('week')" @click="updateButtonColor('week')">week</button>
+        <div class="flex rounded-full bg-(--kots-background-color) p-1">
+          <button
+            class="rounded-full bg-(--kots-blocks-color) px-4 py-1.5 text-xs font-medium text-white transition"
+          >
+            today
+          </button>
 
-          <button :class="buttonClass('global')" @click="updateButtonColor('global')">
+          <button class="rounded-full px-4 py-1.5 text-xs text-body transition hover:text-heading">
+            week
+          </button>
+
+          <button class="rounded-full px-4 py-1.5 text-xs text-body transition hover:text-heading">
             global
           </button>
         </div>
@@ -76,14 +81,125 @@ function buttonClass(ranking) {
 
     <div class="flex-1 min-h-0 overflow-y-auto">
       <ul>
-        <rankingUser
-          v-for="user in usersRanking"
-          :key="user.name"
-          :ranking="user.ranking"
-          :name="user.name"
-          :points="user.points"
-          :pos-change="user.posChange"
-        />
+        <li class="odd:bg-white/[0.015] even:bg-transparent">
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
+            <div class="text-sm text-heading">1</div>
+
+            <div class="flex items-center gap-3">
+              <img class="h-8 w-8 rounded-full object-cover" :src="example" alt="" />
+              <span class="text-sm text-heading">DreamWalker</span>
+            </div>
+
+            <div class="text-right text-sm text-heading">2,560</div>
+
+            <div class="text-right text-sm font-medium text-green-400">↑ 85</div>
+          </div>
+        </li>
+
+        <li class="odd:bg-white/[0.015] even:bg-transparent">
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
+            <div class="text-sm text-heading">2</div>
+
+            <div class="flex items-center gap-3">
+              <img class="h-8 w-8 rounded-full object-cover" :src="example" alt="" />
+              <span class="text-sm text-heading">SleepNinja</span>
+            </div>
+
+            <div class="text-right text-sm text-heading">2,340</div>
+
+            <div class="text-right text-sm font-medium text-green-400">↑ 35</div>
+          </div>
+        </li>
+
+        <li class="odd:bg-white/[0.015] even:bg-transparent">
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
+            <div class="text-sm text-heading">3</div>
+
+            <div class="flex items-center gap-3">
+              <img class="h-8 w-8 rounded-full object-cover" :src="example" alt="" />
+              <span class="text-sm text-heading">RestLord</span>
+            </div>
+
+            <div class="text-right text-sm text-heading">2,180</div>
+
+            <div class="text-right text-sm font-medium text-green-400">↑ 12</div>
+          </div>
+        </li>
+
+        <li class="odd:bg-white/[0.015] even:bg-transparent">
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
+            <div class="text-sm text-heading">4</div>
+
+            <div class="flex items-center gap-3">
+              <img class="h-8 w-8 rounded-full object-cover" :src="example" alt="" />
+              <span class="text-sm text-yellow-400">KingMoon (You)</span>
+            </div>
+
+            <div class="text-right text-sm text-heading">2,120</div>
+
+            <div class="text-right text-sm font-medium text-green-400">↑ 42</div>
+          </div>
+        </li>
+
+        <li class="odd:bg-white/[0.015] even:bg-transparent">
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
+            <div class="text-sm text-heading">5</div>
+
+            <div class="flex items-center gap-3">
+              <img class="h-8 w-8 rounded-full object-cover" :src="example" alt="" />
+              <span class="text-sm text-heading">Zenith</span>
+            </div>
+
+            <div class="text-right text-sm text-heading">1,980</div>
+
+            <div class="text-right text-sm font-medium text-red-400">↓ 5</div>
+          </div>
+        </li>
+
+        <li class="odd:bg-white/[0.015] even:bg-transparent">
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
+            <div class="text-sm text-heading">6</div>
+
+            <div class="flex items-center gap-3">
+              <img class="h-8 w-8 rounded-full object-cover" :src="example" alt="" />
+              <span class="text-sm text-heading">MoonSleeper</span>
+            </div>
+
+            <div class="text-right text-sm text-heading">1,850</div>
+
+            <div class="text-right text-sm font-medium text-red-400">↓ 3</div>
+          </div>
+        </li>
+
+        <li class="odd:bg-white/[0.015] even:bg-transparent">
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
+            <div class="text-sm text-heading">7</div>
+
+            <div class="flex items-center gap-3">
+              <img class="h-8 w-8 rounded-full object-cover" :src="example" alt="" />
+              <span class="text-sm text-heading">DeepRest</span>
+            </div>
+
+            <div class="text-right text-sm text-heading">1,790</div>
+
+            <div class="text-right text-sm font-medium text-green-400">↑ 7</div>
+          </div>
+        </li>
+
+        <li class="odd:bg-white/[0.015] even:bg-transparent">
+          <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
+            <div class="text-sm text-heading">8</div>
+
+            <div class="flex items-center gap-3">
+              <img class="h-8 w-8 rounded-full object-cover" :src="example" alt="" />
+              <span class="text-sm text-heading">NightOwl</span>
+            </div>
+
+            <div class="text-right text-sm text-heading">1,720</div>
+
+            <div class="text-right text-sm font-medium text-red-400">↓ 8</div>
+          </div>
+        </li>
       </ul>
     </div>
   </div>
