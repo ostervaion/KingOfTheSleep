@@ -1,14 +1,12 @@
-from pwdlib import PasswordHash
+from pydantic_settings import BaseSettings
 
-DATABASE_URL = "postgresql+psycopg2://appuser:apppassword@db:5432/appdb"
-SECRET_KEY = "super-secret-key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
-ORIGINS = [
-    "http://localhost:5173",
-    "https://b5f7dz71-5173.uks1.devtunnels.ms",
-	"*"
-	
-]
-password_hash = PasswordHash.recommended()
 
+class Settings(BaseSettings):
+    database_url: str = "postgresql+asyncpg://appuser:apppassword@db:5432/appdb"
+    app_env: str = "development"
+
+    class Config:
+        env_file = ".env"
+
+
+settings = Settings()

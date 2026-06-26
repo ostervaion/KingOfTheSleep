@@ -1,28 +1,47 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
-from config import ORIGINS
-from database import create_db_and_tables
-from routes import router
-from ws import websocket_endpoint
+from config import settings
+from database import engine, Base
+from routers import items
 
-app = FastAPI(title="King of the Sleep API")
+print("asdasd")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: create tables if they don't exist
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    # Shutdown
+    await engine.dispose()
+
+
+app = FastAPI(
+    title="App API",
+    version="1.0.0",
+    lifespan=lifespan,
+    # Serve docs under /api/docs when behind Caddy
+    root_path="/api",
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(router)
-app.websocket("/ws")(websocket_endpoint)
 
-
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
+app.include_router(items.router, prefix="/items", tags=["items"])
 
 
 @app.get("/health")
-def health():
+async def health():
     return {"status": "ok"}
+
+
+@app.get("/")
+async def root():
+    return {"message": "API is running"}

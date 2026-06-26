@@ -38,9 +38,8 @@ function loadUsersData() {
 </script>
 <template>
   <div
-    class="font-inter text-sm text-heading flex-1 min-h-0 bg-(--kots-blocks-color) p-6 rounded-xl overflow-auto"
+    class="font-inter flex flex-col flex-2 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >
-<<<<<<< tempbranch
     <div class="px-6 pb-1 pt-3">
       <div class="flex items-center justify-between">
         <div class="border border-cyan-100 rounded-md px-2 py-0.5 text-gray-800 leading-none">
@@ -108,9 +107,6 @@ function loadUsersData() {
         </div>
       </div>
     </div>
-=======
-    Player Profile
->>>>>>> main
   </div>
 
   <Teleport to="body">

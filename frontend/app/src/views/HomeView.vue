@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import LoginPanel from '@/components/LoginPanel.vue'
 import RegisterPanel from '@/components/RegisterPanel.vue'
-import SleepDataForm from '@/components/SleepDataForm.vue'
 
 const mode = ref('default')
 const homeEmail = ref('')
