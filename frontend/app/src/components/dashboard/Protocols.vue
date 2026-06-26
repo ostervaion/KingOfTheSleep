@@ -24,7 +24,7 @@ function loadProtocols() {
     { ranking: '6', protocol: 'Other', usage: '%20', winrate: '%5' },
     { ranking: '7', protocol: 'Another', usage: '%15', winrate: '%8' },
   ]
-    ///llamar a funcion back para tener todos los protocolos y sus datos en descendiente por punto
+  ///llamar a funcion back para tener todos los protocolos y sus datos en descendiente por punto
 
   protocolsDown.value = [
     { ranking: '1', protocol: 'Other', usage: '%20', winrate: '%5' },
@@ -34,8 +34,7 @@ function loadProtocols() {
     { ranking: '5', protocol: 'Other', usage: '%20', winrate: '%5' },
     { ranking: '6', protocol: 'Another', usage: '%15', winrate: '%8' },
   ]
-    ///llamar a funcion back para tener todos los protocolos y sus datos en descendiente por punto
-
+  ///llamar a funcion back para tener todos los protocolos y sus datos en descendiente por punto
 }
 
 function updateButtonColor(ranking) {
@@ -71,7 +70,7 @@ function buttonClass(ranking) {
       </div>
     </div>
 
-    <div class=" grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body">
+    <div class="grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body">
       <div>
         <ThumbsUpIcon class="-mt-0.5 w-5 h-5" />
       </div>

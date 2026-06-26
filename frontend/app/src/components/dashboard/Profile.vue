@@ -16,11 +16,11 @@ const dialog = ref(null)
 
 function openDialog() {
   dialog.value.showModal()
-} 
+}
 
 function closeDialog() {
   dialog.value.close()
-} 
+}
 
 onMounted(() => {
   loadUsersData()
@@ -40,7 +40,6 @@ function loadUsersData() {
   <div
     class="font-inter flex flex-col flex-2 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >
- 
     <div class="px-6 pb-1 pt-3">
       <div class="flex items-center justify-between">
         <div class="border border-cyan-100 rounded-md px-2 py-0.5 text-gray-800 leading-none">
@@ -57,7 +56,7 @@ function loadUsersData() {
             class="flex border border-red-950 rounded-full px-1.25 py-0.75 bg-(--kots-background-color) m-2"
           >
             <button
-            @click="openDialog" 
+              @click="openDialog"
               class="p5 px-2 py-0.5 leading-none text-xs font-medium text-red-900 text-heading"
             >
               log out
@@ -67,7 +66,6 @@ function loadUsersData() {
       </div>
     </div>
 
-  
     <div class="flex-1 min-h-0 flex items-center gap-10 px-6 py-4">
       <div class="w-80 shrink-0">
         <p class="text-xs font-medium tracking-wide text-body">rank</p>
@@ -80,9 +78,10 @@ function loadUsersData() {
           <div class="h-full w-[74%] rounded-full bg-yellow-400"></div>
         </div>
 
-        <p class="text-xs font-light text-neutral-300">{{ usersData.currentxp }} / {{ usersData.nextxp }} xp</p>
+        <p class="text-xs font-light text-neutral-300">
+          {{ usersData.currentxp }} / {{ usersData.nextxp }} xp
+        </p>
       </div>
-
 
       <div class="relative size-32 shrink-0">
         <svg class="size-full -rotate-90" viewBox="0 0 100 100">
@@ -101,21 +100,20 @@ function loadUsersData() {
         </svg>
 
         <div class="absolute inset-0 flex flex-col items-center justify-center">
-          <div class="text-4xl font-bold leading-none text-green-500">{{ usersData.todaysSleepScore }}</div>
+          <div class="text-4xl font-bold leading-none text-green-500">
+            {{ usersData.todaysSleepScore }}
+          </div>
           <div class="text-base font-light leading-none text-white">/100</div>
         </div>
       </div>
     </div>
   </div>
 
-<Teleport to="body">
-  <dialog
-    ref="dialog"
-    class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none p-0"
-  >
-    <LogOut @close="closeDialog" />
-  </dialog>
-</Teleport>
+  <Teleport to="body">
+    <dialog ref="dialog" class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none p-0">
+      <LogOut @close="closeDialog" />
+    </dialog>
+  </Teleport>
 </template>
 
 <style scoped>
