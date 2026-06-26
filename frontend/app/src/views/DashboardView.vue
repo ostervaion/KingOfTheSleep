@@ -28,6 +28,9 @@ async function fetchDashboard() {
 let intervalId = null
 
 onMounted(() => {
+<<<<<<< tempbranch
+  appStore.onDashboard = true
+=======
   fetchDashboard()
   appStore.onDashboard = true
   intervalId = setInterval(fetchDashboard, 30000)
@@ -35,8 +38,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   clearInterval(intervalId)
+>>>>>>> main
 })
-
 </script>
 
 <template>
