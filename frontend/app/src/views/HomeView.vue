@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import LoginPanel from '@/components/LoginPanel.vue'
 import RegisterPanel from '@/components/RegisterPanel.vue'
+import SleepDataForm from '@/components/SleepDataForm.vue'
 
 const mode = ref('default')
 const homeEmail = ref('')
@@ -93,7 +94,7 @@ const homeEmail = ref('')
             </template>
 
             <template v-else>
-              <RegisterPanel :email="homeEmail" @back="mode = 'default'" />
+              <RegisterPanel :email="homeEmail" @back="mode = 'default'" @login="mode = 'login'" />
             </template>
           </div>
         </div>
