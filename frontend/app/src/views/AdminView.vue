@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import api from '@/api/api'
 import Chat from '@/components/Chat.vue'
+import SleepDataForm from '@/components/SleepDataForm.vue'
 
 const usuarios = ref([])
 const selectedUser = ref(null)
@@ -30,6 +31,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <SleepDataForm />
   <div class="min-h-full px-4 py-8 sm:px-6 md:px-8">
     <Chat v-if="selectedUser" :to_user="selectedUser" @close="selectedUser = null" />
     <div

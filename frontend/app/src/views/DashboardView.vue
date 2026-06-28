@@ -15,7 +15,6 @@ const dashboard = ref(null)
 
 const appStore = useAppStore()
 
-
 async function fetchDashboard() {
   try {
     const response = await api.get('/dashboard')
@@ -36,7 +35,6 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(intervalId)
 })
-
 </script>
 
 <template>

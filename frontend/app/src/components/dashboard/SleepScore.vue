@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+
 import {
   Chart as ChartJS,
   Tooltip,
@@ -12,11 +14,21 @@ import { Line } from 'vue-chartjs'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip)
 
-const chartData = {
-  labels: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SUN'],
+const props = defineProps({
+  sleepScore: {
+    type: Object,
+    default: () => ({
+      labels: [],
+      scores: [],
+    }),
+  },
+})
+
+const chartData = computed(() => ({
+  labels: props.sleepScore?.labels ?? [],
   datasets: [
     {
-      data: [75, 80, 70, 90, 73, 80],
+      data: props.sleepScore?.scores ?? [],
       borderColor: 'rgba(104, 166, 43, 1)',
       backgroundColor: 'rgba(104, 166, 43, 1)',
       pointStyle: 'circle',
@@ -24,7 +36,7 @@ const chartData = {
       pointHoverRadius: 15,
     },
   ],
-}
+}))
 
 const chartOptions = {
   responsive: true,
@@ -68,9 +80,7 @@ const chartOptions = {
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      labels: {
-        color: '#ffffff',
-      },
+      display: false,
     },
   },
 }
@@ -86,6 +96,7 @@ const chartOptions = {
           <h2 class="text-cyan-100 text-sm font-medium text-heading">Sleep score</h2>
         </div>
       </div>
+
       <div class="flex-1 min-h-0">
         <Line class="h-full w-full" :data="chartData" :options="chartOptions" />
       </div>

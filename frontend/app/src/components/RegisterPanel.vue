@@ -8,7 +8,7 @@ const props = defineProps({
     default: '',
   },
 })
-const emit = defineEmits(['back'])
+const emit = defineEmits(['back', 'login'])
 
 const username = ref('')
 const email = ref(props.email)
@@ -30,6 +30,7 @@ async function register(event) {
       password: password.value,
     })
     mensaje.value = '// usuario registrado'
+    emit('login')
   } catch (error) {
     mensaje.value = `// ${error.response?.data?.detail || 'error al registrar'}`
   } finally {

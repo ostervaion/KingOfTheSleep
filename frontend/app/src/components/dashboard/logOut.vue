@@ -1,5 +1,17 @@
 <script setup>
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+
 const emit = defineEmits(['close'])
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+function onLogout() {
+  authStore.logout()
+  emit('close')
+  router.push('/')
+}
 
 function onClose() {
   emit('close')
@@ -31,10 +43,7 @@ function onClose() {
         <button @click="onClose" class="px-2 py-0.5 text-xs font-medium leading-none text-white">
           cancel
         </button>
-        <button
-          @click="onConfirm"
-          class="px-2 py-0.5 text-xs font-medium leading-none text-red-900"
-        >
+        <button @click="onLogout" class="px-2 py-0.5 text-xs font-medium leading-none text-red-900">
           log out
         </button>
       </div>

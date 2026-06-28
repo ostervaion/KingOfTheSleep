@@ -6,7 +6,7 @@ from sqlmodel import select
 
 from config import ACCESS_TOKEN_EXPIRE_MINUTES
 from database import get_session
-from models import Token, User, UserCreate, UserPublic
+from models import SleepData, SleepDataCreate, SleepDataPublic, Token, User, UserCreate, UserPublic
 from security import (
     authenticate_user,
     create_access_token,
@@ -129,3 +129,37 @@ def dashboard_fake():
             "scores": [75, 80, 70, 90, 73, 82, 80],
         },
     }
+
+@router.post("/sleep-data", response_model=SleepDataPublic, status_code=status.HTTP_201_CREATED)
+def create_sleep_data(
+    sleep_data: SleepDataCreate,
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session),
+):
+    new_sleep_data = SleepData(
+        time_in_bed=sleep_data.time_in_bed,
+        awake_time=sleep_data.awake_time,
+        light_sleep=sleep_data.light_sleep,
+        slow_wave=sleep_data.slow_wave,
+        rem=sleep_data.rem,
+
+        disturbance=sleep_data.disturbance,
+        baseline=sleep_data.baseline,
+        debt=sleep_data.debt,
+        strain=sleep_data.strain,
+        nap=sleep_data.nap,
+
+        respiratory_rate=sleep_data.respiratory_rate,
+        performance=sleep_data.performance,
+        consistency=sleep_data.consistency,
+        efficiency=sleep_data.efficiency,
+
+        user_id=current_user.id,
+        username=current_user.username,
+    )
+
+    session.add(new_sleep_data)
+    session.commit()
+    session.refresh(new_sleep_data)
+
+    return new_sleep_data

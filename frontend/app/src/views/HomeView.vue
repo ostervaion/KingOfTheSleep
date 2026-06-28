@@ -94,7 +94,7 @@ const homeEmail = ref('')
             </template>
 
             <template v-else>
-              <RegisterPanel :email="homeEmail" @back="mode = 'default'" />
+              <RegisterPanel :email="homeEmail" @back="mode = 'default'" @login="mode = 'login'" />
             </template>
           </div>
         </div>
