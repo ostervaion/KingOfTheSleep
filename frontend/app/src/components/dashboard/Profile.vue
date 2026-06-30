@@ -66,8 +66,8 @@ function loadUsersData() {
       </div>
     </div>
 
-    <div class="flex-1 min-h-0 flex items-center gap-10 px-6 py-4">
-      <div class="w-80 shrink-0">
+<div class="flex-1 min-h-0 flex items-center justify-between gap-4 px-4 py-4 min-w-0">
+  <div class="min-w-0 flex-1">
         <p class="text-xs font-medium tracking-wide text-body">rank</p>
         <p class="mb-4 text-xl font-light leading-tight text-white">#{{ usersData.rank }}</p>
 
@@ -83,7 +83,7 @@ function loadUsersData() {
         </p>
       </div>
 
-      <div class="relative size-32 shrink-0">
+      <div class="relative size-24 lg:size-32 shrink-0">
         <svg class="size-full -rotate-90" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="42" fill="none" stroke-width="6" class="stroke-neutral-800" />
           <circle
