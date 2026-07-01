@@ -1,10 +1,20 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+import asyncio
 from config import ORIGINS
 from database import create_db_and_tables
 from routes import router
 from ws import websocket_endpoint
+
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from battle_scheduler import battle_scheduler
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    task = asyncio.create_task(battle_scheduler())
+    yield
+    task.cancel()
 
 app = FastAPI(title="King of the Sleep API")
 app.add_middleware(
