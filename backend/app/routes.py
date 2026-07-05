@@ -3,6 +3,7 @@ from datetime import datetime, time, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
+from pydantic import BaseModel
 
 from config import ACCESS_TOKEN_EXPIRE_MINUTES
 from database import get_session
@@ -14,6 +15,13 @@ from security import (
     get_user_by_username,
     hash_password,
 )
+from battle_scheduler import (
+    get_time_until_next_battle,
+    schedule_extra_battle,
+    set_battle_interval,
+    get_battle_interval,
+    get_battle_queue_info,
+)
 
 router = APIRouter()
 
@@ -22,24 +30,6 @@ router = APIRouter()
 def root():
     return {"message": "API running"}
 
-@router.get("/nextbattle")
-def nextbattle(hora_destino=time(0, 0, 0)):
-    # 1. Obtener el momento exacto actual
-    ahora = datetime.now()
-    
-    # 2. Combinar la fecha de hoy con la hora objetivo
-    meta = datetime.combine(ahora.date(), hora_destino)
-    
-    # 3. Si la hora ya pasó hoy, calcula para esa hora del día de mañana
-    if ahora >= meta:
-        from datetime import timedelta
-        meta += timedelta(days=1)
-        
-    # 4. Restar los tiempos para obtener la diferencia
-    diferencia = meta - ahora
-    
-    # 5. Retornar el total de segundos (incluye decimales de microsegundos)
-    return {"nextbattle": diferencia}
 
 @router.post("/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
 def register(user_data: UserCreate, session=Depends(get_session)):
@@ -163,3 +153,123 @@ def create_sleep_data(
     session.refresh(new_sleep_data)
 
     return new_sleep_data
+
+
+# ==================== MODELOS PYDANTIC PARA BATALLAS ====================
+
+class ScheduleExtraBattleRequest(BaseModel):
+    minutes_from_now: int = 5  # Cuántos minutos desde ahora
+
+
+class SetBattleIntervalRequest(BaseModel):
+    interval_minutes: int = 120  # Nuevo intervalo en minutos
+
+
+# ==================== ENDPOINTS DE BATALLA ====================
+
+@router.get("/battles/time-until-next")
+async def get_next_battle_time():
+    """
+    Retorna el tiempo que falta para la próxima batalla en milisegundos y otros formatos.
+    
+    Returns:
+        - milliseconds: Milisegundos hasta la siguiente batalla
+        - seconds: Segundos totales
+        - minutes: Minutos restantes (sin contar horas)
+        - hours: Horas restantes
+        - next_battle_time: Fecha y hora ISO de la próxima batalla
+        - status: Estado ("waiting" o "battle_should_be_running")
+    """
+    return await get_time_until_next_battle()
+
+
+@router.get("/battles/info")
+def get_battles_info():
+    """
+    Retorna información de la configuración actual del scheduler de batallas.
+    
+    Returns:
+        - interval_minutes: Intervalo entre batallas recurrentes (en minutos)
+        - check_interval_seconds: Cada cuánto se verifica si toca ejecutar una batalla
+    """
+    return get_battle_interval()
+
+
+@router.get("/battles/queue")
+def get_battles_queue():
+    """
+    [DEBUG] Retorna la cola de batallas programadas en memoria.
+    Útil para ver todas las batallas programadas y su estado.
+    """
+    return get_battle_queue_info()
+
+
+@router.post("/admin/battles/schedule-extra")
+async def schedule_extra_battle_endpoint(
+    request: ScheduleExtraBattleRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    [REQUIERE ADMIN] Programa una batalla adicional para dentro de X minutos.
+    Después de ejecutarse, el ciclo normal de batallas continúa.
+    
+    Ejemplo: Si normalmente hay batallas cada 2 horas, pero quieres una en 5 minutos,
+    llama este endpoint con minutes_from_now=5. Después, la próxima batalla recurrente
+    seguirá normalmente después de eso.
+    
+    Args:
+        minutes_from_now: Cuántos minutos desde ahora ejecutar la batalla
+    
+    Returns:
+        - id: ID de la batalla programada
+        - scheduled_time: Cuándo se ejecutará (ISO format)
+        - minutes_from_now: Confirmación de minutos solicitados
+        - status: "battle_scheduled"
+    """
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+    
+    if request.minutes_from_now <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="minutes_from_now debe ser mayor a 0"
+        )
+    
+    return await schedule_extra_battle(request.minutes_from_now)
+
+
+@router.post("/admin/battles/set-interval")
+async def set_battle_interval_endpoint(
+    request: SetBattleIntervalRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    [REQUIERE ADMIN] Cambia el intervalo de batallas recurrentes.
+    
+    Ejemplo: Si quieres que las batallas sean cada 1 hora en lugar de cada 2 horas,
+    llama este endpoint con interval_minutes=60.
+    
+    Args:
+        interval_minutes: Nuevo intervalo en minutos
+    
+    Returns:
+        - interval_minutes: Confirmación del nuevo intervalo
+        - next_battle_time: Cuándo será la próxima batalla (ISO format)
+        - status: "interval_updated"
+    """
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+    
+    if request.interval_minutes <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="interval_minutes debe ser mayor a 0"
+        )
+    
+    return await set_battle_interval(request.interval_minutes)
