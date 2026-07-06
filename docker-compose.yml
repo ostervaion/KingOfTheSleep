@@ -49,7 +49,7 @@ services:
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
     volumes:
-      - ./frontend/app:/app                # Mount the full frontend directory
+      - ./frontend/app:/app:Z                # Mount the full frontend directory
       - /app/node_modules              # Protect container node_modules from being overwritten
     ports:
       - "5173:5173"                    # Expose Vite's port if you want direct access from the host browser
