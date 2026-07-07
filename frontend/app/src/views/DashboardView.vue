@@ -18,7 +18,10 @@ const appStore = useAppStore()
 async function fetchDashboard() {
   try {
     const response = await api.get('/dashboard')
-    dashboard.value = response.data
+    dashboard.value = {
+      ...response.data,
+      ranking: Array.isArray(response.data?.ranking) ? response.data.ranking : [],
+    }
   } catch (error) {
     console.error('Error cargando dashboard:', error)
   }
@@ -52,7 +55,7 @@ onUnmounted(() => {
       </section>
 
       <section class="flex flex-col gap-4 min-h-0">
-        <Ranking />
+        <Ranking :ranking-data="dashboard?.ranking || []" />
         <Protocols />
       </section>
 

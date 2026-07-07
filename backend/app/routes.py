@@ -1,13 +1,25 @@
-from datetime import datetime, time, timedelta
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from uuid import uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
 from pydantic import BaseModel
 
 from config import ACCESS_TOKEN_EXPIRE_MINUTES
 from database import get_session
-from models import SleepData, SleepDataCreate, SleepDataPublic, Token, User, UserCreate, UserPublic
+from models import (
+    ScoreHistory,
+    SleepData,
+    SleepDataCreate,
+    SleepDataPublic,
+    Token,
+    User,
+    UserCreate,
+    UserPublic,
+    UserProfile,
+)
 from security import (
     authenticate_user,
     create_access_token,
@@ -24,6 +36,11 @@ from battle_scheduler import (
 )
 
 router = APIRouter()
+
+DAY_NAMES = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
+UPLOAD_BASE_DIR = Path(__file__).resolve().parent / "uploads"
+AVATAR_DIR = UPLOAD_BASE_DIR / "avatars"
+AVATAR_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @router.get("/")
@@ -66,18 +83,12 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), session=Depends(get_
     if not user.active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Inactive user")
 
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username, "user_id": user.id, "role": user.role},
-        expires_delta=access_token_expires,
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
 
     return {"access_token": access_token, "token_type": "bearer"}
-
-
-@router.get("/me", response_model=UserPublic)
-def read_me(current_user=Depends(get_current_active_user)):
-    return current_user
 
 
 @router.get("/all_users", response_model=list[UserPublic])
@@ -85,13 +96,6 @@ def list_users(current_user=Depends(get_current_active_user), session=Depends(ge
     if current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return session.exec(select(User)).all()
-
-
-@router.get("/admin")
-def admin_only(current_user=Depends(get_current_active_user)):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
-    return {"message": f"Welcome admin {current_user.username}"}
 
 
 @router.delete("/users/{username}", status_code=status.HTTP_204_NO_CONTENT)
@@ -105,20 +109,153 @@ def delete_user(username: str, current_user=Depends(get_current_active_user), se
     session.commit()
 
 
-@router.get("/dashboard")
-def dashboard_fake():
+@router.post("/profile/avatar")
+async def upload_profile_avatar(
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session),
+    file: UploadFile = File(...),
+):
+    if not file.filename:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No file selected")
+
+    extension = Path(file.filename).suffix.lower()
+    if extension not in {".jpg", ".jpeg", ".png", ".webp", ".gif"}:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only image files are allowed")
+
+    file_name = f"{current_user.id}_{uuid4().hex}{extension}"
+    file_path = AVATAR_DIR / file_name
+    contents = await file.read()
+    file_path.write_bytes(contents)
+
+    profile = session.exec(select(UserProfile).where(UserProfile.user_id == current_user.id)).first()
+    if profile is None:
+        profile = UserProfile(user_id=current_user.id)
+        session.add(profile)
+
+    profile.user_avatar_path = f"/uploads/avatars/{file_name}"
+    session.add(profile)
+    session.commit()
+    session.refresh(profile)
+
+    return {"avatar_url": profile.user_avatar_path}
+
+
+def _build_ranking(session, current_user_id: int):
+    all_scores = session.exec(select(ScoreHistory).order_by(ScoreHistory.created_at.desc())).all()
+
+    latest_by_user = {}
+    previous_by_user = {}
+    for score in all_scores:
+        if score.user_id is None:
+            continue
+        if score.user_id not in latest_by_user:
+            latest_by_user[score.user_id] = score
+        elif score.user_id not in previous_by_user:
+            previous_by_user[score.user_id] = score
+
+    users = session.exec(select(User)).all()
+    ranking_data = [
+        {
+            "user_id": user.id,
+            "name": user.username,
+            "current_points": latest_by_user[user.id].elo_score if user.id in latest_by_user else 0,
+            "previous_points": previous_by_user[user.id].elo_score if user.id in previous_by_user else 0,
+        }
+        for user in users
+    ]
+    ranking_data.sort(key=lambda x: x["current_points"], reverse=True)
+
+    previous_ranking = sorted(ranking_data, key=lambda x: x["previous_points"], reverse=True)
+    previous_positions = {item["user_id"]: idx + 1 for idx, item in enumerate(previous_ranking)}
+
+    ranking = []
+    current_user_ranking = None
+    current_user_prev_pos = None
+
+    for idx, entry in enumerate(ranking_data):
+        current_pos = idx + 1
+        previous_pos = previous_positions.get(entry["user_id"], current_pos)
+        pos_delta = previous_pos - current_pos
+
+        ranking.append({
+            "ranking": str(current_pos),
+            "name": entry["name"],
+            "points": str(entry["current_points"]),
+            "posChange": str(abs(pos_delta)),
+            "trend": "up" if pos_delta > 0 else "down" if pos_delta < 0 else "same",
+        })
+
+        if entry["user_id"] == current_user_id:
+            current_user_ranking = current_pos
+            current_user_prev_pos = previous_pos
+
+    return ranking, current_user_ranking, current_user_prev_pos
+
+
+async def _build_battle_countdown(now: datetime, current_user_ranking, current_user_prev_pos):
+    battle_info = await get_time_until_next_battle()
+
+    tomorrow_midnight = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    seconds_until_eod = int((tomorrow_midnight - now).total_seconds())
+
+    delta_ranking = 0
+    if current_user_prev_pos and current_user_ranking:
+        delta_ranking = current_user_prev_pos - current_user_ranking
+
     return {
-        "nextBattle": {
-            "currentRanking": 12,
-            "seconds": 999999,
-            "endDay": 1234,
-            "deltaRanking": 34,
-        },
-        "sleepScore": {
-            "labels": ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
-            "scores": [75, 80, 70, 90, 73, 82, 80],
-        },
+        "currentRanking": current_user_ranking or 0,
+        "seconds": battle_info.get("seconds", 0),
+        "endDay": seconds_until_eod,
+        "deltaRanking": delta_ranking,
     }
+
+
+def _build_sleep_score(session, current_user_id: int, now: datetime):
+    seven_days_ago = now - timedelta(days=7)
+    records = session.exec(
+        select(ScoreHistory).where(
+            ScoreHistory.user_id == current_user_id,
+            ScoreHistory.created_at >= seven_days_ago,
+        ).order_by(ScoreHistory.created_at.asc())
+    ).all()
+
+    sleep_by_date = {}
+    for record in records:
+        sleep_by_date.setdefault(record.created_at.date(), []).append(record.sleep_score)
+
+    labels = []
+    scores = []
+    for days_back in range(6, -1, -1):
+        target_date = now.date() - timedelta(days=days_back)
+        labels.append(DAY_NAMES[target_date.weekday()])
+
+        valid_scores = [s for s in sleep_by_date.get(target_date, []) if s is not None]
+        if valid_scores:
+            avg_score = int(sum(valid_scores) / len(valid_scores))
+            scores.append(max(0, min(100, avg_score)))
+        else:
+            scores.append(0)
+
+    return {"labels": labels, "scores": scores}
+
+
+@router.get("/dashboard")
+async def dashboard_fake(
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session),
+):
+    now = datetime.now(timezone.utc)
+
+    ranking, current_user_ranking, current_user_prev_pos = _build_ranking(session, current_user.id)
+    next_battle = await _build_battle_countdown(now, current_user_ranking, current_user_prev_pos)
+    sleep_score = _build_sleep_score(session, current_user.id, now)
+
+    return {
+        "nextBattle": next_battle,
+        "sleepScore": sleep_score,
+        "ranking": ranking,
+    }
+
 
 @router.post("/sleep-data", response_model=SleepDataPublic, status_code=status.HTTP_201_CREATED)
 def create_sleep_data(
@@ -132,18 +269,15 @@ def create_sleep_data(
         light_sleep=sleep_data.light_sleep,
         slow_wave=sleep_data.slow_wave,
         rem=sleep_data.rem,
-
         disturbance=sleep_data.disturbance,
         baseline=sleep_data.baseline,
         debt=sleep_data.debt,
         strain=sleep_data.strain,
         nap=sleep_data.nap,
-
         respiratory_rate=sleep_data.respiratory_rate,
         performance=sleep_data.performance,
         consistency=sleep_data.consistency,
         efficiency=sleep_data.efficiency,
-
         user_id=current_user.id,
         username=current_user.username,
     )
@@ -155,53 +289,32 @@ def create_sleep_data(
     return new_sleep_data
 
 
-# ==================== MODELOS PYDANTIC PARA BATALLAS ====================
-
 class ScheduleExtraBattleRequest(BaseModel):
-    minutes_from_now: int = 5  # Cuántos minutos desde ahora
+    minutes_from_now: int = 5
 
 
 class SetBattleIntervalRequest(BaseModel):
-    interval_minutes: int = 120  # Nuevo intervalo en minutos
+    interval_minutes: int = 120
 
-
-# ==================== ENDPOINTS DE BATALLA ====================
 
 @router.get("/battles/time-until-next")
 async def get_next_battle_time():
-    """
-    Retorna el tiempo que falta para la próxima batalla en milisegundos y otros formatos.
-    
-    Returns:
-        - milliseconds: Milisegundos hasta la siguiente batalla
-        - seconds: Segundos totales
-        - minutes: Minutos restantes (sin contar horas)
-        - hours: Horas restantes
-        - next_battle_time: Fecha y hora ISO de la próxima batalla
-        - status: Estado ("waiting" o "battle_should_be_running")
-    """
     return await get_time_until_next_battle()
 
 
 @router.get("/battles/info")
 def get_battles_info():
-    """
-    Retorna información de la configuración actual del scheduler de batallas.
-    
-    Returns:
-        - interval_minutes: Intervalo entre batallas recurrentes (en minutos)
-        - check_interval_seconds: Cada cuánto se verifica si toca ejecutar una batalla
-    """
     return get_battle_interval()
 
 
 @router.get("/battles/queue")
 def get_battles_queue():
-    """
-    [DEBUG] Retorna la cola de batallas programadas en memoria.
-    Útil para ver todas las batallas programadas y su estado.
-    """
     return get_battle_queue_info()
+
+
+def _require_admin(current_user: User):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
 
 
 @router.post("/admin/battles/schedule-extra")
@@ -209,35 +322,11 @@ async def schedule_extra_battle_endpoint(
     request: ScheduleExtraBattleRequest,
     current_user: User = Depends(get_current_active_user),
 ):
-    """
-    [REQUIERE ADMIN] Programa una batalla adicional para dentro de X minutos.
-    Después de ejecutarse, el ciclo normal de batallas continúa.
-    
-    Ejemplo: Si normalmente hay batallas cada 2 horas, pero quieres una en 5 minutos,
-    llama este endpoint con minutes_from_now=5. Después, la próxima batalla recurrente
-    seguirá normalmente después de eso.
-    
-    Args:
-        minutes_from_now: Cuántos minutos desde ahora ejecutar la batalla
-    
-    Returns:
-        - id: ID de la batalla programada
-        - scheduled_time: Cuándo se ejecutará (ISO format)
-        - minutes_from_now: Confirmación de minutos solicitados
-        - status: "battle_scheduled"
-    """
-    if current_user.role != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
-        )
-    
+    _require_admin(current_user)
+
     if request.minutes_from_now <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="minutes_from_now debe ser mayor a 0"
-        )
-    
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="minutes_from_now debe ser mayor a 0")
+
     return await schedule_extra_battle(request.minutes_from_now)
 
 
@@ -246,30 +335,9 @@ async def set_battle_interval_endpoint(
     request: SetBattleIntervalRequest,
     current_user: User = Depends(get_current_active_user),
 ):
-    """
-    [REQUIERE ADMIN] Cambia el intervalo de batallas recurrentes.
-    
-    Ejemplo: Si quieres que las batallas sean cada 1 hora en lugar de cada 2 horas,
-    llama este endpoint con interval_minutes=60.
-    
-    Args:
-        interval_minutes: Nuevo intervalo en minutos
-    
-    Returns:
-        - interval_minutes: Confirmación del nuevo intervalo
-        - next_battle_time: Cuándo será la próxima batalla (ISO format)
-        - status: "interval_updated"
-    """
-    if current_user.role != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
-        )
-    
+    _require_admin(current_user)
+
     if request.interval_minutes <= 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="interval_minutes debe ser mayor a 0"
-        )
-    
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="interval_minutes debe ser mayor a 0")
+
     return await set_battle_interval(request.interval_minutes)

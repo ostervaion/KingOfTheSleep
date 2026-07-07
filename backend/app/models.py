@@ -84,12 +84,13 @@ class GameAvatar(SQLModel, table=True):
 # La exp es un valor absoluto el front gestiona esto a niveles.
 class UserProfile(SQLModel, table=True):
     __tablename__ = "user_profiles"
+
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: Optional[int] = Field(default=None, foreign_key="users.id", index=True, unique=True)
-    game_avatar_path: str = Field(nullable=False) #guardamos simplemente la ruta y lsito
-    user_avatar_path: str = Field(nullable=False) #guardamos simplemente la ruta y lsito
-    public: bool = Field(default=True, nullable=False)
-    exp: Optional[int] = Field(default=0, primary_key=True)
+    user_id: Optional[int] = Field(default=None, foreign_key="users.id", unique=True, index=True)
+    game_avatar_path: Optional[str] = Field(default=None)
+    user_avatar_path: Optional[str] = Field(default=None)
+    public: bool = Field(default=True)
+    exp: int = Field(default=0)
 
 # Tabla para gestionar el historico de batallas de forma sencilla e intuitiva.
 class CombatHistory(SQLModel, table=True):
