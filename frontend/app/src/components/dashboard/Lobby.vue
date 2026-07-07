@@ -5,49 +5,60 @@ import * as Phaser from 'phaser'
 const gameContainer = ref(null)
 
 let game = null
-let keyA = null
-let keyS = null
-let keyD = null
-let keyW = null
+
+class LobbyScene extends Phaser.Scene {
+  constructor() {
+    super('Lobby')
+  }
+
+  preload() {
+    this.load.image('sheep', 'sheep.webp')
+  }
+
+  create() {
+    const marker = this.add.image(-100, -100, 'sheep').setScale(0.05)
+
+    this.input.on('pointerdown', (pointer) => {
+      this.tweens.add({
+        targets: marker,
+        x: pointer.x,
+        y: pointer.y,
+        duration: 500,
+        ease: 'Linear',
+      })
+    })
+  }
+
+  update() {}
+}
+
+class GameScene extends Phaser.Scene {
+  constructor() {
+    super('Game')
+  }
+
+  create() {
+    this.add.text(100, 100, 'Match!')
+
+    this.time.delayedCall(5000, () => {
+      this.scene.start('Lobby')
+    })
+  }
+}
 
 onMounted(() => {
+  const el = gameContainer.value
+  if (!el) return
+
   game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: gameContainer.value,
-    width: 400,
-    height: 300,
-    backgroundColor: '#222',
-    scene: {
-      create: create,
-      update: update,
-    },
+    width: el.clientWidth,
+    height: el.clientHeight,
+    backgroundColor: '#81C784',
+    scene: [LobbyScene, GameScene],
   })
 })
-
-// preload: preload
-
-function create() {
-  this.add.text(50, 50, 'Helo Phaser!', {
-    fontSize: '32px',
-    color: '#fff',
-  })
-  keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W)
-  keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
-  keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
-  keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
-}
-
-function update() {
-  if (keyA.isDown) {
-    console.log('A key pressed')
-  } else if (keyS.isDown) {
-    console.log('S key pressed')
-  } else if (keyD.isDown) {
-    console.log('D key pressed')
-  } else if (keyW.isDown) {
-    console.log('W key pressed')
-  }
-}
 
 onUnmounted(() => {
   game?.destroy(true)
@@ -58,6 +69,6 @@ onUnmounted(() => {
   <div
     class="font-inter text-sm text-heading flex-6 min-h-0 bg-(--kots-blocks-color) p-6 rounded-xl overflow-auto border-b border-[color:var(--border)]"
   >
-    <div ref="gameContainer"></div>
+    <div ref="gameContainer" class="h-full"></div>
   </div>
 </template>
