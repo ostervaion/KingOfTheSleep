@@ -64,7 +64,7 @@ function closeDialog() {
 <Teleport to="body">
   <dialog
     ref="dialog"
-    class="bg-(--kots-blocks-color) m-auto h-[620px] w-1/2 max-w-[90vw] rounded-xl border-none p-0"
+    class="m-auto h-[90vh] w-[96vw] sm:w-[90vw] md:w-[760px] lg:w-[900px] max-w-[96vw] rounded-xl border-none bg-transparent p-0"
   >
     <BattleLog @close="closeDialog" />
   </dialog>

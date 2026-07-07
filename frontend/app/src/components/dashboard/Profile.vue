@@ -66,8 +66,8 @@ function loadUsersData() {
       </div>
     </div>
 
-<div class="flex-1 min-h-0 flex items-center justify-between gap-4 px-4 py-4 min-w-0">
-  <div class="min-w-0 flex-1">
+    <div class="flex-1 min-h-0 flex items-center justify-between gap-4 px-4 py-4 min-w-0">
+      <div class="min-w-0 flex-1">
         <p class="text-xs font-medium tracking-wide text-body">rank</p>
         <p class="mb-4 text-xl font-light leading-tight text-white">#{{ usersData.rank }}</p>
 

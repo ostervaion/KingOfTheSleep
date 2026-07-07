@@ -49,78 +49,67 @@ function updateActiveMobilePage() {
 
   activeMobilePage.value = Math.round(scrollLeft / pageWidth)
 }
-
 </script>
 
 <template>
-<!-- PARA LA VERSIÓN MÓVIL O TABLET -->
-<div class="relative flex h-dvh flex-col overflow-hidden text-(--text) lg:hidden">
-  <!-- Always visible top bar -->
-  <div class="shrink-0 px-4 pt-4">
-    <NextBattle
-      :next-battle="dashboard?.nextBattle"
-      class="w-full"
-    />
+  <!-- PARA LA VERSIÓN MÓVIL O TABLET -->
+  <div class="relative flex h-dvh flex-col overflow-hidden text-(--text) lg:hidden">
+    <!-- Always visible top bar -->
+    <div class="shrink-0 px-4 pt-4">
+      <NextBattle :next-battle="dashboard?.nextBattle" class="w-full" />
+    </div>
+
+    <!-- Horizontal pages -->
+    <div
+      ref="mobileScroller"
+      @scroll="updateActiveMobilePage"
+      class="no-scrollbar flex min-h-0 flex-1 w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden scroll-smooth"
+    >
+      <!-- Page 1: Lobby + TodayStats -->
+      <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
+        <div class="grid h-full min-h-0 grid-rows-[1fr_auto] gap-4">
+          <Lobby class="h-full min-h-0" />
+          <TodayStats class="min-h-0" />
+        </div>
+      </section>
+
+      <!-- Page 2: Ranking -->
+      <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
+        <Ranking class="h-full min-h-0" />
+      </section>
+
+      <!-- Page 3: Protocols -->
+      <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
+        <Protocols class="h-full min-h-0" />
+      </section>
+
+      <!-- Page 4: Profile + SleepScore -->
+      <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
+        <div class="grid h-full min-h-0 grid-rows-2 gap-4">
+          <Profile class="h-full min-h-0" />
+
+          <SleepScore :sleep-score="dashboard?.sleepScore" class="h-full min-h-0" />
+        </div>
+      </section>
+
+      <!-- Page 5: Protocol Impact -->
+      <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
+        <ProtocolsImpact class="h-full min-h-0" />
+      </section>
+    </div>
+
+    <!-- Mobile dots -->
+    <div
+      class="pt-5 pointer-events-none absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full px-3 py-0"
+    >
+      <span
+        v-for="index in mobilePages"
+        :key="index"
+        class="h-2 rounded-full transition-all duration-200"
+        :class="activeMobilePage === index - 1 ? 'w-6 bg-cyan-100' : 'w-2 bg-white/40'"
+      />
+    </div>
   </div>
-
-  <!-- Horizontal pages -->
-  <div
-    ref="mobileScroller"
-    @scroll="updateActiveMobilePage"
-    class="no-scrollbar flex min-h-0 flex-1 w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden scroll-smooth"
-  >
-    <!-- Page 1: Lobby + TodayStats -->
-    <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
-      <div class="grid h-full min-h-0 grid-rows-[1fr_auto] gap-4">
-        <Lobby class="h-full min-h-0" />
-        <TodayStats class="min-h-0" />
-      </div>
-    </section>
-
-    <!-- Page 2: Ranking -->
-    <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
-      <Ranking class="h-full min-h-0" />
-    </section>
-
-    <!-- Page 3: Protocols -->
-    <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
-      <Protocols class="h-full min-h-0" />
-    </section>
-
-    <!-- Page 4: Profile + SleepScore -->
-    <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
-      <div class="grid h-full min-h-0 grid-rows-2 gap-4">
-        <Profile class="h-full min-h-0" />
-
-        <SleepScore
-          :sleep-score="dashboard?.sleepScore"
-          class="h-full min-h-0"
-        />
-      </div>
-    </section>
-
-    <!-- Page 5: Protocol Impact -->
-    <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
-      <ProtocolsImpact class="h-full min-h-0" />
-    </section>
-  </div>
-
-  <!-- Mobile dots -->
-  <div
-    class="pt-5 pointer-events-none absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full px-3 py-0"
-  >
-    <span
-      v-for="index in mobilePages"
-      :key="index"
-      class="h-2 rounded-full transition-all duration-200"
-      :class="
-        activeMobilePage === index - 1
-          ? 'w-6 bg-cyan-100'
-          : 'w-2 bg-white/40'
-      "
-    />
-  </div>
-</div>
 
   <!-- PARA ORDENADOR -->
   <div

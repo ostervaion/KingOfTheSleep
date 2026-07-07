@@ -92,44 +92,49 @@ function onClose() {
 
 <template>
   <div
-  class="font-inter flex h-full flex-col overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
->
-    <div class="px-6 pb-4 pt-4">
+    class="font-inter flex h-full max-h-[90vh] flex-col overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
+  >
+    <div class="px-4 pb-4 pt-3 sm:px-6 md:px-8 md:pb-5 md:pt-4">
       <div class="flex justify-end">
         <button @click="onClose" class="text-white text-sm">X</button>
       </div>
-      <div class="pt-2 px-5 flex items-center justify-between text-white">
-        <div class="pt-3 items-center">
-          <BoxingGlove class="text-center -mt-0.5 w-10 h-10" />
-          <p class="text-center text-xs font-medium text-body">battles</p>
-          <p class="text-center mb-2 text-xl font-light text-white">18</p>
+
+      <div class="grid grid-cols-2 gap-3 pt-2 text-white sm:grid-cols-4 sm:px-5">
+        <div class="pt-3 flex flex-col items-center">
+          <BoxingGlove class="-mt-0.5 h-8 w-8 sm:h-10 sm:w-10" />
+          <p class="text-center text-[10px] font-medium text-body sm:text-xs">battles</p>
+          <p class="text-center mb-2 text-lg font-light text-white sm:text-xl">18</p>
         </div>
-        <div class="pt-3 items-center">
-          <TriangleUp class="text-center -mt-0.5 w-10 h-10" />
-          <p class="text-center text-xs font-medium text-body">wins</p>
-          <p class="text-center mb-2 text-xl font-light text-white">14</p>
+
+        <div class="pt-3 flex flex-col items-center">
+          <TriangleUp class="-mt-0.5 h-8 w-8 sm:h-10 sm:w-10" />
+          <p class="text-center text-[10px] font-medium text-body sm:text-xs">wins</p>
+          <p class="text-center mb-2 text-lg font-light text-white sm:text-xl">14</p>
         </div>
-        <div class="pt-3 items-center">
-          <TriangleDown class="text-center -mt-0.5 w-10 h-10" />
-          <p class="text-center text-xs font-medium text-body">looses</p>
-          <p class="text-center mb-2 text-xl font-light text-white">4</p>
+
+        <div class="pt-3 flex flex-col items-center">
+          <TriangleDown class="-mt-0.5 h-8 w-8 sm:h-10 sm:w-10" />
+          <p class="text-center text-[10px] font-medium text-body sm:text-xs">looses</p>
+          <p class="text-center mb-2 text-lg font-light text-white sm:text-xl">4</p>
         </div>
-        <div class="pt-3 items-center">
-          <p class="text-center text-xs font-medium text-body mb-0.5">win rate</p>
-          <p class="text-center mb-2 text-xl font-light text-green-400">% 70</p>
+
+        <div class="pt-3 flex flex-col items-center justify-center">
+          <p class="text-center text-[10px] font-medium text-body mb-0.5 sm:text-xs">win rate</p>
+          <p class="text-center mb-2 text-lg font-light text-green-400 sm:text-xl">% 70</p>
         </div>
       </div>
     </div>
-<div class="flex-1 min-h-0 overflow-y-auto snap-y">
-  <ul class="h-full">
-    <BattleLogsCard
-      v-for="logs in battleLogs"
-      :key="logs.enemy_user_name"
-      class="h-full snap-start"
-      v-bind="logs"
-    />
-  </ul>
-</div>
+
+    <div class="flex-1 min-h-0 overflow-y-auto snap-y">
+      <ul class="space-y-4 px-2 pb-4">
+        <BattleLogsCard
+          v-for="logs in battleLogs"
+          :key="logs.enemy_user_name"
+          class="snap-start"
+          v-bind="logs"
+        />
+      </ul>
+    </div>
   </div>
 </template>
 

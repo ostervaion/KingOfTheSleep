@@ -60,7 +60,7 @@ onUnmounted(() => {
       </span>
 
       <div class="min-w-0 text-xs leading-tight sm:block lg:text-sm">
-        <p class="hidden truncate">current ranking</p>
+        <p class="hidden:xs truncate">current ranking</p>
         <p class="truncate">
           <span class="ml-2 text-xs text-green-400 lg:text-xl">
             ▲ {{ props.nextBattle.deltaRanking }}
@@ -90,7 +90,7 @@ onUnmounted(() => {
     </div>
 
     <!-- Day ends -->
-    <div class=" hidden flex min-w-0 shrink-0 items-center gap-1 text-right">
+    <div class="hidden flex min-w-0 shrink-0 items-center gap-1 text-right">
       <span class="hidden text-xs lg:inline">DAY ENDS IN</span>
       <span class="whitespace-nowrap text-lg leading-none sm:text-xl lg:text-2xl">
         {{ formatTime(endDaySeconds) }}
