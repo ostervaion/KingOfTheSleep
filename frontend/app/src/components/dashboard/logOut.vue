@@ -25,9 +25,9 @@ function onClose() {
     <div class="px-6 py-5">
       <div class="mb-4 flex items-start justify-between gap-4">
         <div>
-          <h2 class="text-base font-semibold text-white">Log out?</h2>
+          <h2 class="text-sm font-semibold text-white">Log out?</h2>
 
-          <p class="mt-1 text-sm text-neutral-400">
+          <p class="mt-1 text-xs leading-relaxed text-body text-neutral-400">
             Are you sure you want to log out of your account?
           </p>
         </div>

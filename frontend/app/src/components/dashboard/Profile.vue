@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import LogOut from '@/components/dashboard/logOut.vue'
+import ProfileSettings from '@/components/dashboard/profileSettings.vue'
 
 var usersData = ref({
   rank: '',
@@ -13,6 +14,8 @@ var usersData = ref({
 })
 
 const dialog = ref(null)
+const dialog_settings = ref(null)
+
 
 function openDialog() {
   dialog.value.showModal()
@@ -20,6 +23,14 @@ function openDialog() {
 
 function closeDialog() {
   dialog.value.close()
+}
+
+function openDialogSettings() {
+  dialog_settings.value.showModal()
+}
+
+function closeDialogSettings() {
+  dialog_settings.value.close()
 }
 
 onMounted(() => {
@@ -47,7 +58,7 @@ function loadUsersData() {
         </div>
         <div class="flex rounded-full px-1.25 text-right">
           <div class="flex rounded-full px-1.25 py-0.75 bg-(--kots-background-color) m-2">
-            <button class="p5 px-2 py-0.5 leading-none text-xs font-medium text-white text-heading">
+            <button @click="openDialogSettings" class="p5 px-2 py-0.5 leading-none text-xs font-medium text-white text-heading">
               settings
             </button>
           </div>
@@ -108,12 +119,24 @@ function loadUsersData() {
       </div>
     </div>
   </div>
+  
+<Teleport to="body">
+  <!-- log out button -->
+  <dialog
+    ref="dialog"
+    class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent p-0"
+  >
+    <LogOut @close="closeDialog" />
+  </dialog>
 
-  <Teleport to="body">
-    <dialog ref="dialog" class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none p-0">
-      <LogOut @close="closeDialog" />
-    </dialog>
-  </Teleport>
+  <!-- profile settings button -->
+  <dialog
+    ref="dialog_settings"
+    class="m-auto w-[720px] max-w-[94vw] rounded-xl border-none bg-transparent p-0"
+  >
+    <ProfileSettings @close="closeDialogSettings" />
+  </dialog>
+</Teleport>
 </template>
 
 <style scoped>
