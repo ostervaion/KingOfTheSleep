@@ -14,19 +14,19 @@ function loadUsers() {
   usersRanking.value = [
     {
       ranking: '1',
-      name: 'Martin',
+      name: 'asfdsa',
       points: '2500',
       posChange: '3',
     },
     {
-      ranking: '1',
-      name: 'Martin',
+      ranking: '2',
+      name: 'dfggdfg',
       points: '2500',
       posChange: '3',
     },
     {
-      ranking: '1',
-      name: 'Martin',
+      ranking: '3',
+      name: 'safadfs',
       points: '2500',
       posChange: '4',
     },

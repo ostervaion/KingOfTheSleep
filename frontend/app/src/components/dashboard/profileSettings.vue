@@ -49,8 +49,8 @@ function onSaveChanges() {
       </div>
     </div>
 
-    <div class="flex-1 min-h-0 overflow-y-auto px-4 pb-4 sm:px-6 md:px-8 md:pb-6">
-      <div class="rounded-lg bg-white/[0.02] p-4 sm:p-5">
+    <div class="flex-1 min-h-0 overflow-y-auto px-4 pb-4 sm:px-6 md:px-6 md:pb-6">
+      <div class="rounded-lg  p-4 sm:p-5">
         <div class="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div class="flex flex-col items-center gap-3 sm:flex-row sm:items-center">
             <img
@@ -84,7 +84,7 @@ function onSaveChanges() {
           </div>
         </div>
 
-        <div class="my-5 border-t border-white/10"></div>
+        <div class="mb-5"></div>
 
         <form class="space-y-4" @submit.prevent="onSaveChanges">
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
