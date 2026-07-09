@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
+from sqlalchemy import func
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -239,6 +240,18 @@ def _build_sleep_score(session, current_user_id: int, now: datetime):
     return {"labels": labels, "scores": scores}
 
 
+def _lobby_state(session, current_user_id: int, now: datetime) -> bool:
+    today = now.date()
+
+    today_data = session.exec(
+        select(SleepData).where(
+            SleepData.user_id == current_user_id,
+            func.date(SleepData.created_at) == today,
+        )
+    ).first()
+
+    return today_data is not None
+
 @router.get("/dashboard")
 async def dashboard_fake(
     current_user: User = Depends(get_current_active_user),
@@ -249,11 +262,13 @@ async def dashboard_fake(
     ranking, current_user_ranking, current_user_prev_pos = _build_ranking(session, current_user.id)
     next_battle = await _build_battle_countdown(now, current_user_ranking, current_user_prev_pos)
     sleep_score = _build_sleep_score(session, current_user.id, now)
+    lobby = _lobby_state(session, current_user.id, now)
 
     return {
         "nextBattle": next_battle,
         "sleepScore": sleep_score,
         "ranking": ranking,
+        "lobby": lobby,
     }
 
 

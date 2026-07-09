@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta, timezone
-from random import choice, randint, seed
+from random import choice, randint, sample, seed
+from random import choice, random, randint
 
 from sqlmodel import Session, select
 
 from database import engine
-from models import ScoreHistory, User
+from models import CombatHistory, ScoreHistory, User
 from security import hash_password
 
 # Fijamos la semilla para que los nombres aleatorios sigan un patrón predecible
@@ -66,11 +67,61 @@ def _ensure_users(session: Session, additional_count: int = 20) -> list[User]:
     return new_users_to_add
 
 
+def _seed_combat_history(session: Session, battles_per_user: int = 4) -> None:
+    """
+    Genera un mínimo de 'battles_per_user' registros de CombatHistory
+    POR CADA usuario existente en la base de datos, con fecha de hoy,
+    enfrentándolo contra rivales aleatorios.
+    """
+    all_users = session.exec(select(User)).all()
+    if len(all_users) < 2:
+        print("No hay suficientes usuarios para generar batallas.")
+        return
+
+    today = datetime.now(timezone.utc).date()
+    start_of_day = datetime.combine(today, datetime.min.time(), tzinfo=timezone.utc)
+
+    battles_to_add = []
+
+    for user in all_users:
+        opponents_pool = [u for u in all_users if u.id != user.id]
+
+        for _ in range(battles_per_user):
+            opponent = choice(opponents_pool)
+
+            # 50/50 de que el usuario actual gane o pierda
+            if random() < 0.5:
+                winner, loser = user, opponent
+            else:
+                winner, loser = opponent, user
+
+            random_time = start_of_day + timedelta(
+                hours=randint(0, 23), minutes=randint(0, 59), seconds=randint(0, 59)
+            )
+
+            battles_to_add.append(
+                CombatHistory(
+                    winner_user_id=winner.id,
+                    loser_user_id=loser.id,
+                    created_at=random_time,
+                )
+            )
+
+    session.add_all(battles_to_add)
+    session.commit()
+    print(
+        f"¡Se han generado {len(battles_to_add)} batallas nuevas para hoy ({today}), "
+        f"{battles_per_user} por usuario ({len(all_users)} usuarios)!"
+    )
+
+
 def seed_score_history():
     with Session(engine) as session:
         # Configura aquí cuántos usuarios NUEVOS quieres agregar en cada ejecución
         CANTIDAD_NUEVOS_USUARIOS = 20
-        
+        # Configura aquí el mínimo de batallas de hoy que se generarán SIEMPRE
+        MINIMO_BATALLAS_HOY = 4
+
         print("Buscando e insertando nuevos usuarios...")
         nuevos_usuarios = _ensure_users(session, additional_count=CANTIDAD_NUEVOS_USUARIOS)
 
@@ -101,6 +152,10 @@ def seed_score_history():
         session.commit()
         print(f"¡Seed completado con éxito! Se han acumulado {len(nuevos_usuarios)} usuarios más con 5 registros de historial cada uno.")
 
+        # Generamos siempre un mínimo de batallas de hoy, usando todos los usuarios disponibles
+        print(f"Generando un mínimo de {MINIMO_BATALLAS_HOY} batallas para hoy...")
+        _seed_combat_history(session, min_battles=MINIMO_BATALLAS_HOY)
+
 
 if __name__ == "__main__":
-    seed_score_history()
+    seed_score_history() 

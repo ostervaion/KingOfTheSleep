@@ -10,6 +10,7 @@ import Lobby from '@/components/dashboard/Lobby.vue'
 import { useAppStore } from '@/stores/app'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import api from '@/api/api'
+import SleepDataForm from '@/components/SleepDataForm.vue'
 
 const dashboard = ref(null)
 
@@ -50,7 +51,8 @@ onUnmounted(() => {
       class="mx-auto grid w-full flex-1 min-h-0 gap-4 lg:grid-cols-[1fr_1.2fr_1.2fr] items-stretch"
     >
       <section class="flex flex-col gap-4 min-h-0">
-        <Lobby />
+      <SleepDataForm v-if="!dashboard?.lobby" @saved="fetchDashboard" />
+        <Lobby v-else/>
         <TodayStats />
       </section>
 
