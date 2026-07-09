@@ -1,12 +1,12 @@
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
-
+from collections import defaultdict
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
 from pydantic import BaseModel
-
+from data_transfer_objects import ProtocolImpactRead
 from config import ACCESS_TOKEN_EXPIRE_MINUTES
 from database import get_session
 from models import (
@@ -19,6 +19,8 @@ from models import (
     UserCreate,
     UserPublic,
     UserProfile,
+    UserProtocol,
+    Protocol
 )
 from security import (
     authenticate_user,
@@ -238,6 +240,63 @@ def _build_sleep_score(session, current_user_id: int, now: datetime):
 
     return {"labels": labels, "scores": scores}
 
+# somewhere near your other _build_* helpers
+def _build_protocol_impacts(session, user_id: int) -> list[ProtocolImpactRead]:
+    usage_rows = session.exec(
+        select(UserProtocol)
+        .join(Protocol)
+        .where(UserProtocol.user_id == user_id)
+    ).all()
+    if not usage_rows:
+        return []
+
+    score_rows = session.exec(
+        select(ScoreHistory.created_at, ScoreHistory.elo_score)
+        .where(ScoreHistory.user_id == user_id)
+    ).all()
+
+    score_by_date: dict[date, list[int]] = defaultdict(list)
+    for created_at, elo_score in score_rows:
+        if elo_score is not None:
+            score_by_date[created_at.date()].append(elo_score)
+
+    daily_avg = {d: sum(v) / len(v) for d, v in score_by_date.items()}
+    if not daily_avg:
+        return []
+
+    all_dates = set(daily_avg.keys())
+
+    protocol_usage_dates: dict[int, dict] = defaultdict(lambda: {"name": None, "dates": set()})
+    for protocol_aux in usage_rows:
+        protocol_usage_dates[protocol_aux.protocol_id]["name"] = protocol_auxname
+        protocol_usage_dates[protocol_aux.protocol_id]["dates"].add(created_at.date())
+
+    results = []
+    for protocol_id, data in protocol_usage_dates.items():
+        used_dates = data["dates"] & all_dates
+        not_used_dates = all_dates - data["dates"]
+
+        if not used_dates or not not_used_dates:
+            continue
+
+        avg_used = sum(daily_avg[d] for d in used_dates) / len(used_dates)
+        avg_not_used = sum(daily_avg[d] for d in not_used_dates) / len(not_used_dates)
+
+        if avg_not_used == 0:
+            continue
+
+        percentage = round((avg_used - avg_not_used) / avg_not_used * 100, 1)
+
+        results.append(
+            ProtocolImpactRead(
+                id=protocol_id,
+                name=data["name"],
+                percentage=percentage,
+                daysUsed=len(data["dates"]),
+            )
+        )
+
+    return results
 
 @router.get("/dashboard")
 async def dashboard_fake(
@@ -249,11 +308,13 @@ async def dashboard_fake(
     ranking, current_user_ranking, current_user_prev_pos = _build_ranking(session, current_user.id)
     next_battle = await _build_battle_countdown(now, current_user_ranking, current_user_prev_pos)
     sleep_score = _build_sleep_score(session, current_user.id, now)
+    protocol_impact = _build_protocol_impacts(session, current_user.id)
 
     return {
         "nextBattle": next_battle,
         "sleepScore": sleep_score,
         "ranking": ranking,
+        "protocol_impact": protocol_impact
     }
 
 

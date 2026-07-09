@@ -62,7 +62,7 @@ onUnmounted(() => {
       <section class="flex flex-col gap-4 min-h-0">
         <Profile />
         <SleepScore :sleep-score="dashboard?.sleepScore" />
-        <ProtocolsImpact />
+        <ProtocolsImpact :protocol-impacts="dashboard?.protocolImpacts || []" />
       </section>
     </div>
   </div>
