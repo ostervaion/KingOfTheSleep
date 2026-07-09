@@ -7,6 +7,7 @@ import SleepScore from '@/components/dashboard/SleepScore.vue'
 import Profile from '@/components/dashboard/Profile.vue'
 import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Lobby from '@/components/dashboard/Lobby.vue'
+import Battle from '@/components/dashboard/Battle.vue'
 </script>
 
 <template>
@@ -19,7 +20,7 @@ import Lobby from '@/components/dashboard/Lobby.vue'
       class="mx-auto grid w-full flex-1 min-h-0 gap-4 lg:grid-cols-[1fr_1.2fr_1.2fr] items-stretch"
     >
       <section class="flex flex-col gap-4 min-h-0">
-        <Lobby />
+        <Battle />
         <TodayStats />
       </section>
 
