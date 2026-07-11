@@ -2,6 +2,8 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 from collections import defaultdict
+from sqlalchemy import func
+
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
@@ -279,6 +281,18 @@ def _build_protocol_impacts(session, actual_user_id: int) -> list[ProtocolImpact
     print(results)
     return results
 
+def _lobby_state(session, current_user_id: int, now: datetime) -> bool:
+    today = now.date()
+
+    today_data = session.exec(
+        select(SleepData).where(
+            SleepData.user_id == current_user_id,
+            func.date(SleepData.created_at) == today,
+        )
+    ).first()
+
+    return today_data is not None
+
 @router.get("/dashboard")
 async def dashboard_fake(
     current_user: User = Depends(get_current_active_user),
@@ -290,12 +304,14 @@ async def dashboard_fake(
     next_battle = await _build_battle_countdown(now, current_user_ranking, current_user_prev_pos)
     sleep_score = _build_sleep_score(session, current_user.id, now)
     protocol_impact = _build_protocol_impacts(session, current_user.id)
+    lobby = _lobby_state(session, current_user.id, now)
 
     return {
         "nextBattle": next_battle,
         "sleepScore": sleep_score,
         "ranking": ranking,
-        "protocolImpacts": protocol_impact
+        "protocolImpacts": protocol_impact,
+        "lobby": lobby
     }
 
 

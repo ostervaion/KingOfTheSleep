@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 import api from '@/api/api'
 
+// step: 1 = sleep data, 2 = protocol selection
+const step = ref(1)
+
 const loading = ref(false)
 const mensaje = ref('')
 const showMessage = ref(false)
@@ -23,7 +26,38 @@ const formData = ref({
   efficiency: 90,
 })
 
-async function submitForm() {
+// Lista fija de protocolos (genérica, ajustable después)
+const protocolOptions = [
+  { id: 'no_caffeine', label: 'No caffeine after 2pm' },
+  { id: 'no_screens', label: 'No screens before bed' },
+  { id: 'consistent_schedule', label: 'Consistent sleep schedule' },
+  { id: 'meditation', label: 'Meditation' },
+  { id: 'reading', label: 'Reading before bed' },
+  { id: 'cold_room', label: 'Cold room temperature' },
+  { id: 'exercise', label: 'Exercise during the day' },
+  { id: 'blue_light', label: 'Blue light blocking glasses' },
+]
+
+const selectedProtocols = ref([])
+
+function toggleProtocol(id) {
+  const idx = selectedProtocols.value.indexOf(id)
+  if (idx === -1) {
+    selectedProtocols.value.push(id)
+  } else {
+    selectedProtocols.value.splice(idx, 1)
+  }
+}
+
+function goToProtocolStep() {
+  step.value = 2
+}
+
+function backToSleepStep() {
+  step.value = 1
+}
+
+async function submitAll() {
   if (loading.value) return
 
   loading.value = true
@@ -31,7 +65,7 @@ async function submitForm() {
   showMessage.value = false
 
   try {
-    const response = await api.post('/sleep-data', {
+    await api.post('/sleep-data', {
       time_in_bed: formData.value.timeInBed,
       awake_time: formData.value.awakeTime,
       light_sleep: formData.value.lightSleep,
@@ -48,13 +82,20 @@ async function submitForm() {
       efficiency: formData.value.efficiency,
     })
 
-    mensaje.value = '// data saved ✓'
+    await api.post('/protocol', {
+      protocols: selectedProtocols.value,
+    })
+
+    mensaje.value = 'Data saved'
     showMessage.value = true
+    step.value = 1
+    resetForm()
+    selectedProtocols.value = []
     setTimeout(() => {
       showMessage.value = false
     }, 3000)
   } catch (error) {
-    mensaje.value = '// error saving data'
+    mensaje.value = 'Error saving data'
     showMessage.value = true
   } finally {
     loading.value = false
@@ -83,25 +124,23 @@ const resetForm = () => {
 
 <template>
   <div
-    class="w-full max-w-2xl mx-auto rounded-xl border border-(--border) bg-(--surface-soft) p-6 space-y-6"
+    class="font-inter text-sm text-(--text) flex-6 min-h-0 bg-(--kots-blocks-color) p-6 rounded-xl overflow-auto border-[color:var(--border)] border"
   >
-    <div>
-      <span class="block text-[10px] tracking-[4px] uppercase text-(--accent) mb-4"
-        >Sleep Data</span
-      >
-      <p class="text-xs text-(--muted) tracking-[1px]">Log your sleep information</p>
+    <div class="mb-4">
+      <h2 class="text-sm font-semibold text-(--text)">Sleep Data</h2>
+      <p class="text-xs text-(--muted)">Log your sleep information</p>
     </div>
 
-    <form @submit.prevent="submitForm" class="space-y-6">
+    <form v-if="step === 1" @submit.prevent="goToProtocolStep" class="space-y-6">
       <!-- Sleep Duration Section -->
-      <div class="space-y-4">
-        <h3 class="text-xs tracking-[2px] uppercase text-(--text) font-semibold">Sleep Duration</h3>
+      <div class="space-y-3">
+        <h3 class="text-xs font-medium text-(--muted) uppercase tracking-wide">Sleep Duration</h3>
 
         <div class="space-y-3">
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Time in Bed</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.timeInBed }}h</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Time in Bed</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.timeInBed }}h</span>
             </div>
             <input
               v-model.number="formData.timeInBed"
@@ -109,14 +148,14 @@ const resetForm = () => {
               min="0"
               max="12"
               step="0.5"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
 
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Awake Time</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.awakeTime }}h</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Awake Time</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.awakeTime }}h</span>
             </div>
             <input
               v-model.number="formData.awakeTime"
@@ -124,14 +163,14 @@ const resetForm = () => {
               min="0"
               max="5"
               step="0.5"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
 
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Light Sleep</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.lightSleep }}h</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Light Sleep</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.lightSleep }}h</span>
             </div>
             <input
               v-model.number="formData.lightSleep"
@@ -139,14 +178,14 @@ const resetForm = () => {
               min="0"
               max="8"
               step="0.5"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
 
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Slow Wave Sleep</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.slowWave }}h</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Slow Wave Sleep</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.slowWave }}h</span>
             </div>
             <input
               v-model.number="formData.slowWave"
@@ -154,14 +193,14 @@ const resetForm = () => {
               min="0"
               max="6"
               step="0.5"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
 
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">REM Sleep</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.rem }}h</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">REM Sleep</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.rem }}h</span>
             </div>
             <input
               v-model.number="formData.rem"
@@ -169,21 +208,21 @@ const resetForm = () => {
               min="0"
               max="5"
               step="0.5"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
         </div>
       </div>
 
       <!-- Sleep Quality Section -->
-      <div class="space-y-4">
-        <h3 class="text-xs tracking-[2px] uppercase text-(--text) font-semibold">Sleep Quality</h3>
+      <div class="space-y-3">
+        <h3 class="text-xs font-medium text-(--muted) uppercase tracking-wide">Sleep Quality</h3>
 
         <div class="space-y-3">
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Disturbance</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.disturbance }}</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Disturbance</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.disturbance }}</span>
             </div>
             <input
               v-model.number="formData.disturbance"
@@ -191,14 +230,14 @@ const resetForm = () => {
               min="0"
               max="20"
               step="1"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
 
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Baseline</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.baseline }}h</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Baseline</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.baseline }}h</span>
             </div>
             <input
               v-model.number="formData.baseline"
@@ -206,14 +245,14 @@ const resetForm = () => {
               min="0"
               max="12"
               step="0.5"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
 
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Debt</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.debt }}h</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Debt</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.debt }}h</span>
             </div>
             <input
               v-model.number="formData.debt"
@@ -221,14 +260,14 @@ const resetForm = () => {
               min="-5"
               max="5"
               step="0.5"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
 
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Strain</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.strain }}</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Strain</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.strain }}</span>
             </div>
             <input
               v-model.number="formData.strain"
@@ -236,14 +275,14 @@ const resetForm = () => {
               min="0"
               max="10"
               step="1"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
 
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Nap</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.nap }}h</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Nap</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.nap }}h</span>
             </div>
             <input
               v-model.number="formData.nap"
@@ -251,23 +290,21 @@ const resetForm = () => {
               min="0"
               max="4"
               step="0.5"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
         </div>
       </div>
 
       <!-- Performance Section -->
-      <div class="space-y-4">
-        <h3 class="text-xs tracking-[2px] uppercase text-(--text) font-semibold">Performance</h3>
+      <div class="space-y-3">
+        <h3 class="text-xs font-medium text-(--muted) uppercase tracking-wide">Performance</h3>
 
         <div class="space-y-3">
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Respiratory Rate</span>
-              <span class="text-sm font-semibold text-(--accent)">{{
-                formData.respiratoryRate
-              }}</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Respiratory Rate</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.respiratoryRate }}</span>
             </div>
             <input
               v-model.number="formData.respiratoryRate"
@@ -275,14 +312,14 @@ const resetForm = () => {
               min="10"
               max="25"
               step="1"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
 
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Performance</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.performance }}%</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Performance</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.performance }}%</span>
             </div>
             <input
               v-model.number="formData.performance"
@@ -290,14 +327,14 @@ const resetForm = () => {
               min="0"
               max="100"
               step="1"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
 
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Consistency</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.consistency }}%</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Consistency</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.consistency }}%</span>
             </div>
             <input
               v-model.number="formData.consistency"
@@ -305,14 +342,14 @@ const resetForm = () => {
               min="0"
               max="100"
               step="1"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
 
           <label class="block">
-            <div class="flex justify-between mb-2">
-              <span class="text-xs tracking-[1px] text-(--muted) uppercase">Efficiency</span>
-              <span class="text-sm font-semibold text-(--accent)">{{ formData.efficiency }}%</span>
+            <div class="flex justify-between mb-1.5">
+              <span class="text-xs text-(--muted)">Efficiency</span>
+              <span class="text-xs font-medium text-(--text)">{{ formData.efficiency }}%</span>
             </div>
             <input
               v-model.number="formData.efficiency"
@@ -320,34 +357,73 @@ const resetForm = () => {
               min="0"
               max="100"
               step="1"
-              class="w-full h-2 bg-(--surface) rounded-lg appearance-none cursor-pointer accent-(--accent)"
+              class="kots-range"
             />
           </label>
         </div>
       </div>
 
-      <!-- Message -->
-      <transition>
-        <p v-if="showMessage" class="text-sm tracking-[1px] text-(--muted) text-center">
-          {{ mensaje }}
-        </p>
-      </transition>
-
       <!-- Buttons -->
-      <div class="flex gap-3 pt-4">
+      <div class="flex gap-3 pt-2">
         <button
           type="submit"
-          :disabled="loading"
-          class="flex-1 rounded-2xl border border-(--accent) bg-(--surface-soft) px-4 py-3 text-sm font-semibold uppercase tracking-[2px] text-(--accent) hover:bg-(--surface) transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="flex-1 rounded-lg border-[color:var(--border)] border bg-(--kots-blocks-color) px-4 py-2.5 text-xs font-medium text-(--text) hover:bg-(--surface-strong) transition-colors duration-150"
         >
-          {{ loading ? '// sending...' : '▶ Save' }}
+          Next
         </button>
         <button
           type="button"
           @click="resetForm"
-          class="flex-1 rounded-2xl border border-(--muted) bg-(--surface-soft) px-4 py-3 text-sm font-semibold uppercase tracking-[2px] text-(--muted) hover:bg-(--surface) transition-colors duration-150"
+          class="flex-1 rounded-lg border-[color:var(--border)] border bg-(--kots-blocks-color) px-4 py-2.5 text-xs font-medium text-(--muted) hover:bg-(--surface-strong) transition-colors duration-150"
         >
-          ↻ Reset
+          Reset
+        </button>
+      </div>
+    </form>
+
+    <!-- Step 2: Protocol selection -->
+    <form v-if="step === 2" @submit.prevent="submitAll" class="space-y-6">
+      <div class="space-y-3">
+        <h3 class="text-xs font-medium text-(--muted) uppercase tracking-wide">Protocols</h3>
+        <p class="text-xs text-(--muted)">Select the protocols you followed today</p>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button
+            v-for="protocol in protocolOptions"
+            :key="protocol.id"
+            type="button"
+            @click="toggleProtocol(protocol.id)"
+            class="text-left rounded-lg border px-3 py-2.5 text-xs font-medium transition-colors duration-150"
+            :class="
+              selectedProtocols.includes(protocol.id)
+                ? 'border-[color:var(--text)] bg-(--surface-strong) text-(--text)'
+                : 'border-[color:var(--border)] bg-(--kots-blocks-color) text-(--muted) hover:bg-(--surface-strong)'
+            "
+          >
+            {{ protocol.label }}
+          </button>
+        </div>
+      </div>
+      <transition>
+        <p v-if="showMessage" class="text-xs text-(--muted) text-center">
+          {{ mensaje }}
+        </p>
+      </transition>
+      <div class="flex gap-3 pt-2">
+        <button
+          type="submit"
+          :disabled="loading"
+          @click="$emit('saved')"
+          class="flex-1 rounded-lg border-[color:var(--border)] border bg-(--kots-blocks-color) px-4 py-2.5 text-xs font-medium text-(--text) hover:bg-(--surface-strong) transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {{ loading ? 'Sending...' : 'Save' }}
+        </button>
+        <button
+          type="button"
+          @click="backToSleepStep"
+          class="flex-1 rounded-lg border-[color:var(--border)] border bg-(--kots-blocks-color) px-4 py-2.5 text-xs font-medium text-(--muted) hover:bg-(--surface-strong) transition-colors duration-150"
+        >
+          Back
         </button>
       </div>
     </form>
@@ -355,63 +431,51 @@ const resetForm = () => {
 </template>
 
 <style scoped>
-/* Custom range input styling */
-input[type='range'] {
+.kots-range {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 8px;
+  height: 4px;
   border-radius: 4px;
   outline: none;
+  background: var(--border);
 }
 
-input[type='range']::-webkit-slider-thumb {
+.kots-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: var(--accent, #00d9ff);
+  background: var(--text);
   cursor: pointer;
-  transition: all 150ms ease;
-  box-shadow: 0 2px 4px rgba(0, 217, 255, 0.3);
+  transition: transform 150ms ease;
 }
 
-input[type='range']::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 0 12px rgba(0, 217, 255, 0.6);
+.kots-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
 }
 
-input[type='range']::-webkit-slider-thumb:active {
-  transform: scale(1.1);
-}
-
-input[type='range']::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+.kots-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: var(--accent, #00d9ff);
+  background: var(--text);
   cursor: pointer;
   border: none;
-  transition: all 150ms ease;
-  box-shadow: 0 2px 4px rgba(0, 217, 255, 0.3);
+  transition: transform 150ms ease;
 }
 
-input[type='range']::-moz-range-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 0 12px rgba(0, 217, 255, 0.6);
+.kots-range::-moz-range-thumb:hover {
+  transform: scale(1.15);
 }
 
-input[type='range']::-moz-range-thumb:active {
-  transform: scale(1.1);
-}
-
-input[type='range']::-moz-range-track {
+.kots-range::-moz-range-track {
   background: transparent;
   border: none;
 }
 
-input[type='range']::-webkit-slider-runnable-track {
+.kots-range::-webkit-slider-runnable-track {
   background: transparent;
   border: none;
 }

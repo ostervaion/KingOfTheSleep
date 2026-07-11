@@ -2580,7 +2580,7 @@ snapshots:
       baseline-browser-mapping: 2.10.42
       caniuse-lite: 1.0.30001803
       electron-to-chromium: 1.5.389
-      node-releases: 2.0.51
+      node-releases: 2.0.50
       update-browserslist-db: 1.2.3(browserslist@4.28.5)
 
   bundle-name@4.1.0:
