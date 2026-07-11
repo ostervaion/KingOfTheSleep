@@ -1,9 +1,10 @@
 import Phaser, { LEFT } from 'phaser'
 import Character from '../Character.js'
+import BaseScene from './BaseScene.js'
 
-export default class GameScene extends Phaser.Scene {
+export default class GameScene extends BaseScene {
   constructor() {
-    super('GameScene')
+    super({ key: 'GameScene' })
   }
   preload() {
     this.load.audio('moveSfx', 'gameAssets/move.ogg')
@@ -40,6 +41,7 @@ export default class GameScene extends Phaser.Scene {
     this.load.image('jewel', 'gameAssets/jewel.png')
   }
   create() {
+    this.input.mouse.disableContextMenu()
     this.attackSfx = this.sound.add('attackSfx')
     this.lastHitSfx = this.sound.add('lastHitSfx')
     this.moveSfx = this.sound.add('moveSfx', {
@@ -188,6 +190,11 @@ export default class GameScene extends Phaser.Scene {
         this.player2.setTarget(this.player1)
         this.moveSfx.stop()
       },
+    })
+    this.input.on('pointerdown', (pointer) => {
+      if (pointer.rightButtonDown()) {
+        this.switchScene('LobbyScene')
+      }
     })
   }
 

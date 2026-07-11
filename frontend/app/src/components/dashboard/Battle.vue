@@ -1,9 +1,12 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import Phaser from 'phaser'
-import GameScene from '../../scenes/BattleScene.js'
+import * as Phaser from 'phaser'
+
+import LobbyScene from '@/scenes/LobbyScene'
+import GameScene from '@/scenes/BattleScene'
 
 const gameContainer = ref(null)
+
 let game = null
 
 onMounted(() => {
@@ -13,18 +16,16 @@ onMounted(() => {
   game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: gameContainer.value,
-
-    width: 360,
-    height: 640,
-
-    backgroundColor: '#aaaaaa',
-
-    scale: {
-      mode: Phaser.Scale.FIT,
-      autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: el.clientWidth,
+    height: el.clientHeight,
+    backgroundColor: '#81C784',
+    physics: {
+      default: 'arcade',
+      arcade: {
+        debug: false,
+      },
     },
-
-    scene: [GameScene],
+    scene: [LobbyScene, GameScene],
   })
 })
 
@@ -35,7 +36,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="h-full w-full">
-    <div ref="gameContainer" class="h-full w-full"></div>
+  <div
+    class="font-inter text-sm text-heading flex-6 min-h-0 bg-(--kots-blocks-color) p-6 rounded-xl overflow-auto border-b border-[color:var(--border)]"
+  >
+    <div ref="gameContainer" class="h-full"></div>
   </div>
 </template>

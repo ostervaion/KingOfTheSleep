@@ -6,7 +6,6 @@ import ProtocolsImpact from '@/components/dashboard/ProtocolImpact.vue'
 import SleepScore from '@/components/dashboard/SleepScore.vue'
 import Profile from '@/components/dashboard/Profile.vue'
 import TodayStats from '@/components/dashboard/TodayStats.vue'
-import Lobby from '@/components/dashboard/Lobby.vue'
 import Battle from '@/components/dashboard/Battle.vue'
 </script>
 
