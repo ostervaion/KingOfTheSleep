@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from data_transfer_objects import ProtocolImpactRead
 from config import ACCESS_TOKEN_EXPIRE_MINUTES
 from database import get_session
+from itertools import groupby
 from models import (
     ScoreHistory,
     SleepData,
@@ -43,7 +44,7 @@ DAY_NAMES = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
 UPLOAD_BASE_DIR = Path(__file__).resolve().parent / "uploads"
 AVATAR_DIR = UPLOAD_BASE_DIR / "avatars"
 AVATAR_DIR.mkdir(parents=True, exist_ok=True)
-
+DEFAULT_SCORE = 70
 
 @router.get("/")
 def root():
@@ -240,62 +241,42 @@ def _build_sleep_score(session, current_user_id: int, now: datetime):
 
     return {"labels": labels, "scores": scores}
 
-# somewhere near your other _build_* helpers
-def _build_protocol_impacts(session, user_id: int) -> list[ProtocolImpactRead]:
-    usage_rows = session.exec(
-        select(UserProtocol)
-        .join(Protocol)
-        .where(UserProtocol.user_id == user_id)
-    ).all()
-    if not usage_rows:
-        return []
-
-    score_rows = session.exec(
-        select(ScoreHistory.created_at, ScoreHistory.elo_score)
-        .where(ScoreHistory.user_id == user_id)
-    ).all()
-
-    score_by_date: dict[date, list[int]] = defaultdict(list)
-    for created_at, elo_score in score_rows:
-        if elo_score is not None:
-            score_by_date[created_at.date()].append(elo_score)
-
-    daily_avg = {d: sum(v) / len(v) for d, v in score_by_date.items()}
-    if not daily_avg:
-        return []
-
-    all_dates = set(daily_avg.keys())
-
-    protocol_usage_dates: dict[int, dict] = defaultdict(lambda: {"name": None, "dates": set()})
-    for protocol_aux in usage_rows:
-        protocol_usage_dates[protocol_aux.protocol_id]["name"] = protocol_auxname
-        protocol_usage_dates[protocol_aux.protocol_id]["dates"].add(created_at.date())
+def _build_protocol_impacts(session, actual_user_id: int) -> list[ProtocolImpactRead]:
+    
+    statement = (
+    select(Protocol.id, Protocol.name, ScoreHistory.sleep_score)
+    .join(UserProtocol, UserProtocol.protocol_id == Protocol.id)
+    .join(ScoreHistory, UserProtocol.user_id == ScoreHistory.user_id)
+    .where(UserProtocol.user_id == actual_user_id)
+    .order_by(UserProtocol.protocol_id)
+    )
+    protocol_user_history_list = session.exec(statement).all()
 
     results = []
-    for protocol_id, data in protocol_usage_dates.items():
-        used_dates = data["dates"] & all_dates
-        not_used_dates = all_dates - data["dates"]
 
-        if not used_dates or not not_used_dates:
-            continue
-
-        avg_used = sum(daily_avg[d] for d in used_dates) / len(used_dates)
-        avg_not_used = sum(daily_avg[d] for d in not_used_dates) / len(not_used_dates)
-
-        if avg_not_used == 0:
-            continue
-
-        percentage = round((avg_used - avg_not_used) / avg_not_used * 100, 1)
+    for (protocol_id, name), group in groupby(
+        protocol_user_history_list, key=lambda row: (row.id, row.name)
+    ):
+        scores = [row.sleep_score for row in group]
+        days_used = len(scores)
+        avg_score = sum(scores) / days_used
+        print("//////////////////////")
+        print(avg_score)
+        print("//////////////////////")
+        percentage = round(((avg_score / DEFAULT_SCORE) * 100) - 100, 2)
 
         results.append(
             ProtocolImpactRead(
                 id=protocol_id,
-                name=data["name"],
+                name=name,
                 percentage=percentage,
-                daysUsed=len(data["dates"]),
+                daysUsed=days_used,
             )
         )
-
+    print("//////////////////////")
+    print("RESULTS")
+    print("//////////////////////")
+    print(results)
     return results
 
 @router.get("/dashboard")
@@ -314,7 +295,7 @@ async def dashboard_fake(
         "nextBattle": next_battle,
         "sleepScore": sleep_score,
         "ranking": ranking,
-        "protocol_impact": protocol_impact
+        "protocolImpacts": protocol_impact
     }
 
 

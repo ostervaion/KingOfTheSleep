@@ -1,10 +1,10 @@
 <script setup>
 defineProps({
-     protocolImpacts: {
-       type: Array,
-       default: () => [],
-     },
-   })
+  protocolImpacts: {
+    type: Array,
+    default: () => [],
+  },
+})
 </script>
 
 <template>
