@@ -39,6 +39,7 @@ export default class GameScene extends BaseScene {
     this.load.image('icon2', 'gameAssets/lamb-icon-1.jpg')
     this.load.image('steam', 'gameAssets/steam.png')
     this.load.image('jewel', 'gameAssets/jewel.png')
+    this.load.image('LifeBar', 'gameAssets/LifeBar.png')
   }
   create() {
     this.input.mouse.disableContextMenu()
@@ -51,7 +52,7 @@ export default class GameScene extends BaseScene {
       key: 'idle',
       frames: this.anims.generateFrameNumbers('playerIdle', {
         start: 0,
-        end: 9,
+        end: 0,
       }),
       frameRate: 8,
       repeat: -1,
@@ -96,17 +97,17 @@ export default class GameScene extends BaseScene {
       repeat: 0,
     })
 
-    //this.player1 = new Character("Perro0000", 12, 15, 0.1, 4, this, 125, 300);
-    //this.player2 = new Character("Sanshe0000", 150, 12, 1, 6, this, 235, 300);
-
     this.player1 = new Character('Perro', 10, 15, 0.1, 4, this, -80, 300)
     this.player2 = new Character('Sanshe', 150, 12, 1, 6, this, 440, 300)
     this.player2.sprite.setFlipX(true)
 
-    this.player1Icon = this.add.image(40, 40, 'icon1')
+    const screenW = this.scale.width
+    const margin = 20
+
+    this.player1Icon = this.add.image(margin + 24, 40, 'icon1')
     this.player1Icon.setDisplaySize(48, 48)
 
-    this.player2Icon = this.add.image(320, 40, 'icon2')
+    this.player2Icon = this.add.image(screenW - margin - 24, 40, 'icon2')
     this.player2Icon.setDisplaySize(48, 48)
 
     this.player1Bar = this.add.graphics()
@@ -119,7 +120,7 @@ export default class GameScene extends BaseScene {
     this.player2HpBar = this.add.graphics()
 
     this.player1NameText = this.add
-      .text(0, 0, this.player1.name, {
+      .text(margin, 75, this.player1.name, {
         fontSize: '16px',
         color: '#ffffff',
         align: 'left',
@@ -127,7 +128,7 @@ export default class GameScene extends BaseScene {
       .setOrigin(0, 0.5)
 
     this.player2NameText = this.add
-      .text(0, 0, this.player2.name, {
+      .text(screenW - margin, 75, this.player2.name, {
         fontSize: '16px',
         color: '#ffffff',
         align: 'right',
@@ -135,10 +136,10 @@ export default class GameScene extends BaseScene {
       .setOrigin(1, 0.5)
 
     this.hitParticles = this.add.particles(0, 0, 'feather', {
-      speed: { min: -180, max: 180 },
+      speed: { min: -180, max: 280 },
       angle: { min: 0, max: 180 },
       rotate: { min: 0, max: 180 },
-      scale: { start: 0.05, end: 0 },
+      scale: { start: 0.4, end: 0 },
       lifespan: 700,
       quantity: 7,
       gravityY: 50,
@@ -167,7 +168,7 @@ export default class GameScene extends BaseScene {
       loop: true,
       rate: 2,
     })
-    // move to center positions
+
     this.tweens.add({
       targets: this.player1.sprite,
       x: 125,
@@ -175,17 +176,37 @@ export default class GameScene extends BaseScene {
       ease: 'Power2',
     })
 
+    this.player1LifeBar = this.add.image(margin + 85, 95, 'LifeBar')
+    this.player1LifeBar.setDisplaySize(160, 22)
+    this.player1LifeBar.setDepth(1)
+
+    this.player1AtkBar = this.add.image(margin + 56, 115, 'LifeBar')
+    this.player1AtkBar.setDisplaySize(110, 22)
+    this.player1AtkBar.setDepth(1)
+
+    this.player2LifeBar = this.add.image(screenW - margin - 85, 95, 'LifeBar')
+    this.player2LifeBar.setDisplaySize(160, 22)
+    this.player2LifeBar.setFlipX(true)
+    this.player2LifeBar.setDepth(1)
+
+    this.player2AtkBar = this.add.image(screenW - margin - 56, 115, 'LifeBar')
+    this.player2AtkBar.setDisplaySize(110, 22)
+    this.player2AtkBar.setFlipX(true)
+    this.player2AtkBar.setDepth(1)
+
+    this.player1HpBar.setDepth(0)
+    this.player1Bar.setDepth(0)
+    this.player2HpBar.setDepth(0)
+    this.player2Bar.setDepth(0)
+
     this.tweens.add({
       targets: this.player2.sprite,
       x: 235,
       duration: 800,
       ease: 'Power2',
       onComplete: () => {
-        // switch to idle after entering
         this.player1.sprite.play('idle')
         this.player2.sprite.play('idle')
-
-        // NOW start fighting
         this.player1.setTarget(this.player2)
         this.player2.setTarget(this.player1)
         this.moveSfx.stop()
@@ -199,15 +220,15 @@ export default class GameScene extends BaseScene {
   }
 
   spawnHitParticles(x, y) {
-    const range = 20 // increase this for wider spread
-
+    const range = 20
     this.hitParticles.emitParticleAt(x, y + Phaser.Math.Between(-range, range))
   }
 
   spawnJewelRain() {
+    const screenW = this.scale.width
     return this.add.particles(0, 0, 'jewel', {
       tint: () => Phaser.Display.Color.RandomRGB().color,
-      x: { min: 0, max: 360 },
+      x: { min: 0, max: screenW },
       y: -50,
       speedY: { min: 250, max: 600 },
       speedX: { min: -150, max: 150 },
@@ -221,57 +242,48 @@ export default class GameScene extends BaseScene {
 
   drawAttackBar(graphics, x, y, progress, flip = false) {
     graphics.clear()
-
     const width = 96
     const height = 10
 
-    // background
     graphics.fillStyle(0xffffff)
     graphics.fillRect(x, y, width, height)
 
     graphics.fillStyle(0x00d9ff)
-
     const fillWidth = width * progress
 
     if (!flip) {
-      // LEFT → RIGHT (Player 1)
       graphics.fillRect(x, y, fillWidth, height)
     } else {
-      // RIGHT → LEFT (Player 2)
       graphics.fillRect(x + (width - fillWidth), y, fillWidth, height)
     }
   }
+
   drawHpBar(graphics, x, y, hp, maxHp) {
     const width = 140
     const height = 18
     const radius = 9
-
     const hpPercent = Phaser.Math.Clamp(hp / maxHp, 0, 1)
 
     graphics.clear()
 
-    // White outer background
     graphics.fillStyle(0xffffff)
     graphics.fillRoundedRect(x, y, width, height, radius)
 
-    // Dark inner background
     graphics.fillStyle(0xff1900)
     graphics.fillRoundedRect(x + 2, y + 2, width - 4, height - 4, radius)
 
-    // Green HP fill
     graphics.fillStyle(0x08ff29)
     graphics.fillRoundedRect(x + 2, y + 2, (width - 4) * hpPercent, height - 4, radius)
   }
 
   gameOver(winner) {
     this.isGameOver = true
+    const midX = this.scale.width / 2
+    const midY = this.scale.height / 2
 
-    // dark overlay
-    const overlay = this.add.rectangle(180, 320, 360, 640, 0x000000, 0.5)
+    const overlay = this.add.rectangle(midX, midY, this.scale.width, this.scale.height, 0x000000, 0.5)
+    overlay.setDepth(2)
 
-    overlay.setDepth(1)
-
-    // winner name (comes from left)
     const topText = this.add.text(-200, 280, winner.name, {
       fontSize: '36px',
       color: '#ffffff',
@@ -281,10 +293,9 @@ export default class GameScene extends BaseScene {
     })
 
     topText.setOrigin(0.5)
-    topText.setDepth(2)
+    topText.setDepth(3)
 
-    // wins text (comes from right)
-    const bottomText = this.add.text(560, 340, 'WINS!', {
+    const bottomText = this.add.text(this.scale.width + 200, 340, 'WINS!', {
       fontSize: '42px',
       color: '#ffff00',
       fontStyle: 'bold',
@@ -293,33 +304,26 @@ export default class GameScene extends BaseScene {
     })
 
     bottomText.setOrigin(0.5)
-    bottomText.setDepth(2)
+    bottomText.setDepth(3)
 
-    // white flash
-    const flash = this.add.rectangle(180, 320, 360, 640, 0xffffff, 1)
-
+    const flash = this.add.rectangle(midX, midY, this.scale.width, this.scale.height, 0xffffff, 1)
     flash.setAlpha(0)
     flash.setDepth(10)
 
-    // top text animation
     this.tweens.add({
       targets: topText,
-      x: 180,
+      x: midX,
       duration: 500,
       ease: 'Back.Out',
     })
 
-    // bottom text animation
     this.tweens.add({
       targets: bottomText,
-      x: 180,
+      x: midX,
       duration: 500,
       ease: 'Back.Out',
-
       onComplete: () => {
-        // flash effect
         flash.setAlpha(1)
-
         this.tweens.add({
           targets: flash,
           alpha: 0,
@@ -327,7 +331,6 @@ export default class GameScene extends BaseScene {
           ease: 'Quad.Out',
         })
 
-        // pulse animation
         this.tweens.add({
           targets: [topText, bottomText],
           scale: 1.15,
@@ -339,7 +342,6 @@ export default class GameScene extends BaseScene {
       },
     })
     this.spawnJewelRain()
-    // restore timescale
     this.time.delayedCall(1500, () => {
       this.time.timeScale = 1
       this.tweens.timeScale = 1
@@ -352,31 +354,24 @@ export default class GameScene extends BaseScene {
     this.player1.update(delta)
     this.player2.update(delta)
 
-    const atkY = 105
-
-    // Player 1 attack bar (left)
-    this.drawAttackBar(this.player1Bar, 20, atkY, this.player1.attackProgress)
-
-    this.drawAttackBar(this.player2Bar, 242, atkY, this.player2.attackProgress, true)
-
-    // HP bars
-    this.player1HpBar.clear()
-    this.player2HpBar.clear()
-
-    // Player 1 HP (top left)
-    this.drawHpBar(this.player1HpBar, 20, 85, this.player1.hp, this.player1MaxHp)
-
-    // Player 2 HP (top right)
-    this.drawHpBar(this.player2HpBar, 200, 85, this.player2.hp, this.player2MaxHp)
-
-    const screenW = 360
-    const hpW = 140
+    const screenW = this.scale.width
     const margin = 20
+    const hpBarWidth = 140
+    const atkBarWidth = 96
 
-    // Player 1 name (left)
+    const hpY = 86
+    const atkY = 110
+
+    this.drawHpBar(this.player1HpBar, margin + 12, hpY, this.player1.hp, this.player1MaxHp)
+    this.drawAttackBar(this.player1Bar, margin + 12, atkY, this.player1.attackProgress)
+
+    const player2HpX = screenW - margin - hpBarWidth - 12
+    this.drawHpBar(this.player2HpBar, player2HpX, hpY, this.player2.hp, this.player2MaxHp)
+
+    const player2AtkX = screenW - margin - atkBarWidth - 12
+    this.drawAttackBar(this.player2Bar, player2AtkX, atkY, this.player2.attackProgress, true)
+
     this.player1NameText.setPosition(margin, 75)
-
-    // Player 2 name (right aligned under bars)
     this.player2NameText.setPosition(screenW - margin, 75)
   }
 }

@@ -18,6 +18,7 @@ onMounted(() => {
     parent: gameContainer.value,
     width: el.clientWidth,
     height: el.clientHeight,
+    pixelArt: true,
     backgroundColor: '#81C784',
     physics: {
       default: 'arcade',
