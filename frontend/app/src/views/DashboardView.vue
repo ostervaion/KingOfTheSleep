@@ -106,7 +106,7 @@ function updateActiveMobilePage() {
         v-for="index in mobilePages"
         :key="index"
         class="h-2 rounded-full transition-all duration-200"
-        :class="activeMobilePage === index - 1 ? 'w-6 bg-cyan-100' : 'w-2 bg-white/40'"
+        :class="activeMobilePage === index - 1 ? 'w-6 bg-cyan-200' : 'w-2 bg-white/40'"
       />
     </div>
   </div>

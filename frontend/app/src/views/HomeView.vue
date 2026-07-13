@@ -75,7 +75,7 @@ function openRegistration() {
             <h1
               class="mt-8 max-w-[520px] text-[clamp(3rem,5.2vw,5.25rem)] font-semibold leading-[0.98] tracking-[-0.06em]"
             >
-              Enter the arena and <span class="text-cyan-100">master</span> your <span class="text-cyan-100">sleep</span>.
+              Enter the arena and <span class="text-cyan-200">master</span> your <span class="text-cyan-200">sleep</span>.
             </h1>
 
             <p class="mt-6 max-w-[470px] text-base leading-7 text-white/60 sm:text-lg sm:leading-8">
@@ -159,8 +159,8 @@ function openRegistration() {
       <!-- HOW IT WORKS -->
       <section class="border-b border-white/10 py-16 sm:py-20 lg:py-24">
         <div class="flex justify-center">
-          <div class="rounded-lg border border-cyan-100 px-2 text-gray-800 leading-none">
-            <h2 class="text-heading text-xl  text-cyan-100">How it works</h2>
+          <div class="rounded-lg border border-cyan-200 px-2 text-gray-800 leading-none">
+            <h2 class="text-heading text-xl  text-cyan-200">How it works</h2>
           </div>
         </div>
 
@@ -224,8 +224,8 @@ function openRegistration() {
       <!-- FEATURE GRID -->
       <section class="py-16 sm:py-20 lg:py-24">
         <div class="mb-10 flex justify-center sm:mb-12">
-          <div class="rounded-lg border border-cyan-100 px-2 py-0.5 text-gray-800 leading-none">
-            <h2 class="text-heading text-xl font-medium text-cyan-100">Why it works</h2>
+          <div class="rounded-lg border border-cyan-200 px-2 py-0.5 text-gray-800 leading-none">
+            <h2 class="text-heading text-xl font-medium text-cyan-200">Why it works</h2>
           </div>
         </div>
 
@@ -343,8 +343,8 @@ function openRegistration() {
       <!-- DASHBOARD -->
       <section class="border-t border-white/10 py-16 sm:py-20 lg:py-24">
         <div class="flex justify-center">
-          <div class="rounded-lg border border-cyan-100 px-2 py-0.5 text-gray-800 leading-none">
-            <h2 class="text-heading text-xl font-medium text-cyan-100">Dashboard</h2>
+          <div class="rounded-lg border border-cyan-200 px-2 py-0.5 text-gray-800 leading-none">
+            <h2 class="text-heading text-xl font-medium text-cyan-200">Dashboard</h2>
           </div>
         </div>
 

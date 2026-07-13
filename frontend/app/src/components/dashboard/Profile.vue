@@ -51,10 +51,10 @@ function loadUsersData() {
   <div
     class="font-inter flex flex-col flex-2 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >
-    <div class="px-6 pb-1 pt-3">
+    <div class="px-6 pt-3">
       <div class="flex items-center justify-between">
-        <div class="border border-cyan-100 rounded-md px-2 py-0.5 text-gray-800 leading-none">
-          <h2 class="text-cyan-100 text-sm font-medium text-heading">Profile</h2>
+        <div class="border border-cyan-200 rounded-md px-2 py-0.5 text-gray-800 leading-none">
+          <h2 class="text-cyan-200 text-sm font-medium text-heading">Profile</h2>
         </div>
         <div class="flex rounded-full px-1.25 text-right">
           <div class="flex rounded-full px-1.25 py-0.75 bg-(--kots-background-color) m-2">
@@ -68,7 +68,7 @@ function loadUsersData() {
           >
             <button
               @click="openDialog"
-              class="p5 px-2 py-0.5 leading-none text-xs font-medium text-red-900 text-heading"
+              class="p5 px-2 py-0.5 leading-none text-xs font-medium text-red-800 text-heading"
             >
               log out
             </button>
@@ -77,7 +77,7 @@ function loadUsersData() {
       </div>
     </div>
 
-    <div class="flex-1 min-h-0 flex items-center justify-between gap-4 px-4 py-4 min-w-0">
+    <div class="flex-1 min-h-0 flex justify-between gap-4 px-6 py-5 min-w-0">
       <div class="min-w-0 flex-1">
         <p class="text-xs font-medium tracking-wide text-body">rank</p>
         <p class="mb-4 text-xl font-light leading-tight text-white">#{{ usersData.rank }}</p>

@@ -39,7 +39,7 @@ function onChat() {
     </div>
 
     <div class="flex-1 min-h-0 overflow-y-auto px-5 pb-5 sm:px-6">
-      <div class="rounded-lg bg-white/[0.02] p-5">
+      <div class="rounded-lg p-5">
         <div class="flex flex-col items-center text-center">
           <div
             class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[var(--kots-background-color)] shadow-md shadow-black/30 sm:h-28 sm:w-28"
@@ -53,7 +53,7 @@ function onChat() {
 
             <span
               v-else
-              class="text-3xl font-semibold uppercase text-cyan-100"
+              class="text-3xl font-semibold uppercase text-cyan-200"
             >
               {{ user.username?.charAt(0) || '?' }}
             </span>
@@ -97,7 +97,7 @@ function onChat() {
 
         <button
           @click="onChat"
-          class="mt-5 w-full rounded-md bg-cyan-100 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
+          class="mt-5 w-full rounded-md bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
         >
           Chat with {{ user.username }}
         </button>

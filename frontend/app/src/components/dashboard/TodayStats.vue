@@ -22,10 +22,10 @@ function closeDialog() {
   <div
     class="font-inter flex flex-col flex-2 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) shadow-md shadow-black/20 border-b border-[color:var(--border)]"
   >
-    <div class="px-6 pb-4 pt-5">
+    <div class="px-6 pb-4 pt-5.5">
       <div class="flex items-center justify-between">
-        <div class="border border-cyan-100 rounded-md px-2 py-0.5 text-gray-800 leading-none">
-          <h2 class="text-cyan-100 text-sm font-medium text-heading">Today's Stats</h2>
+        <div class="border border-cyan-200 rounded-md px-2 py-0.5 text-gray-800 leading-none">
+          <h2 class="text-cyan-200 text-sm font-medium text-heading">Today's Stats</h2>
         </div>
         <div class="flex rounded-full px-1.25 text-right">
           <div class="flex rounded-full px-1.25 py-0.75 bg-(--kots-background-color)">
@@ -64,7 +64,7 @@ function closeDialog() {
 <Teleport to="body">
   <dialog
     ref="dialog"
-    class="m-auto h-[90vh] w-[96vw] sm:w-[90vw] md:w-[760px] lg:w-[900px] max-w-[96vw] rounded-xl border-none bg-transparent p-0"
+    class="m-auto h-[90vh] w-[96vw] sm:w-[90vw] md:w-[500px] lg:w-[700px] max-w-[96vw] rounded-xl border-none bg-transparent p-0"
   >
     <BattleLog @close="closeDialog" />
   </dialog>

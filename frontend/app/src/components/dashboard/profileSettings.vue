@@ -38,7 +38,7 @@ function onSaveChanges() {
   <div
     class="font-inter flex max-h-[90vh] w-full flex-col overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >
-    <div class="px-4 pb-4 pt-3 sm:px-6 md:px-8 md:pb-5 md:pt-4">
+    <div class="px-4 pb-1 pt-4 sm:px-6 md:px-8 md:pb-2 md:pt-5">
       <div class="flex items-start justify-end gap-4">
         <button
           @click="onClose"
@@ -49,8 +49,7 @@ function onSaveChanges() {
       </div>
     </div>
 
-    <div class="flex-1 min-h-0 overflow-y-auto px-4 pb-4 sm:px-6 md:px-6 md:pb-6">
-      <div class="rounded-lg  p-4 sm:p-5">
+    <div class="flex-1 min-h-0 overflow-y-auto px-1 pb-8 sm:px-6 md:px-8 md:pb-10">
         <div class="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div class="flex flex-col items-center gap-3 sm:flex-row sm:items-center">
             <img
@@ -130,7 +129,7 @@ function onSaveChanges() {
                 <input
                   v-model="form.currentPassword"
                   type="password"
-                  class="inputField"
+                  class="inputField "
                   placeholder="••••••••"
                 />
               </label>
@@ -161,7 +160,6 @@ function onSaveChanges() {
             </div>
           </div>
         </form>
-      </div>
     </div>
 
     <div
@@ -188,7 +186,7 @@ function onSaveChanges() {
 @reference "@/assets/main.css";
 
 .inputField {
-  @apply w-full rounded-lg border border-white/10 bg-[var(--kots-background-color)] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-neutral-600 focus:border-cyan-100/60;
+  @apply w-full rounded-lg focus:border-cyan-200/60 bg-[var(--kots-background-color)] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-neutral-600 focus:border-cyan-200/60;
 }
 
 .overflow-y-auto::-webkit-scrollbar {
