@@ -19,3 +19,17 @@
   --kots-background-color: #1f1f1d;
   --kots-blocks-color: #171715;
 }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html,
+body,
+#app {
+  background-color: #FACC15;
+}

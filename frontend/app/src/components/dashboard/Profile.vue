@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import LogOut from '@/components/dashboard/logOut.vue'
+import ProfileSettings from '@/components/dashboard/profileSettings.vue'
 
 var usersData = ref({
   rank: '',
@@ -13,6 +14,8 @@ var usersData = ref({
 })
 
 const dialog = ref(null)
+const dialog_settings = ref(null)
+
 
 function openDialog() {
   dialog.value.showModal()
@@ -20,6 +23,14 @@ function openDialog() {
 
 function closeDialog() {
   dialog.value.close()
+}
+
+function openDialogSettings() {
+  dialog_settings.value.showModal()
+}
+
+function closeDialogSettings() {
+  dialog_settings.value.close()
 }
 
 onMounted(() => {
@@ -40,14 +51,14 @@ function loadUsersData() {
   <div
     class="font-inter flex flex-col flex-2 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >
-    <div class="px-6 pb-1 pt-3">
+    <div class="px-6 pt-3">
       <div class="flex items-center justify-between">
-        <div class="border border-cyan-100 rounded-md px-2 py-0.5 text-gray-800 leading-none">
-          <h2 class="text-cyan-100 text-sm font-medium text-heading">Profile</h2>
+        <div class="border border-cyan-200 rounded-md px-2 py-0.5 text-gray-800 leading-none">
+          <h2 class="text-cyan-200 text-sm font-medium text-heading">Profile</h2>
         </div>
         <div class="flex rounded-full px-1.25 text-right">
           <div class="flex rounded-full px-1.25 py-0.75 bg-(--kots-background-color) m-2">
-            <button class="p5 px-2 py-0.5 leading-none text-xs font-medium text-white text-heading">
+            <button @click="openDialogSettings" class="p5 px-2 py-0.5 leading-none text-xs font-medium text-white text-heading">
               settings
             </button>
           </div>
@@ -57,7 +68,7 @@ function loadUsersData() {
           >
             <button
               @click="openDialog"
-              class="p5 px-2 py-0.5 leading-none text-xs font-medium text-red-900 text-heading"
+              class="p5 px-2 py-0.5 leading-none text-xs font-medium text-red-800 text-heading"
             >
               log out
             </button>
@@ -66,8 +77,8 @@ function loadUsersData() {
       </div>
     </div>
 
-    <div class="flex-1 min-h-0 flex items-center gap-10 px-6 py-4">
-      <div class="w-80 shrink-0">
+    <div class="flex-1 min-h-0 flex justify-between gap-4 px-6 py-5 min-w-0">
+      <div class="min-w-0 flex-1">
         <p class="text-xs font-medium tracking-wide text-body">rank</p>
         <p class="mb-4 text-xl font-light leading-tight text-white">#{{ usersData.rank }}</p>
 
@@ -83,7 +94,7 @@ function loadUsersData() {
         </p>
       </div>
 
-      <div class="relative size-32 shrink-0">
+      <div class="relative size-24 lg:size-32 shrink-0">
         <svg class="size-full -rotate-90" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="42" fill="none" stroke-width="6" class="stroke-neutral-800" />
           <circle
@@ -108,12 +119,24 @@ function loadUsersData() {
       </div>
     </div>
   </div>
+  
+<Teleport to="body">
+  <!-- log out button -->
+  <dialog
+    ref="dialog"
+    class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent p-0"
+  >
+    <LogOut @close="closeDialog" />
+  </dialog>
 
-  <Teleport to="body">
-    <dialog ref="dialog" class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none p-0">
-      <LogOut @close="closeDialog" />
-    </dialog>
-  </Teleport>
+  <!-- profile settings button -->
+  <dialog
+    ref="dialog_settings"
+    class="m-auto w-[720px] max-w-[94vw] rounded-xl border-none bg-transparent p-0"
+  >
+    <ProfileSettings @close="closeDialogSettings" />
+  </dialog>
+</Teleport>
 </template>
 
 <style scoped>
