@@ -1,12 +1,25 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.staticfiles import StaticFiles
+import asyncio
+from pathlib import Path
 from config import ORIGINS
 from database import create_db_and_tables
-from routes import router
+from routes import AVATAR_DIR, router
 from ws import websocket_endpoint
 
-app = FastAPI(title="King of the Sleep API")
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from battle_scheduler import battle_scheduler
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    task = asyncio.create_task(battle_scheduler())
+    yield
+    task.cancel()
+
+app = FastAPI(title="King of the Sleep API", lifespan=lifespan)
+app.mount("/uploads", StaticFiles(directory=str(AVATAR_DIR.parent)), name="uploads")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ORIGINS,

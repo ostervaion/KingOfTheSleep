@@ -36,7 +36,7 @@ guard-.env:
 help: ## Show this help message
 	@echo ""
 	@echo -e "$(CYAN)Available targets:$(RESET)"
-	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) \
+	@grep -Eh '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) \
 		| awk 'BEGIN {FS = ":.*##"}; {printf "  $(GREEN)%-20s$(RESET) %s\n", $$1, $$2}'
 	@echo ""
 

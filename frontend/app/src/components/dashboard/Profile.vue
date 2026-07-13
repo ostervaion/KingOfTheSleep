@@ -43,7 +43,7 @@ function loadUsersData() {
     level: '42',
     currentxp: '18,450',
     nextxp: '25,000',
-    todaysSleepScore: '82',
+    todaysSleepScore: '2',
   }
 }
 </script>

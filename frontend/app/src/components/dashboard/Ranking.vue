@@ -1,38 +1,24 @@
 <script setup>
-import example from '@/assets/example.jpg'
-import { ref, onMounted } from 'vue'
+import { ref, watch, toRef } from 'vue'
 import RankingUser from '@/components/dashboard/rankingUsers.vue'
 
-const selectedRanking = ref('today')
-var usersRanking = ref([])
-
-onMounted(() => {
-  loadUsers()
+const props = defineProps({
+  rankingData: {
+    type: Array,
+    default: () => [],
+  },
 })
 
-function loadUsers() {
-  usersRanking.value = [
-    {
-      ranking: '1',
-      name: 'asfdsa',
-      points: '2500',
-      posChange: '3',
-    },
-    {
-      ranking: '2',
-      name: 'dfggdfg',
-      points: '2500',
-      posChange: '3',
-    },
-    {
-      ranking: '3',
-      name: 'safadfs',
-      points: '2500',
-      posChange: '4',
-    },
-  ]
-  ///llamar a funcion back para tener todos los usaurios y sus datos en descendiente por punto
-}
+const selectedRanking = ref('today')
+const usersRanking = ref([])
+
+watch(
+  () => props.rankingData,
+  (value) => {
+    usersRanking.value = value || []
+  },
+  { immediate: true },
+)
 
 function updateButtonColor(ranking) {
   selectedRanking.value = ranking
@@ -83,6 +69,7 @@ function buttonClass(ranking) {
           :name="user.name"
           :points="user.points"
           :pos-change="user.posChange"
+          :trend="user.trend"
         />
       </ul>
     </div>

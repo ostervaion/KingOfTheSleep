@@ -10,6 +10,7 @@ import Lobby from '@/components/dashboard/Lobby.vue'
 import { useAppStore } from '@/stores/app'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import api from '@/api/api'
+import SleepDataForm from '@/components/SleepDataForm.vue'
 
 const dashboard = ref(null)
 
@@ -18,7 +19,10 @@ const appStore = useAppStore()
 async function fetchDashboard() {
   try {
     const response = await api.get('/dashboard')
-    dashboard.value = response.data
+    dashboard.value = {
+      ...response.data,
+      ranking: Array.isArray(response.data?.ranking) ? response.data.ranking : [],
+    }
   } catch (error) {
     console.error('Error cargando dashboard:', error)
   }
@@ -106,8 +110,7 @@ function updateActiveMobilePage() {
         v-for="index in mobilePages"
         :key="index"
         class="h-2 rounded-full transition-all duration-200"
-        :class="activeMobilePage === index - 1 ? 'w-6 bg-cyan-200' : 'w-2 bg-white/40'"
-      />
+        :class="activeMobilePage === index - 1 ?  'w-6 bg-cyan-200' : 'w-2 bg-white/40'"/>
     </div>
   </div>
 
@@ -120,13 +123,14 @@ function updateActiveMobilePage() {
     <div
       class="mx-auto grid w-full flex-1 min-h-0 min-w-0 gap-4 items-stretch lg:grid-cols-[1fr_1.2fr_1.2fr]"
     >
-      <section class="flex flex-col gap-4 min-h-0 min-w-0">
-        <Lobby />
+      <section class="flex flex-col gap-4 min-h-0">
+      <SleepDataForm v-if="!dashboard?.lobby" @saved="fetchDashboard" />
+        <Lobby v-else/>
         <TodayStats />
       </section>
 
-      <section class="flex flex-col gap-4 min-h-0 min-w-0">
-        <Ranking />
+      <section class="flex flex-col gap-4 min-h-0">
+        <Ranking :ranking-data="dashboard?.ranking || []" />
         <Protocols />
       </section>
 
