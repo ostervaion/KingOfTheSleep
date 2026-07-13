@@ -49,7 +49,7 @@ const chartData = computed(() => ({
   datasets: [
     {
       data: scores.value,
-      borderColor: '#4ADE80',
+      borderColor: '#05df72',
       backgroundColor: (context) => {
         const { chart } = context
         const { ctx, chartArea } = chart
