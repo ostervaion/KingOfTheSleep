@@ -50,116 +50,113 @@ function onSaveChanges() {
     </div>
 
     <div class="flex-1 min-h-0 overflow-y-auto px-1 pb-8 sm:px-6 md:px-8 md:pb-10">
-        <div class="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div class="flex flex-col items-center gap-3 sm:flex-row sm:items-center">
-            <img
-              :src="example"
-              alt="Profile picture"
-              class="h-24 w-24 rounded-full border border-white/10 object-cover shadow-md shadow-black/30 sm:h-28 sm:w-28"
-            />
+      <div class="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col items-center gap-3 sm:flex-row sm:items-center">
+          <img
+            :src="example"
+            alt="Profile picture"
+            class="h-24 w-24 rounded-full border border-white/10 object-cover shadow-md shadow-black/30 sm:h-28 sm:w-28"
+          />
 
-            <div class="text-center sm:text-left">
-              <p class="text-sm font-medium text-white">Profile Picture</p>
-              <p class="mt-1 max-w-[260px] text-xs leading-relaxed text-body text-neutral-400">
-                Upload a new avatar or remove the current one from your profile.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <button
-              @click="onChangePicture"
-              class="rounded-md bg-(--kots-background-color) px-3 py-2 text-xs font-medium text-white transition hover:bg-white/10"
-            >
-              Change Picture
-            </button>
-
-            <button
-              @click="onDeletePicture"
-              class="rounded-md  px-3 py-2 text-xs font-medium text-red-300 transition hover:bg-red-950/35"
-            >
-              Delete Picture
-            </button>
+          <div class="text-center sm:text-left">
+            <p class="text-sm font-medium text-white">Profile Picture</p>
+            <p class="mt-1 max-w-[260px] text-xs leading-relaxed text-body text-neutral-400">
+              Upload a new avatar or remove the current one from your profile.
+            </p>
           </div>
         </div>
 
-        <div class="mb-5"></div>
+        <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          <button
+            @click="onChangePicture"
+            class="rounded-md bg-(--kots-background-color) px-3 py-2 text-xs font-medium text-white transition hover:bg-white/10"
+          >
+            Change Picture
+          </button>
 
-        <form class="space-y-4" @submit.prevent="onSaveChanges">
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <button
+            @click="onDeletePicture"
+            class="rounded-md px-3 py-2 text-xs font-medium text-red-300 transition hover:bg-red-950/35"
+          >
+            Delete Picture
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-5"></div>
+
+      <form class="space-y-4" @submit.prevent="onSaveChanges">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <label class="block">
+            <span class="mb-1.5 block text-xs font-medium text-body text-neutral-400"
+              >Username</span
+            >
+            <input
+              v-model="form.username"
+              disabled
+              type="text"
+              class="w-full rounded-lg border border-white/5 bg-black/25 px-3 py-2.5 text-sm text-neutral-500 outline-none cursor-not-allowed"
+            />
+          </label>
+
+          <label class="block">
+            <span class="mb-1.5 block text-xs font-medium text-body text-neutral-400">Country</span>
+            <input v-model="form.country" type="text" class="inputField" placeholder="Country" />
+          </label>
+
+          <label class="block md:col-span-2">
+            <span class="mb-1.5 block text-xs font-medium text-body text-neutral-400">Email</span>
+            <input
+              v-model="form.email"
+              type="email"
+              class="inputField"
+              placeholder="email@example.com"
+            />
+          </label>
+        </div>
+
+        <div class="rounded-lg bg-white/[0.02] p-3 sm:p-4">
+          <p class="mb-3 text-sm font-medium text-white">Change Password</p>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
             <label class="block">
-              <span class="mb-1.5 block text-xs font-medium text-body text-neutral-400">Username</span>
+              <span class="mb-1.5 block text-xs font-medium text-body text-neutral-400">
+                Current Password
+              </span>
               <input
-                v-model="form.username"
-                disabled
-                type="text"
-                class="w-full rounded-lg border border-white/5 bg-black/25 px-3 py-2.5 text-sm text-neutral-500 outline-none cursor-not-allowed"
+                v-model="form.currentPassword"
+                type="password"
+                class="inputField"
+                placeholder="••••••••"
               />
             </label>
 
             <label class="block">
-              <span class="mb-1.5 block text-xs font-medium text-body text-neutral-400">Country</span>
+              <span class="mb-1.5 block text-xs font-medium text-body text-neutral-400">
+                New Password
+              </span>
               <input
-                v-model="form.country"
-                type="text"
+                v-model="form.newPassword"
+                type="password"
                 class="inputField"
-                placeholder="Country"
+                placeholder="••••••••"
               />
             </label>
 
-            <label class="block md:col-span-2">
-              <span class="mb-1.5 block text-xs font-medium text-body text-neutral-400">Email</span>
+            <label class="block">
+              <span class="mb-1.5 block text-xs font-medium text-body text-neutral-400">
+                Confirm Password
+              </span>
               <input
-                v-model="form.email"
-                type="email"
+                v-model="form.confirmPassword"
+                type="password"
                 class="inputField"
-                placeholder="email@example.com"
+                placeholder="••••••••"
               />
             </label>
           </div>
-
-          <div class="rounded-lg bg-white/[0.02] p-3 sm:p-4">
-            <p class="mb-3 text-sm font-medium text-white">Change Password</p>
-
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <label class="block">
-                <span class="mb-1.5 block text-xs font-medium text-body text-neutral-400">
-                  Current Password
-                </span>
-                <input
-                  v-model="form.currentPassword"
-                  type="password"
-                  class="inputField "
-                  placeholder="••••••••"
-                />
-              </label>
-
-              <label class="block">
-                <span class="mb-1.5 block text-xs font-medium text-body text-neutral-400">
-                  New Password
-                </span>
-                <input
-                  v-model="form.newPassword"
-                  type="password"
-                  class="inputField"
-                  placeholder="••••••••"
-                />
-              </label>
-
-              <label class="block">
-                <span class="mb-1.5 block text-xs font-medium text-body text-neutral-400">
-                  Confirm Password
-                </span>
-                <input
-                  v-model="form.confirmPassword"
-                  type="password"
-                  class="inputField"
-                  placeholder="••••••••"
-                />
-              </label>
-            </div>
-          </div>
-        </form>
+        </div>
+      </form>
     </div>
 
     <div
@@ -167,14 +164,14 @@ function onSaveChanges() {
     >
       <button
         @click="onDeleteAccount"
-        class="rounded-md px-3 py-2 text-xs font-medium text-red-400 transition "
+        class="rounded-md px-3 py-2 text-xs font-medium text-red-400 transition"
       >
         Delete Account
       </button>
 
       <button
         @click="onSaveChanges"
-        class="rounded-md  px-4 py-2  text-xs font-medium  text-white transition"
+        class="rounded-md px-4 py-2 text-xs font-medium text-white transition"
       >
         Save Changes
       </button>

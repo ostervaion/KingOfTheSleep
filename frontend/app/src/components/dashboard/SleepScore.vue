@@ -135,14 +135,13 @@ const chartOptions = {
         <div class="mb-3 inline-flex rounded-md border border-cyan-200 px-2 py-0.5 leading-none">
           <h2 class="text-heading text-sm font-medium text-cyan-200">Sleep score</h2>
         </div>
-
       </div>
 
       <div
-        class="flex items-center gap-1 pt-1 text-3xl font-semibold "
+        class="flex items-center gap-1 pt-1 text-3xl font-semibold"
         :class="scoreChange >= 0 ? 'text-green-500' : 'text-red-400'"
       >
-              <p class="font-inter pb-1 text-xs font-medium text-white">since latest score</p>
+        <p class="font-inter pb-1 text-xs font-medium text-white">since latest score</p>
         <svg
           class="h-4 w-4"
           :class="scoreChange < 0 ? 'rotate-180' : ''"
@@ -163,27 +162,18 @@ const chartOptions = {
       </div>
     </div>
 
-<div class="relative min-h-0 flex-1">
-  <!-- Graph background -->
-  <Line
-    class="absolute inset-0 h-full w-full"
-    :data="chartData"
-    :options="chartOptions"
-  />
+    <div class="relative min-h-0 flex-1">
+      <!-- Graph background -->
+      <Line class="absolute inset-0 h-full w-full" :data="chartData" :options="chartOptions" />
 
-  <!-- Average overlay -->
-  <div
-    class="pointer-events-none absolute bottom-5 right-5 z-10 text-right sm:bottom-6 sm:right-6"
-  >
-    <p class="text-xs font-medium text-[#A2A1A6]">
-      Last 7 days
-    </p>
+      <!-- Average overlay -->
+      <div
+        class="pointer-events-none absolute bottom-5 right-5 z-10 text-right sm:bottom-6 sm:right-6"
+      >
+        <p class="text-xs font-medium text-[#A2A1A6]">Last 7 days</p>
 
-    <p class="mt-0.5 text-sm font-medium text-white">
-      {{ averageScore }} average
-    </p>
-  </div>
-</div>
-
+        <p class="mt-0.5 text-sm font-medium text-white">{{ averageScore }} average</p>
+      </div>
+    </div>
   </div>
 </template>

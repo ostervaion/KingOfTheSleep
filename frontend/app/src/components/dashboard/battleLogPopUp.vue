@@ -74,7 +74,7 @@ function loadLogs() {
         consistency: 82,
         efficiency: 88,
       },
-      enemy_protocol: ["kaka", "culo", "pedo", "pis"],
+      enemy_protocol: ['kaka', 'culo', 'pedo', 'pis'],
     },
   ]
 }
@@ -156,11 +156,7 @@ function onClose() {
       </div>
 
       <ul class="mt-4">
-        <BattleLogsCard
-          v-for="log in battleLogs"
-          :key="log.enemy_user_name"
-          v-bind="log"
-        />
+        <BattleLogsCard v-for="log in battleLogs" :key="log.enemy_user_name" v-bind="log" />
       </ul>
     </div>
   </section>

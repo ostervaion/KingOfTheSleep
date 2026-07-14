@@ -51,10 +51,7 @@ function onChat() {
               class="h-full w-full object-cover"
             />
 
-            <span
-              v-else
-              class="text-3xl font-semibold uppercase text-cyan-200"
-            >
+            <span v-else class="text-3xl font-semibold uppercase text-cyan-200">
               {{ user.username?.charAt(0) || '?' }}
             </span>
           </div>
@@ -68,27 +65,19 @@ function onChat() {
 
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div class="rounded-lg bg-[var(--kots-background-color)] px-4 py-3 text-center">
-            <p class="text-xs font-medium text-body text-neutral-400">
-              Rank
-            </p>
-            <p class="mt-1 text-xl font-light text-white">
-              #{{ user.rank }}
-            </p>
+            <p class="text-xs font-medium text-body text-neutral-400">Rank</p>
+            <p class="mt-1 text-xl font-light text-white">#{{ user.rank }}</p>
           </div>
 
           <div class="rounded-lg bg-[var(--kots-background-color)] px-4 py-3 text-center">
-            <p class="text-xs font-medium text-body text-neutral-400">
-              Level
-            </p>
+            <p class="text-xs font-medium text-body text-neutral-400">Level</p>
             <p class="mt-1 text-xl font-light text-white">
               {{ user.level }}
             </p>
           </div>
 
           <div class="rounded-lg bg-[var(--kots-background-color)] px-4 py-3 text-center">
-            <p class="text-xs font-medium text-body text-neutral-400">
-              Points
-            </p>
+            <p class="text-xs font-medium text-body text-neutral-400">Points</p>
             <p class="mt-1 text-xl font-light text-white">
               {{ user.points }}
             </p>
