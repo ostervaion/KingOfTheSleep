@@ -174,11 +174,9 @@ def _seed_combat_history(session: Session, battles_per_user: int = 4) -> None:
     )
 
 
-def seed_score_history():
+def seed_score_history(backfill_existing: bool = True):
     with Session(engine) as session:
-        # Configura aquí cuántos usuarios NUEVOS quieres agregar en cada ejecución
         CANTIDAD_NUEVOS_USUARIOS = 20
-        # Configura aquí el mínimo de batallas de hoy que se generarán SIEMPRE
         MINIMO_BATALLAS_HOY = 4
 
         print("Buscando e insertando nuevos usuarios...")
@@ -200,7 +198,7 @@ def seed_score_history():
 
                 session.add(
                     ScoreHistory(
-                        user_id=user.id,  # user.id ahora está garantizado gracias al refresh anterior
+                        user_id=user.id,
                         sleep_score=score,
                         elo_score=elo,
                         created_at=created_at,
@@ -212,8 +210,6 @@ def seed_score_history():
         _seed_user_protocols(session, nuevos_usuarios, protocols, now)
 
         if backfill_existing:
-            # Solo asigna protocolos a usuarios que YA existían y que todavía
-            # no tienen ningún UserProtocol registrado (para no duplicar).
             existing_with_no_protocols = []
             for user in usuarios_antes:
                 has_protocols = session.exec(
@@ -236,10 +232,9 @@ def seed_score_history():
             f"con 5 registros de historial y protocolos asignados cada uno."
         )
 
-        # Generamos siempre un mínimo de batallas de hoy, usando todos los usuarios disponibles
         print(f"Generando un mínimo de {MINIMO_BATALLAS_HOY} batallas para hoy...")
-        _seed_combat_history(session, min_battles=MINIMO_BATALLAS_HOY)
+        _seed_combat_history(session, battles_per_user=MINIMO_BATALLAS_HOY)
 
 
 if __name__ == "__main__":
-    seed_score_history() 
+    seed_score_history()

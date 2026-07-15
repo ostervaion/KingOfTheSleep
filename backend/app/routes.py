@@ -2,13 +2,14 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 from collections import defaultdict
-from sqlalchemy import func
+from sqlalchemy import func, case, and_, or_
+from sqlalchemy.orm import aliased
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
 from pydantic import BaseModel
-from data_transfer_objects import ProtocolImpactRead
+from data_transfer_objects import ProtocolImpactRead, TodayStatsRead, ResumedBattleRead
 from config import ACCESS_TOKEN_EXPIRE_MINUTES
 from database import get_session
 from itertools import groupby
@@ -23,7 +24,8 @@ from models import (
     UserPublic,
     UserProfile,
     UserProtocol,
-    Protocol
+    Protocol,
+    CombatHistory
 )
 from security import (
     authenticate_user,
@@ -262,9 +264,6 @@ def _build_protocol_impacts(session, actual_user_id: int) -> list[ProtocolImpact
         scores = [row.sleep_score for row in group]
         days_used = len(scores)
         avg_score = sum(scores) / days_used
-        print("//////////////////////")
-        print(avg_score)
-        print("//////////////////////")
         percentage = round(((avg_score / DEFAULT_SCORE) * 100) - 100, 2)
 
         results.append(
@@ -275,10 +274,6 @@ def _build_protocol_impacts(session, actual_user_id: int) -> list[ProtocolImpact
                 daysUsed=days_used,
             )
         )
-    print("//////////////////////")
-    print("RESULTS")
-    print("//////////////////////")
-    print(results)
     return results
 
 def _lobby_state(session, current_user_id: int, now: datetime) -> bool:
@@ -293,6 +288,51 @@ def _lobby_state(session, current_user_id: int, now: datetime) -> bool:
 
     return today_data is not None
 
+def _today_stats(session, actual_user_id: int, now: datetime) -> list[TodayStatsRead]:
+
+    today = now.date()
+    winsLoses = session.exec(
+        select(
+            func.count(case((and_(CombatHistory.winner_user_id == actual_user_id, func.date(CombatHistory.created_at) == today,), 1,))).label("wins"),
+            func.count(case((and_(CombatHistory.loser_user_id == actual_user_id, func.date(CombatHistory.created_at) == today,), 1,))).label("losses"),
+        )
+    ).one()
+
+    winner = aliased(User)
+    loser = aliased(User)
+    last_battles = session.exec(
+        select(CombatHistory.id,
+                winner.username.label("winner"),
+                loser.username.label("loser"),)
+        .join(winner, CombatHistory.winner_user_id == winner.id)
+        .join(loser, CombatHistory.loser_user_id == loser.id)
+        .where(
+            or_(
+                CombatHistory.winner_user_id == actual_user_id,
+                CombatHistory.loser_user_id == actual_user_id,
+            )
+            , func.date(CombatHistory.created_at) == today
+        )
+        .order_by(CombatHistory.id.desc())
+        .limit(5)
+    ).all()
+    battles = []
+    for id, winner, loser in last_battles:
+        battles.append(ResumedBattleRead(
+            id = id,
+            winner_name = winner,
+            loser_name = loser,
+        )
+        )
+    stats = TodayStatsRead(
+        wins = winsLoses.wins,
+        losses = winsLoses.losses,
+        battles = battles
+    )
+    print("////////////TODAY_STATS//////////////")
+    print(stats)
+    return stats
+
 @router.get("/dashboard")
 async def dashboard_fake(
     current_user: User = Depends(get_current_active_user),
@@ -305,13 +345,14 @@ async def dashboard_fake(
     sleep_score = _build_sleep_score(session, current_user.id, now)
     protocol_impact = _build_protocol_impacts(session, current_user.id)
     lobby = _lobby_state(session, current_user.id, now)
-
+    today_stats = _today_stats(session, current_user.id, now)
     return {
         "nextBattle": next_battle,
         "sleepScore": sleep_score,
         "ranking": ranking,
         "protocolImpacts": protocol_impact,
-        "lobby": lobby
+        "lobby": lobby,
+        "today_stats": today_stats
     }
 
 

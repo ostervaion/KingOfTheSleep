@@ -12,3 +12,15 @@ class ProtocolImpactRead(BaseModel):
     name: str        # protocol name
     percentage: float  # % impact vs baseline, computed server-side
     daysUsed: int      # count of days this protocol was used
+
+class ResumedBattleRead(BaseModel):
+
+    id: int
+    winner_name: str
+    loser_name: str
+
+class TodayStatsRead(BaseModel):
+
+    wins: int
+    losses: int
+    battles: list[ResumedBattleRead]
