@@ -5,14 +5,26 @@ from sqlmodel import Session
 from database import engine
 from security import verify_token
 
-connections: dict[WebSocket, str] = {}
-users: dict[str, WebSocket] = {}
-
+# Diccionarios globales para rastrear las conexiones
+connections: dict[WebSocket, str] = {}  # websocket -> username
+users: dict[str, WebSocket] = {}        # username -> websocket
+async def broadcast_presence(username: str, online: bool):
+    payload = json.dumps({
+        "type": "presence:update",
+        "payload": {"username": username, "online": online}
+    })
+    for conn in list(connections.keys()):
+        try:
+            await conn.send_text(payload)
+        except Exception:
+            pass
 
 def unregister_connection(websocket: WebSocket):
     username = connections.pop(websocket, None)
     if username:
         users.pop(username, None)
+    return username
+
 
 
 async def websocket_endpoint(websocket: WebSocket):
@@ -21,25 +33,99 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             message = await websocket.receive_text()
             data = json.loads(message)
+            
+            msg_type = data.get("type")
+            if not msg_type:
+                await websocket.send_text(json.dumps({
+                    "type": "error", 
+                    "payload": "Missing message type"
+                }))
+                continue
 
-            if data["type"] == "auth":
-                with Session(engine) as session:
-                    user = verify_token(data["token"], session)
-                connections[websocket] = user.username
-                users[user.username] = websocket
-                await websocket.send_text("authenticated")
+            # ==========================================
+            # 1. FLUJO DE AUTENTICACIÓN (Obligatorio primero)
+            # ==========================================
+            if msg_type == "auth":
+                token = data.get("token")
+                if not token:
+                    await websocket.send_text(json.dumps({
+                        "type": "error", 
+                        "payload": "Token is required"
+                    }))
+                    continue
 
-            elif data["type"] == "message":
-                sender = connections.get(websocket)
-                target = data["to"]
-                if sender and target in users:
-                    payload = {"from": sender, "text": data["text"]}
+                try:
+                    with Session(engine) as session:
+                        user = verify_token(token, session)
+                    
+                    connections[websocket] = user.username
+                    users[user.username] = websocket
+                    
+                    await websocket.send_text(json.dumps({
+                        "type": "auth:success",
+                        "payload": {"username": user.username}
+                    }))
+                    await broadcast_presence(user.username, True)
+
+                    await websocket.send_text(json.dumps({
+                        "type": "presence:list",
+                        "payload": {"online": list(users.keys())}
+                    }))
+                except Exception as e:
+                    # Si el token es inválido o expiró
+                    await websocket.send_text(json.dumps({
+                        "type": "auth:fail", 
+                        "payload": "Invalid or expired token"
+                    }))
+                    await websocket.close(code=1008)  # Cerramos por violación de política
+                    unregister_connection(websocket)
+                    return
+                continue
+
+            # ==========================================
+            # 2. CONTROL DE ACCESO (Guardia de seguridad)
+            # ==========================================
+            sender = connections.get(websocket)
+            if not sender:
+                await websocket.send_text(json.dumps({
+                    "type": "error", 
+                    "payload": "Not authenticated. Send 'auth' first."
+                }))
+                continue
+
+            # ==========================================
+            # 3. ENRUTADOR DE OTROS MÓDULOS (Chat, Juego...)
+            # ==========================================
+            if msg_type == "chat:message":
+                target = data.get("to")
+                text = data.get("text")
+                if not target or not text:
+                    continue
+                
+                payload = {
+                    "type": "chat:message",
+                    "payload": {
+                        "from": sender,
+                        "to": target,
+                        "text": text
+                    }
+                }
+                
+                # Enviar al destinatario si está conectado
+                if target in users:
                     await users[target].send_text(json.dumps(payload))
-                    await websocket.send_text(json.dumps(payload))
-                else:
-                    await websocket.send_text("user not connected")
+                
+                # Eco al emisor para que se pinte en su pantalla
+                await websocket.send_text(json.dumps(payload))
+
+            elif msg_type.startswith("game:"):
+                # Aquí procesarías la lógica del juego usando 'sender'
+                pass
+
     except WebSocketDisconnect:
-        unregister_connection(websocket)
+        username = unregister_connection(websocket)
+        if username:
+            await broadcast_presence(username, False)
     except Exception:
         await websocket.close(code=1008)
         unregister_connection(websocket)

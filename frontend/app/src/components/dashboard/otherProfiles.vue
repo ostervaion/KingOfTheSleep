@@ -1,4 +1,7 @@
 <script setup>
+import { ref } from 'vue'
+import Chat from '@/components/Chat.vue'
+
 const emit = defineEmits(['close', 'chat'])
 
 const props = defineProps({
@@ -14,16 +17,26 @@ const props = defineProps({
   },
 })
 
+// 2. Creamos la variable reactiva para controlar el chat abierto
+const selectedUser = ref(null)
+
 function onClose() {
   emit('close')
 }
 
 function onChat() {
+  selectedUser.value = props.user.username
   emit('chat', props.user)
 }
 </script>
 
 <template>
+  <Chat 
+    v-if="selectedUser" 
+    :to_user="selectedUser" 
+    @close="selectedUser = null" 
+  />
+
   <div
     class="font-inter flex max-h-[90vh] w-full flex-col overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >

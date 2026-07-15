@@ -15,6 +15,9 @@ export default defineConfig({
     tailwindcss(),
     svgLoader()
   ],
+  server: {
+  allowedHosts: true,
+},
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
