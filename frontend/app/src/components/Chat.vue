@@ -18,10 +18,7 @@ const messageText = ref('')
 const messagesContainer = ref(null)
 
 const conversationMessages = computed(() => {
-  return chatMessages.value.filter(msg => 
-
-    msg.from === props.to_user || msg.to === props.to_user
-  )
+  return chatMessages.value.filter((msg) => msg.from === props.to_user || msg.to === props.to_user)
 })
 
 async function scrollToBottom() {
@@ -44,7 +41,7 @@ function handleSend() {
   })
 
   messageText.value = ''
-  
+
   scrollToBottom()
 }
 
@@ -58,7 +55,9 @@ onMounted(() => {
     <div
       class="w-full max-w-md bg-[#1a1a1f] border border-[#2a2a2f] rounded-2xl overflow-hidden shadow-2xl"
     >
-      <div class="flex items-center justify-between px-5 py-3 bg-[#16161a] border-b border-[#2a2a2f]">
+      <div
+        class="flex items-center justify-between px-5 py-3 bg-[#16161a] border-b border-[#2a2a2f]"
+      >
         <div class="flex items-center gap-3">
           <div
             class="w-8 h-8 rounded-full bg-[#2a2a3a] flex items-center justify-center text-[#8888cc] text-sm font-semibold"
@@ -68,12 +67,14 @@ onMounted(() => {
           <div>
             <p class="text-sm font-medium text-[#e8e8f0] leading-none">{{ props.to_user }}</p>
             <p class="text-xs mt-1 flex items-center gap-1.5">
-            <span :class="['w-2 h-2 rounded-full', isTargetOnline ? 'bg-[#4caf50]' : 'bg-[#f44336]']"></span>
-            <span class="text-[#555]">{{ isTargetOnline ? 'Conectado' : 'Desconectado' }}</span>
+              <span
+                :class="['w-2 h-2 rounded-full', isTargetOnline ? 'bg-[#4caf50]' : 'bg-[#f44336]']"
+              ></span>
+              <span class="text-[#555]">{{ isTargetOnline ? 'Conectado' : 'Desconectado' }}</span>
             </p>
           </div>
         </div>
-        
+
         <button
           @click="emit('close')"
           class="text-[#555] hover:text-[#aaa] transition-colors text-lg"
@@ -125,7 +126,9 @@ onMounted(() => {
           type="text"
           :disabled="!isConnected || !isAuthenticated"
           class="flex-1 bg-[#25252e] border border-[#333] rounded-lg px-3 py-2 text-sm text-[#e0e0e0] placeholder-[#555] outline-none focus:border-[#5555aa] disabled:opacity-50 transition-colors"
-          :placeholder="isConnected && isAuthenticated ? 'Escribe un mensaje...' : 'Conectando al servidor...'"
+          :placeholder="
+            isConnected && isAuthenticated ? 'Escribe un mensaje...' : 'Conectando al servidor...'
+          "
           @keyup.enter="handleSend"
         />
         <button

@@ -48,10 +48,10 @@ function closeDialog() {
     class="font-inter flex items-center justify-center bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20 fixed z-50 h-14 w-14 touch-none rounded-full"
     @click="handleClick"
   >
-  <ChatIcon class="h-7 w-auto text-cyan-200 " />
+    <ChatIcon class="h-7 w-auto text-cyan-200" />
   </button>
 
-    <Teleport to="body">
+  <Teleport to="body">
     <dialog
       ref="dialog"
       class="m-auto h-[90vh] w-[96vw] sm:w-[90vw] md:w-[500px] lg:w-[700px] max-w-[96vw] rounded-xl border-none bg-transparent p-0"
@@ -59,5 +59,4 @@ function closeDialog() {
       <Chat @close="closeDialog" />
     </dialog>
   </Teleport>
-  
 </template>

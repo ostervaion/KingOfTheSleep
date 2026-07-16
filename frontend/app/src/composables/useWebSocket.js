@@ -26,7 +26,7 @@ export function useWebSocket() {
           JSON.stringify({
             type: 'auth',
             token: token,
-          })
+          }),
         )
       } else {
         console.error('No se encontró un token en el localStorage para autenticar')
@@ -61,7 +61,7 @@ export function useWebSocket() {
           case 'error':
             console.warn('Error recibido del servidor:', payload)
             break
-          
+
           case 'presence:list':
             onlineUsers.value = new Set(payload.online)
             break
@@ -107,12 +107,12 @@ export function useWebSocket() {
       console.warn('No se puede enviar el mensaje, el socket está cerrado.')
       return
     }
-    
+
     ws.value.send(
       JSON.stringify({
         type: type,
         ...data,
-      })
+      }),
     )
   }
 

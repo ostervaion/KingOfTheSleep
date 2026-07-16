@@ -30,11 +30,7 @@ function onChat() {
 </script>
 
 <template>
-  <Chat 
-    v-if="selectedUser" 
-    :to_user="selectedUser" 
-    @close="selectedUser = null" 
-  />
+  <Chat v-if="selectedUser" :to_user="selectedUser" @close="selectedUser = null" />
 
   <div
     class="font-inter flex max-h-[90vh] w-full flex-col overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"

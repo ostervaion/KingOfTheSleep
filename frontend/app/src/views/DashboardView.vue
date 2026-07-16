@@ -18,7 +18,6 @@ const dashboard = ref(null)
 const appStore = useAppStore()
 const { connect, disconnect } = useWebSocket()
 
-
 async function fetchDashboard() {
   try {
     const response = await api.get('/dashboard')
@@ -38,7 +37,6 @@ onMounted(() => {
   appStore.onDashboard = true
   intervalId = setInterval(fetchDashboard, 30000)
   connect()
-
 })
 
 onUnmounted(() => {
