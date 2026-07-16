@@ -51,46 +51,58 @@ onUnmounted(() => {
 <template>
   <div
     v-if="props.nextBattle"
-    class="font-inter text-sm text-heading flex items-center justify-between bg-(--kots-blocks-color) p-4 rounded-full border-b border-[color:var(--border)]"
+    class="font-inter flex min-w-0 items-center justify-between gap-2 rounded-lg border-b border-[color:var(--border)] bg-(--kots-blocks-color) px-3 py-2 text-heading sm:gap-4 sm:px-4 sm:py-3 lg:p-4"
   >
-    <div class="flex items-center gap-2">
-      <span class="text-4xl text-yellow-400">
+    <!-- Ranking -->
+    <div class="flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-2">
+      <span class="text-2xl leading-none text-yellow-400 sm:text-3xl lg:text-4xl">
         {{ '#' + props.nextBattle.currentRanking }}
       </span>
 
-      <div>
-        current ranking
-        <span class="text-xl text-green-400 ml-2">
-          {{ props.nextBattle.deltaRanking }}
-        </span>
-        since last battle
+      <div class="min-w-0 text-xs leading-tight sm:block lg:text-sm">
+        <p class="hidden:xs truncate">current ranking</p>
+        <p class="truncate">
+          <span class="ml-2 text-xs text-green-400 lg:text-xl">
+            ▲ {{ props.nextBattle.deltaRanking }}
+          </span>
+          <span class="ml-1 hidden lg:inline">since last battle</span>
+        </p>
       </div>
     </div>
 
-    <div class="flex items-center gap-2">
+    <!-- Next battle -->
+    <div class="flex min-w-0 flex-1 items-center justify-end gap-1.5 sm:gap-2">
       <span
-        class="inline-flex items-center text-sm font-bold bg-yellow-400 rounded-md px-2 py-2 text-gray-800 leading-none"
+        class="hidden shrink-0 items-center rounded-md bg-yellow-400 px-2 py-1.5 text-[10px] font-bold leading-none text-gray-800 sm:inline-flex lg:text-sm"
       >
         NEXT BATTLE IN
       </span>
 
-      <span class="text-2xl">
+      <span
+        class="inline-flex shrink-0 items-center rounded-md bg-yellow-400 px-1.5 py-1 text-[9px] font-bold leading-none text-gray-800 sm:hidden"
+      >
+        NEXT BATTLE IN
+      </span>
+
+      <span class="whitespace-nowrap text-lg leading-none sm:text-xl lg:text-2xl">
         {{ formatTime(nextBattleSeconds) }}
       </span>
     </div>
 
-    <div class="flex items-center">
-      DAY ENDS IN
-      <span class="text-2xl ml-2 mr-2">
+    <!-- Day ends -->
+    <div class="hidden flex min-w-0 shrink-0 items-center gap-1 text-right">
+      <span class="hidden text-xs lg:inline">DAY ENDS IN</span>
+      <span class="whitespace-nowrap text-lg leading-none sm:text-xl lg:text-2xl">
         {{ formatTime(endDaySeconds) }}
       </span>
-      until daily reset
+
+      <span class="hidden text-xs lg:inline">until daily reset</span>
     </div>
   </div>
 
   <div
     v-else
-    class="font-inter text-sm text-heading bg-(--kots-blocks-color) p-4 rounded-full border-b border-[color:var(--border)]"
+    class="font-inter rounded-full border-b border-[color:var(--border)] bg-(--kots-blocks-color) px-3 py-2 text-sm text-heading sm:px-4 sm:py-3 lg:p-4"
   >
     Loading next battle...
   </div>

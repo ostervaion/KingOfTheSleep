@@ -288,7 +288,7 @@ def _lobby_state(session, current_user_id: int, now: datetime) -> bool:
 
     return today_data is not None
 
-def _today_stats(session, actual_user_id: int, now: datetime) -> list[TodayStatsRead]:
+def _today_stats(session, actual_user_id: int, now: datetime) -> TodayStatsRead:
 
     today = now.date()
     winsLoses = session.exec(
@@ -352,7 +352,7 @@ async def dashboard_fake(
         "ranking": ranking,
         "protocolImpacts": protocol_impact,
         "lobby": lobby,
-        "today_stats": today_stats
+        "todayStats": today_stats
     }
 
 
