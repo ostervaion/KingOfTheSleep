@@ -81,23 +81,43 @@ const score = computed(() => ({
         class="grid h-5 w-5 shrink-0 place-items-center rounded-full border"
         :class="props.victory ? 'border-green-400 text-green-400' : 'border-red-500 text-red-500'"
       >
-        <svg v-if="props.victory" viewBox="0 0 24 24" class="h-3 w-3" fill="none" aria-hidden="true">
-          <path d="m6.5 12.5 3.2 3.2 7.8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <svg
+          v-if="props.victory"
+          viewBox="0 0 24 24"
+          class="h-3 w-3"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="m6.5 12.5 3.2 3.2 7.8-8"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
         <svg v-else viewBox="0 0 24 24" class="h-3 w-3" fill="none" aria-hidden="true">
-          <path d="m8 8 8 8M16 8l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path
+            d="m8 8 8 8M16 8l-8 8"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
         </svg>
       </span>
 
       <p class="min-w-0 flex-1 truncate text-xs font-medium text-white sm:text-sm">
-        {{ player.name }} <span class="font-normal text-neutral-400">vs</span> {{ props.enemy_user_name }}
+        {{ player.name }} <span class="font-normal text-neutral-400">vs</span>
+        {{ props.enemy_user_name }}
       </p>
 
       <div class="flex shrink-0 items-center gap-3 sm:gap-4">
         <p class="text-xs font-medium tabular-nums sm:text-sm">
           <span :class="props.victory ? 'text-green-400' : 'text-red-500'">{{ score.player }}</span>
           <span class="mx-1 font-normal text-neutral-400">–</span>
-          <span :class="props.victory ? 'text-neutral-400' : 'text-red-500'">{{ score.enemy }}</span>
+          <span :class="props.victory ? 'text-neutral-400' : 'text-red-500'">{{
+            score.enemy
+          }}</span>
         </p>
 
         <svg
@@ -107,7 +127,13 @@ const score = computed(() => ({
           fill="none"
           aria-hidden="true"
         >
-          <path d="m6 14 6-6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          <path
+            d="m6 14 6-6 6 6"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
       </div>
     </button>
@@ -134,7 +160,9 @@ const score = computed(() => ({
                 {{ statLabels[stat] || stat }}
               </span>
 
-              <span class="text-right text-[10px] font-medium tabular-nums text-green-400 sm:text-xs">
+              <span
+                class="text-right text-[10px] font-medium tabular-nums text-green-400 sm:text-xs"
+              >
                 {{ playerValue }}
               </span>
 

@@ -18,7 +18,7 @@ const appStore = useAppStore()
         <div class="flex items-center justify-between h-16">
           <!-- Logo izquierda -->
           <div class="flex-shrink-0">
-            <img src="/KOTS_logo.png" alt="King of the Sleep" class="h-14 w-auto" />
+            <img src="/KOTS_logo.png" alt="King of the Sleep" class="h-10 w-auto" />
           </div>
 
           <!-- Menú desktop -->

@@ -65,16 +65,16 @@ function closeDialog() {
       ref="dialog"
       class="m-auto w-[420px] max-w-[94vw] rounded-xl border-none bg-transparent p-0"
     >
-    <OtherProfiles
-      :user="{
-        username: props.name,
-        profilePicture: example,
-        rank: props.ranking,
-        level: '42',
-        points: props.points,
-      }"
-      @close="closeDialog"
-    />
+      <OtherProfiles
+        :user="{
+          username: props.name,
+          profilePicture: example,
+          rank: props.ranking,
+          level: '42',
+          points: props.points,
+        }"
+        @close="closeDialog"
+      />
     </dialog>
   </Teleport>
 </template>

@@ -46,9 +46,7 @@ const protocolImpacts = ref([
       <div class="text-right">days used</div>
     </div>
 
-    <div
-      class="flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto bg-white/[0.015] pt-2"
-    >
+    <div class="flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto bg-white/[0.015] pt-2">
       <div
         v-for="item in protocolImpacts"
         :key="item.id"

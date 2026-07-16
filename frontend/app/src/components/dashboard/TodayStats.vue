@@ -61,14 +61,14 @@ function closeDialog() {
       </div>
     </div>
   </div>
-<Teleport to="body">
-  <dialog
-    ref="dialog"
-    class="m-auto h-[90vh] w-[96vw] sm:w-[90vw] md:w-[500px] lg:w-[700px] max-w-[96vw] rounded-xl border-none bg-transparent p-0"
-  >
-    <BattleLog @close="closeDialog" />
-  </dialog>
-</Teleport>
+  <Teleport to="body">
+    <dialog
+      ref="dialog"
+      class="m-auto h-[90vh] w-[96vw] sm:w-[90vw] md:w-[500px] lg:w-[700px] max-w-[96vw] rounded-xl border-none bg-transparent p-0"
+    >
+      <BattleLog @close="closeDialog" />
+    </dialog>
+  </Teleport>
 </template>
 
 <style scoped>
