@@ -1,4 +1,7 @@
 <script setup>
+import { ref } from 'vue'
+import Chat from '@/components/Chat.vue'
+
 const emit = defineEmits(['close', 'chat'])
 
 const props = defineProps({
@@ -14,16 +17,25 @@ const props = defineProps({
   },
 })
 
+const selectedUser = ref(null)
+
 function onClose() {
   emit('close')
 }
 
 function onChat() {
+  selectedUser.value = props.user.username
   emit('chat', props.user)
 }
 </script>
 
 <template>
+  <Chat 
+    v-if="selectedUser" 
+    :to_user="selectedUser" 
+    @close="selectedUser = null" 
+  />
+
   <div
     class="font-inter flex max-h-[90vh] w-full flex-col overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >
@@ -94,24 +106,3 @@ function onChat() {
     </div>
   </div>
 </template>
-
-<style scoped>
-@reference "@/assets/main.css";
-
-.overflow-y-auto::-webkit-scrollbar {
-  width: 8px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #333;
-}
-</style>
