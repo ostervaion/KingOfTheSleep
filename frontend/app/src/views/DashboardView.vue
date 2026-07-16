@@ -6,7 +6,7 @@ import ProtocolsImpact from '@/components/dashboard/ProtocolImpact.vue'
 import SleepScore from '@/components/dashboard/SleepScore.vue'
 import Profile from '@/components/dashboard/Profile.vue'
 import TodayStats from '@/components/dashboard/TodayStats.vue'
-import Lobby from '@/components/dashboard/Lobby.vue'
+import Battle from '@/components/dashboard/Battle.vue'
 import ChatButton from '@/components/dashboard/ChatButton.vue'
 import { useAppStore } from '@/stores/app'
 import { useWebSocket } from '@/composables/useWebSocket'
@@ -76,7 +76,7 @@ function updateActiveMobilePage() {
       <!-- Page 1: Lobby + TodayStats -->
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
         <div class="grid h-full min-h-0 grid-rows-[1fr_auto] gap-4">
-          <Lobby class="h-full min-h-0" />
+          <Battle class="h-full min-h-0" />
           <TodayStats class="min-h-0" />
         </div>
       </section>
@@ -130,7 +130,7 @@ function updateActiveMobilePage() {
     >
       <section class="flex flex-col gap-4 min-h-0">
         <SleepDataForm v-if="!dashboard?.lobby" @saved="fetchDashboard" />
-        <Lobby v-else />
+        <Battle v-else />
         <TodayStats />
       </section>
 
