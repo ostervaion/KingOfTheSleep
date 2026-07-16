@@ -1,0 +1,184 @@
+<script setup>
+import { computed, onMounted, ref } from 'vue'
+import BattleLogsCard from '@/components/dashboard/battleLogsCard.vue'
+import BoxingGlove from '@/assets/boxing-glove.svg'
+import TriangleUp from '@/assets/triangle-up.svg'
+import TriangleDown from '@/assets/triangle-down.svg'
+
+const emit = defineEmits(['close'])
+
+const battleLogs = ref([])
+
+onMounted(loadLogs)
+
+function loadLogs() {
+  battleLogs.value = [
+    {
+      victory: true,
+      enemy_user_name: 'Enemy 1',
+      enemy_avatar: '',
+      enemy_stats: {
+        timeInBed: 6,
+        awakeTime: 1,
+        lightSleep: 2,
+        slowWave: 1,
+        rem: 2,
+        disturbance: 0,
+        baseline: 0,
+        debt: 1,
+        strain: 2,
+        respiratoryRate: 16,
+        performance: 80,
+        consistency: 85,
+        efficiency: 90,
+      },
+      enemy_protocol: [],
+    },
+    {
+      victory: false,
+      enemy_user_name: 'Enemy 2',
+      enemy_avatar: '',
+      enemy_stats: {
+        timeInBed: 6,
+        awakeTime: 1,
+        lightSleep: 2,
+        slowWave: 1,
+        rem: 2,
+        disturbance: 0,
+        baseline: 0,
+        debt: 1,
+        strain: 2,
+        respiratoryRate: 16,
+        performance: 80,
+        consistency: 85,
+        efficiency: 90,
+      },
+      enemy_protocol: [],
+    },
+    {
+      victory: true,
+      enemy_user_name: 'Enemy 3',
+      enemy_avatar: '',
+      enemy_stats: {
+        timeInBed: 7,
+        awakeTime: 1,
+        lightSleep: 3,
+        slowWave: 2,
+        rem: 2,
+        disturbance: 1,
+        baseline: 1,
+        debt: 1,
+        strain: 3,
+        respiratoryRate: 17,
+        performance: 84,
+        consistency: 82,
+        efficiency: 88,
+      },
+      enemy_protocol: ['kaka', 'culo', 'pedo', 'pis'],
+    },
+  ]
+}
+
+const summary = computed(() => {
+  // Replace these fallback totals with API values when the full battle history is loaded.
+  const battles = 18
+  const wins = 14
+  const losses = 4
+  const winRate = 70
+
+  return { battles, wins, losses, winRate }
+})
+
+function onClose() {
+  emit('close')
+}
+</script>
+
+<template>
+  <section
+    class="font-inter flex max-h-[90vh] w-full flex-col overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] text-white shadow-md shadow-black/20"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="battle-logs-title"
+  >
+    <div class="px-4 pb-1 pt-4 sm:px-6 md:px-8 md:pb-2 md:pt-5">
+      <div class="flex items-start justify-end gap-4">
+        <button
+          @click="onClose"
+          class="rounded-full px-2 text-lg leading-none text-neutral-400 transition hover:text-white"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 min-h-0 overflow-y-auto px-1 pb-8 sm:px-6 md:px-8 md:pb-10">
+      <div
+        class="grid grid-cols-2 gap-4 rounded-lg bg-white/[0.02] justify-between p-3 sm:grid-cols-4 sm:p-4"
+      >
+        <div class="flex min-w-0 items-center gap-2.5">
+          <BoxingGlove class="h-5 w-5 shrink-0 text-neutral-400" />
+          <div class="min-w-0">
+            <p class="text-xs font-medium text-body text-neutral-400">Battles</p>
+            <p class="mt-1 text-sm font-medium leading-none text-white">{{ summary.battles }}</p>
+          </div>
+        </div>
+
+        <div class="flex min-w-0 items-center gap-2.5">
+          <TriangleUp class="h-5 w-5 shrink-0" />
+          <div class="min-w-0">
+            <p class="text-xs font-medium text-body text-neutral-400">Wins</p>
+            <p class="mt-1 text-sm font-medium leading-none text-white">{{ summary.wins }}</p>
+          </div>
+        </div>
+
+        <div class="flex min-w-0 items-center gap-2.5">
+          <TriangleDown class="h-5 w-5 shrink-0" />
+          <div class="min-w-0">
+            <p class="text-xs font-medium text-body text-neutral-400">Losses</p>
+            <p class="mt-1 text-sm font-medium leading-none text-white">{{ summary.losses }}</p>
+          </div>
+        </div>
+
+        <div class="flex min-w-0 items-center gap-2.5">
+          <div
+            class="grid h-5 w-5 shrink-0 place-items-center rounded-full border border-green-500/60 text-[10px] font-medium text-green-400"
+          >
+            %
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-medium text-body text-neutral-400">Win rate</p>
+            <p class="mt-1 text-sm font-medium leading-none text-green-400">
+              {{ summary.winRate }}%
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <ul class="mt-4">
+        <BattleLogsCard v-for="log in battleLogs" :key="log.enemy_user_name" v-bind="log" />
+      </ul>
+    </div>
+  </section>
+</template>
+
+<style scoped>
+@reference "@/assets/main.css";
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+</style>

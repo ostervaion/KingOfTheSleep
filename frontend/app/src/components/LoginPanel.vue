@@ -20,7 +20,7 @@ async function login(event) {
   try {
     await auth.login(user.value, password.value)
     mensaje.value = '// acceso concedido'
-    await router.push('/admin')
+    await router.push('/dashboard')
   } catch (error) {
     mensaje.value = '// datos incorrectos'
   } finally {

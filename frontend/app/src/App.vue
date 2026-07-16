@@ -1,19 +1,24 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
+import { useAppStore } from '@/stores/app'
 
 const mobileMenuOpen = ref(false)
+const appStore = useAppStore()
 </script>
 
 <template>
   <div class="min-h-screen bg-[var(--kots-background-color)] font-mono flex flex-col">
     <!-- Navbar horizontal -->
-    <header class="bg-[var(--web-bg)] border-b border-[color:var(--border)]">
+    <header
+      v-if="!appStore.onDashboard"
+      class="bg-[var(--web-bg)] border-b border-[color:var(--border)]"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <!-- Logo izquierda -->
           <div class="flex-shrink-0">
-            <img src="/KOTS_logo.png" alt="King of the Sleep" class="h-14 w-auto" />
+            <img src="/KOTS_logo.png" alt="King of the Sleep" class="h-10 w-auto" />
           </div>
 
           <!-- Menú desktop -->

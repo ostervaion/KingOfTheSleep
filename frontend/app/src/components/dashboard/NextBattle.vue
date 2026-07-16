@@ -1,24 +1,43 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 
-const initialSeconds = 2000
-const nextBattleSeconds = ref(initialSeconds)
+const props = defineProps({
+  nextBattle: {
+    type: Object,
+    default: null,
+  },
+})
+
+const nextBattleSeconds = ref(0)
+const endDaySeconds = ref(0)
+
 let countdownInterval = null
 
+watch(
+  () => props.nextBattle,
+  (newNextBattle) => {
+    if (!newNextBattle) return
+
+    nextBattleSeconds.value = newNextBattle.seconds ?? 0
+    endDaySeconds.value = newNextBattle.endDay ?? 0
+  },
+  { immediate: true },
+)
+
 const formatTime = (seconds) => {
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  const secs = seconds % 60
+  const totalSeconds = Math.max(0, Number(seconds) || 0)
+
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const secs = totalSeconds % 60
+
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
 }
 
 onMounted(() => {
   countdownInterval = window.setInterval(() => {
-    if (nextBattleSeconds.value > 0) {
-      nextBattleSeconds.value -= 1
-    } else {
-      window.clearInterval(countdownInterval)
-    }
+    nextBattleSeconds.value = Math.max(0, nextBattleSeconds.value - 1)
+    endDaySeconds.value = Math.max(0, endDaySeconds.value - 1)
   }, 1000)
 })
 
@@ -31,23 +50,60 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="font-inter text-sm text-heading flex items-center justify-between bg-(--kots-blocks-color) p-4 rounded-full border-b border-[color:var(--border)]"
+    v-if="props.nextBattle"
+    class="font-inter flex min-w-0 items-center justify-between gap-2 rounded-lg border-b border-[color:var(--border)] bg-(--kots-blocks-color) px-3 py-2 text-heading sm:gap-4 sm:px-4 sm:py-3 lg:p-4"
   >
-    <div class="flex items-center gap-2">
-      <span class="text-4xl text-yellow-400">#4</span>
-      <div>
-        current ranking <span class="text-xl text-green-400 ml-2">↑42</span> since last battle
+    <!-- Ranking -->
+    <div class="flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-2">
+      <span class="text-2xl leading-none text-yellow-400 sm:text-3xl lg:text-4xl">
+        {{ '#' + props.nextBattle.currentRanking }}
+      </span>
+
+      <div class="min-w-0 text-xs leading-tight sm:block lg:text-sm">
+        <p class="hidden:xs truncate">current ranking</p>
+        <p class="truncate">
+          <span class="ml-2 text-xs text-green-400 lg:text-xl">
+            ▲ {{ props.nextBattle.deltaRanking }}
+          </span>
+          <span class="ml-1 hidden lg:inline">since last battle</span>
+        </p>
       </div>
     </div>
-    <div class="flex items-center gap-2">
+
+    <!-- Next battle -->
+    <div class="flex min-w-0 flex-1 items-center justify-end gap-1.5 sm:gap-2">
       <span
-        class="inline-flex items-center text-sm font-bold bg-yellow-400 rounded-md px-2 py-2 text-gray-800 leading-none"
-        >NEXT BATTLE IN</span
+        class="hidden shrink-0 items-center rounded-md bg-yellow-400 px-2 py-1.5 text-[10px] font-bold leading-none text-gray-800 sm:inline-flex lg:text-sm"
       >
-      <span class="text-2xl">{{ formatTime(nextBattleSeconds) }}</span>
+        NEXT BATTLE IN
+      </span>
+
+      <span
+        class="inline-flex shrink-0 items-center rounded-md bg-yellow-400 px-1.5 py-1 text-[9px] font-bold leading-none text-gray-800 sm:hidden"
+      >
+        NEXT BATTLE IN
+      </span>
+
+      <span class="whitespace-nowrap text-lg leading-none sm:text-xl lg:text-2xl">
+        {{ formatTime(nextBattleSeconds) }}
+      </span>
     </div>
-    <div class="flex items-center">
-      DAY ENDS IN <span class="text-2xl ml-2 mr-2">15:12:34</span> until daily reset
+
+    <!-- Day ends -->
+    <div class="hidden flex min-w-0 shrink-0 items-center gap-1 text-right">
+      <span class="hidden text-xs lg:inline">DAY ENDS IN</span>
+      <span class="whitespace-nowrap text-lg leading-none sm:text-xl lg:text-2xl">
+        {{ formatTime(endDaySeconds) }}
+      </span>
+
+      <span class="hidden text-xs lg:inline">until daily reset</span>
     </div>
+  </div>
+
+  <div
+    v-else
+    class="font-inter rounded-full border-b border-[color:var(--border)] bg-(--kots-blocks-color) px-3 py-2 text-sm text-heading sm:px-4 sm:py-3 lg:p-4"
+  >
+    Loading next battle...
   </div>
 </template>

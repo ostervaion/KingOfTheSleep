@@ -16,6 +16,20 @@
   --accent-soft: #6ab8ff;
   --button: #6e54d0;
   --button-hover: #8367ff;
-  --kots-background-color: #171717;
-  --kots-blocks-color: #0e1112;
+  --kots-background-color: #1f1f1d;
+  --kots-blocks-color: #171715;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html,
+body,
+#app {
+  background-color: #1f1f1d;
 }

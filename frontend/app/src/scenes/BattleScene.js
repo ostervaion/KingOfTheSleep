@@ -281,7 +281,14 @@ export default class GameScene extends BaseScene {
     const midX = this.scale.width / 2
     const midY = this.scale.height / 2
 
-    const overlay = this.add.rectangle(midX, midY, this.scale.width, this.scale.height, 0x000000, 0.5)
+    const overlay = this.add.rectangle(
+      midX,
+      midY,
+      this.scale.width,
+      this.scale.height,
+      0x000000,
+      0.5,
+    )
     overlay.setDepth(2)
 
     const topText = this.add.text(-200, 280, winner.name, {
