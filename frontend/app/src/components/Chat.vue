@@ -32,14 +32,12 @@ async function scrollToBottom() {
 }
 
 function handleSend() {
-  // Aseguramos que esté conectado y autenticado para poder chatear
   if (!isConnected.value || !isAuthenticated.value) {
     console.warn('El chat no está listo o no estás autenticado')
     return
   }
   if (!messageText.value.trim()) return
 
-  // Usamos sendPayload con la estructura del "Protocolo" que definimos
   sendPayload('chat:message', {
     to: props.to_user,
     text: messageText.value.trim(),
@@ -47,11 +45,9 @@ function handleSend() {
 
   messageText.value = ''
   
-  // Forzamos el scroll hacia abajo tras enviar
   scrollToBottom()
 }
 
-// Hacemos scroll al abrir la ventana por si hay mensajes previos en el historial global
 onMounted(() => {
   scrollToBottom()
 })
@@ -71,9 +67,8 @@ onMounted(() => {
           </div>
           <div>
             <p class="text-sm font-medium text-[#e8e8f0] leading-none">{{ props.to_user }}</p>
-            <!-- Indicador visual de estado (Conectado / Sin Conexión) -->
             <p class="text-xs mt-1 flex items-center gap-1.5">
-            <span :class="['w-2 h-2 rounded-full...', isTargetOnline ? 'bg-[#4caf50]' : 'bg-[#f44336]']"></span>
+            <span :class="['w-2 h-2 rounded-full', isTargetOnline ? 'bg-[#4caf50]' : 'bg-[#f44336]']"></span>
             <span class="text-[#555]">{{ isTargetOnline ? 'Conectado' : 'Desconectado' }}</span>
             </p>
           </div>

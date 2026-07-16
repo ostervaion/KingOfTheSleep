@@ -41,10 +41,6 @@ async def websocket_endpoint(websocket: WebSocket):
                     "payload": "Missing message type"
                 }))
                 continue
-
-            # ==========================================
-            # 1. FLUJO DE AUTENTICACIÓN (Obligatorio primero)
-            # ==========================================
             if msg_type == "auth":
                 token = data.get("token")
                 if not token:
@@ -77,14 +73,11 @@ async def websocket_endpoint(websocket: WebSocket):
                         "type": "auth:fail", 
                         "payload": "Invalid or expired token"
                     }))
-                    await websocket.close(code=1008)  # Cerramos por violación de política
+                    await websocket.close(code=1008)
                     unregister_connection(websocket)
                     return
                 continue
 
-            # ==========================================
-            # 2. CONTROL DE ACCESO (Guardia de seguridad)
-            # ==========================================
             sender = connections.get(websocket)
             if not sender:
                 await websocket.send_text(json.dumps({
@@ -92,10 +85,6 @@ async def websocket_endpoint(websocket: WebSocket):
                     "payload": "Not authenticated. Send 'auth' first."
                 }))
                 continue
-
-            # ==========================================
-            # 3. ENRUTADOR DE OTROS MÓDULOS (Chat, Juego...)
-            # ==========================================
             if msg_type == "chat:message":
                 target = data.get("to")
                 text = data.get("text")
@@ -110,12 +99,9 @@ async def websocket_endpoint(websocket: WebSocket):
                         "text": text
                     }
                 }
-                
-                # Enviar al destinatario si está conectado
                 if target in users:
                     await users[target].send_text(json.dumps(payload))
                 
-                # Eco al emisor para que se pinte en su pantalla
                 await websocket.send_text(json.dumps(payload))
 
             elif msg_type.startswith("game:"):

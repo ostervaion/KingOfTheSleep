@@ -17,7 +17,6 @@ const props = defineProps({
   },
 })
 
-// 2. Creamos la variable reactiva para controlar el chat abierto
 const selectedUser = ref(null)
 
 function onClose() {
@@ -118,24 +117,3 @@ function onChat() {
     </div>
   </div>
 </template>
-
-<style scoped>
-@reference "@/assets/main.css";
-
-.overflow-y-auto::-webkit-scrollbar {
-  width: 8px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #333;
-}
-</style>
