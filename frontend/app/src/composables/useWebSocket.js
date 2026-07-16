@@ -5,12 +5,11 @@ const isConnected = ref(false)
 const isAuthenticated = ref(false)
 const onlineUsers = ref(new Set())
 
-// Estados para los distintos módulos de tu app
 const chatMessages = ref([])
 const myUsername = ref('')
 
 export function useWebSocket() {
-  const API_WS_URL = 'api/ws' // Cambia por tu URL de FastAPI
+  const API_WS_URL = 'api/ws'
 
   function connect() {
     if (ws.value && ws.value.readyState === WebSocket.OPEN) return
@@ -101,7 +100,6 @@ export function useWebSocket() {
     }
   }
 
-  // Función genérica para enviar datos de forma segura
   function sendPayload(type, data) {
     if (!ws.value || ws.value.readyState !== WebSocket.OPEN) {
       console.warn('No se puede enviar el mensaje, el socket está cerrado.')
