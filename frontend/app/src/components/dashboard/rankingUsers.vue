@@ -46,7 +46,11 @@ function closeDialog() {
     <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
       <div class="text-sm text-heading">{{ props.ranking }}</div>
       <div class="flex items-center gap-3">
-        <img class="h-8 w-8 rounded-full object-cover" :src="props.profilePicture || example" alt="" />
+        <img
+          class="h-8 w-8 rounded-full object-cover"
+          :src="props.profilePicture || example"
+          alt=""
+        />
         <span class="text-sm text-heading">{{ props.name }}</span>
       </div>
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed,watch, toRef } from 'vue'
+import { ref, computed, watch, toRef } from 'vue'
 import RankingUser from '@/components/dashboard/rankingUsers.vue'
 
 const props = defineProps({
@@ -10,7 +10,6 @@ const props = defineProps({
 })
 
 const selectedRanking = ref('today')
-
 
 const usersRanking = computed(() => {
   return props.rankingData || []
