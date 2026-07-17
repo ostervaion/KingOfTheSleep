@@ -120,6 +120,14 @@ class Token(SQLModel):
     token_type: str
 
 
+# Payload para el PATCH de /profile. Todos los campos son opcionales:
+# el usuario puede mandar solo el email, solo el password, o ambos.
+class UserUpdate(SQLModel):
+    email: Optional[EmailStr] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+
+
 class TokenData(SQLModel):
     username: Optional[str] = None
 

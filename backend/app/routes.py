@@ -20,6 +20,7 @@ from models import (
     UserCreate,
     UserPublic,
     UserProfile,
+    UserUpdate,
 )
 from security import (
     authenticate_user,
@@ -27,6 +28,7 @@ from security import (
     get_current_active_user,
     get_user_by_username,
     hash_password,
+    verify_password,
 )
 from battle_scheduler import (
     get_time_until_next_battle,
@@ -138,7 +140,60 @@ async def upload_profile_avatar(
     session.commit()
     session.refresh(profile)
 
-    return {"avatar_url": profile.user_avatar_path}
+    return {"avatar_url": f"/api{profile.user_avatar_path}"}
+
+
+@router.patch("/profile", response_model=UserPublic)
+def update_profile(
+    payload: UserUpdate,
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session),
+):
+    # Email: solo tocamos si viene y es distinto al actual
+    if payload.email and payload.email != current_user.email:
+        existing_email = session.exec(select(User).where(User.email == payload.email)).first()
+        if existing_email and existing_email.id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+        current_user.email = payload.email
+
+    # Password: si viene new_password, exigimos current_password y la validamos
+    if payload.new_password:
+        if not payload.current_password:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password is required to set a new password",
+            )
+        if not verify_password(payload.current_password, current_user.password):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
+        current_user.password = hash_password(payload.new_password)
+
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+
+    return current_user
+
+@router.get("/me")
+def get_me(
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session),
+):
+    profile = session.exec(
+        select(UserProfile).where(
+            UserProfile.user_id == current_user.id
+        )
+    ).first()
+
+    return {
+        "id": current_user.id,
+        "username": current_user.username,
+        "email": current_user.email,
+        "avatar_path": (
+            f"/api{profile.user_avatar_path}"
+            if profile
+            else None
+        ),
+    }
 
 
 def _build_ranking(session, current_user_id: int):
