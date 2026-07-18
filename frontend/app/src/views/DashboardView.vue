@@ -8,14 +8,12 @@ import Profile from '@/components/dashboard/Profile.vue'
 import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Battle from '@/components/dashboard/Battle.vue'
 import ChatButton from '@/components/dashboard/ChatButton.vue'
-import { useAppStore } from '@/stores/app'
 import { useWebSocket } from '@/composables/useWebSocket'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import api from '@/api/api'
 import SleepDataForm from '@/components/SleepDataForm.vue'
 
 const dashboard = ref(null)
-const appStore = useAppStore()
 const { connect, disconnect } = useWebSocket()
 
 async function fetchDashboard() {
@@ -34,7 +32,6 @@ let intervalId = null
 
 onMounted(() => {
   fetchDashboard()
-  appStore.onDashboard = true
   intervalId = setInterval(fetchDashboard, 30000)
   connect()
 })
