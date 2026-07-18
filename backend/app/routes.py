@@ -20,6 +20,7 @@ from models import (
     UserCreate,
     UserPublic,
     UserProfile,
+    UserUpdate,
 )
 from security import (
     authenticate_user,
@@ -27,6 +28,7 @@ from security import (
     get_current_active_user,
     get_user_by_username,
     hash_password,
+    verify_password,
 )
 from battle_scheduler import (
     get_time_until_next_battle,
@@ -138,60 +140,180 @@ async def upload_profile_avatar(
     session.commit()
     session.refresh(profile)
 
-    return {"avatar_url": profile.user_avatar_path}
+    return {"avatar_url": f"/api{profile.user_avatar_path}"}
+
+
+@router.patch("/profile", response_model=UserPublic)
+def update_profile(
+    payload: UserUpdate,
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session),
+):
+    # Email: solo tocamos si viene y es distinto al actual
+    if payload.email and payload.email != current_user.email:
+        existing_email = session.exec(select(User).where(User.email == payload.email)).first()
+        if existing_email and existing_email.id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+        current_user.email = payload.email
+
+    # Password: si viene new_password, exigimos current_password y la validamos
+    if payload.new_password:
+        if not payload.current_password:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password is required to set a new password",
+            )
+        if not verify_password(payload.current_password, current_user.password):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
+        current_user.password = hash_password(payload.new_password)
+
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+
+    return current_user
+
+@router.get("/me")
+def get_me(
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session),
+):
+    profile = session.exec(
+        select(UserProfile).where(
+            UserProfile.user_id == current_user.id
+        )
+    ).first()
+
+    return {
+        "id": current_user.id,
+        "username": current_user.username,
+        "email": current_user.email,
+        "avatar_path": (
+            f"/api{profile.user_avatar_path}"
+            if profile
+            else None
+        ),
+    }
 
 
 def _build_ranking(session, current_user_id: int):
-    all_scores = session.exec(select(ScoreHistory).order_by(ScoreHistory.created_at.desc())).all()
+    all_scores = session.exec(
+        select(ScoreHistory)
+        .order_by(ScoreHistory.created_at.desc())
+    ).all()
 
     latest_by_user = {}
     previous_by_user = {}
+
     for score in all_scores:
         if score.user_id is None:
             continue
+
         if score.user_id not in latest_by_user:
             latest_by_user[score.user_id] = score
+
         elif score.user_id not in previous_by_user:
             previous_by_user[score.user_id] = score
 
-    users = session.exec(select(User)).all()
+    users = session.exec(
+        select(User)
+    ).all()
+
+    profiles = session.exec(
+        select(UserProfile)
+    ).all()
+
+
+    profiles_by_user = {
+        profile.user_id: profile
+        for profile in profiles
+    }
+
     ranking_data = [
         {
             "user_id": user.id,
             "name": user.username,
-            "current_points": latest_by_user[user.id].elo_score if user.id in latest_by_user else 0,
-            "previous_points": previous_by_user[user.id].elo_score if user.id in previous_by_user else 0,
+
+            "avatar_path": (
+                profiles_by_user[user.id].user_avatar_path
+                if user.id in profiles_by_user
+                else None
+            ),
+
+            "current_points": (
+                latest_by_user[user.id].elo_score
+                if user.id in latest_by_user
+                else 0
+            ),
+
+            "previous_points": (
+                previous_by_user[user.id].elo_score
+                if user.id in previous_by_user
+                else 0
+            ),
         }
         for user in users
     ]
-    ranking_data.sort(key=lambda x: x["current_points"], reverse=True)
 
-    previous_ranking = sorted(ranking_data, key=lambda x: x["previous_points"], reverse=True)
-    previous_positions = {item["user_id"]: idx + 1 for idx, item in enumerate(previous_ranking)}
+    ranking_data.sort(
+        key=lambda entry: entry["current_points"],
+        reverse=True,
+    )
+
+    previous_ranking = sorted(
+        ranking_data,
+        key=lambda entry: entry["previous_points"],
+        reverse=True,
+    )
+
+    previous_positions = {
+        item["user_id"]: index + 1
+        for index, item in enumerate(previous_ranking)
+    }
 
     ranking = []
     current_user_ranking = None
     current_user_prev_pos = None
 
-    for idx, entry in enumerate(ranking_data):
-        current_pos = idx + 1
-        previous_pos = previous_positions.get(entry["user_id"], current_pos)
+    for index, entry in enumerate(ranking_data):
+        current_pos = index + 1
+
+        previous_pos = previous_positions.get(
+            entry["user_id"],
+            current_pos,
+        )
+
         pos_delta = previous_pos - current_pos
 
         ranking.append({
             "ranking": str(current_pos),
+            "user_id": entry["user_id"],
             "name": entry["name"],
+            "avatar_path": (
+                f"/api{entry['avatar_path']}"
+                if entry["avatar_path"]
+                else None
+            ),
             "points": str(entry["current_points"]),
             "posChange": str(abs(pos_delta)),
-            "trend": "up" if pos_delta > 0 else "down" if pos_delta < 0 else "same",
+            "trend": (
+                "up"
+                if pos_delta > 0
+                else "down"
+                if pos_delta < 0
+                else "same"
+            ),
         })
 
         if entry["user_id"] == current_user_id:
             current_user_ranking = current_pos
             current_user_prev_pos = previous_pos
 
-    return ranking, current_user_ranking, current_user_prev_pos
-
+    return (
+        ranking,
+        current_user_ranking,
+        current_user_prev_pos,
+    )
 
 async def _build_battle_countdown(now: datetime, current_user_ranking, current_user_prev_pos):
     battle_info = await get_time_until_next_battle()

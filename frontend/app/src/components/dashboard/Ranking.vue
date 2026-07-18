@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, toRef } from 'vue'
+import { ref, computed, watch, toRef } from 'vue'
 import RankingUser from '@/components/dashboard/rankingUsers.vue'
 
 const props = defineProps({
@@ -10,15 +10,10 @@ const props = defineProps({
 })
 
 const selectedRanking = ref('today')
-const usersRanking = ref([])
 
-watch(
-  () => props.rankingData,
-  (value) => {
-    usersRanking.value = value || []
-  },
-  { immediate: true },
-)
+const usersRanking = computed(() => {
+  return props.rankingData || []
+})
 
 function updateButtonColor(ranking) {
   selectedRanking.value = ranking
@@ -70,7 +65,8 @@ function buttonClass(ranking) {
           :points="user.points"
           :pos-change="user.posChange"
           :trend="user.trend"
-        />
+          :profilePicture="user.avatar_path"
+         />
       </ul>
     </div>
   </div>
