@@ -41,7 +41,7 @@ function closeDialog() {
 <template>
   <li
     @click="openDialog"
-    class="cursor-pointer odd:bg-white/[0.015] even:bg-transparent transition hover:bg-white/[0.04]"
+    class="cursor-pointer odd:bg-white/[0.015] even:bg-transparent transition hover:scale-102 hover:bg-white/[0.04]"
   >
     <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
       <div class="text-sm text-heading">{{ props.ranking }}</div>
