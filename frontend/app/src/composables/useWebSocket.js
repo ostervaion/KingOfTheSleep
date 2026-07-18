@@ -4,6 +4,7 @@ const ws = ref(null)
 const isConnected = ref(false)
 const isAuthenticated = ref(false)
 const onlineUsers = ref(new Set())
+const updateDashboard = ref(false)
 
 const chatMessages = ref([])
 const myUsername = ref('')
@@ -64,6 +65,10 @@ export function useWebSocket() {
           case 'presence:list':
             onlineUsers.value = new Set(payload.online)
             break
+          case 'fetch':
+            updateDashboard.value = true
+            console.log("FETCH")
+            break
 
           case 'presence:update':
             if (payload.online) {
@@ -123,5 +128,6 @@ export function useWebSocket() {
     chatMessages,
     myUsername,
     onlineUsers,
+    updateDashboard
   }
 }
