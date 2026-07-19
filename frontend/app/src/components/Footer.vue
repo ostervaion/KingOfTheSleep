@@ -17,15 +17,10 @@ const currentYear = new Date().getFullYear()
           KingOfTheSleep
         </RouterLink>
 
-        <p class="mt-1 text-xs text-white/40">
-          © {{ currentYear }} KingOfTheSleep
-        </p>
+        <p class="mt-1 text-xs text-white/40">© {{ currentYear }} KingOfTheSleep</p>
       </div>
 
-      <nav
-        aria-label="Legal links"
-        class="flex items-center gap-5 text-sm"
-      >
+      <nav aria-label="Legal links" class="flex items-center gap-5 text-sm">
         <RouterLink
           to="/privacy"
           class="text-white/55 transition hover:text-cyan-200 focus-visible:text-cyan-200"

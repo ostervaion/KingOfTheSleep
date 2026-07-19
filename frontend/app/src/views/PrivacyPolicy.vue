@@ -7,9 +7,7 @@ const previousTitle = document.title
 onMounted(() => {
   document.title = 'Privacy Policy | KingOfTheSleep'
 
-  let description = document.querySelector(
-    'meta[name="description"]'
-  )
+  let description = document.querySelector('meta[name="description"]')
 
   if (!description) {
     description = document.createElement('meta')
@@ -19,7 +17,7 @@ onMounted(() => {
 
   description.setAttribute(
     'content',
-    'Privacy Policy for the KingOfTheSleep educational web application.'
+    'Privacy Policy for the KingOfTheSleep educational web application.',
   )
 })
 
@@ -30,27 +28,16 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="legal-page">
-    <a class="skip-link" href="#main-content">
-      Skip to main content
-    </a>
+    <a class="skip-link" href="#main-content"> Skip to main content </a>
 
     <header class="legal-header">
       <div class="header-inner">
-        <RouterLink class="brand" to="/">
-          KingOfTheSleep
-        </RouterLink>
+        <RouterLink class="brand" to="/"> KingOfTheSleep </RouterLink>
 
         <nav aria-label="Legal pages">
-          <RouterLink
-            to="/privacy"
-            aria-current="page"
-          >
-            Privacy Policy
-          </RouterLink>
+          <RouterLink to="/privacy" aria-current="page"> Privacy Policy </RouterLink>
 
-          <RouterLink to="/terms">
-            Terms of Service
-          </RouterLink>
+          <RouterLink to="/terms"> Terms of Service </RouterLink>
         </nav>
       </div>
     </header>
@@ -66,21 +53,17 @@ onBeforeUnmount(() => {
 
         <div class="summary">
           <strong>Summary:</strong>
-          KingOfTheSleep is an educational project. Personal data is
-          used only to operate and evaluate this project. All project
-          data will be permanently deleted after the project evaluation
-          has been completed.
+          KingOfTheSleep is an educational project. Personal data is used only to operate and
+          evaluate this project. All project data will be permanently deleted after the project
+          evaluation has been completed.
         </div>
 
         <h2>1. Who is responsible for the project?</h2>
 
         <p>
-          KingOfTheSleep is a student project developed for educational
-          and evaluation purposes. Questions about privacy or data
-          deletion can be sent to
-          <a href="mailto:eloymart@student.42urduliz.com">
-            eloymart@student.42urduliz.com
-          </a>.
+          KingOfTheSleep is a student project developed for educational and evaluation purposes.
+          Questions about privacy or data deletion can be sent to
+          <a href="mailto:eloymart@student.42urduliz.com"> eloymart@student.42urduliz.com </a>.
         </p>
 
         <h2>2. Data we collect</h2>
@@ -92,128 +75,109 @@ onBeforeUnmount(() => {
           <li>Username and authentication credentials.</li>
           <li>Profile information and avatar.</li>
           <li>Sleep-related values voluntarily entered by the user.</li>
-          <li>
-            Game parameters, scores, rankings, match results and
-            activity data.
-          </li>
-          <li>
-            Technical information strictly necessary to operate and
-            secure the service.
-          </li>
+          <li>Game parameters, scores, rankings, match results and activity data.</li>
+          <li>Technical information strictly necessary to operate and secure the service.</li>
         </ul>
-<h2>3. Public and private information</h2>
-      <p>
-        A user's email address is private and is not shown to other users. Authentication
-        credentials are also private.
-      </p>
-      <p>
-        Other profile and game-related information may be public inside the application,
-        including the username, avatar, sleep-game parameters, scores, rankings, match
-        information and other data used to calculate or display game features.
-      </p>
+        <h2>3. Public and private information</h2>
+        <p>
+          A user's email address is private and is not shown to other users. Authentication
+          credentials are also private.
+        </p>
+        <p>
+          Other profile and game-related information may be public inside the application, including
+          the username, avatar, sleep-game parameters, scores, rankings, match information and other
+          data used to calculate or display game features.
+        </p>
 
-      <h2>4. How the data is used</h2>
-      <p>Data is used exclusively to:</p>
-      <ul>
-        <li>Create, authenticate and manage user accounts.</li>
-        <li>Display profiles, rankings and game activity.</li>
-        <li>Calculate parameters and mechanics used by the game.</li>
-        <li>Operate, test, secure and evaluate the KingOfTheSleep project.</li>
-      </ul>
-      <p>
-        Data will not be sold, used for advertising, or used for purposes unrelated to
-        this educational project.
-      </p>
+        <h2>4. How the data is used</h2>
+        <p>Data is used exclusively to:</p>
+        <ul>
+          <li>Create, authenticate and manage user accounts.</li>
+          <li>Display profiles, rankings and game activity.</li>
+          <li>Calculate parameters and mechanics used by the game.</li>
+          <li>Operate, test, secure and evaluate the KingOfTheSleep project.</li>
+        </ul>
+        <p>
+          Data will not be sold, used for advertising, or used for purposes unrelated to this
+          educational project.
+        </p>
 
-      <h2>5. Chat messages</h2>
-      <p>
-        Chat messages are not stored in the server database and no server-side chat
-        history is created. The chat operates in a pseudo peer-to-peer manner: the server
-        only relays messages between connected users and does not keep a persistent
-        record of their content.
-      </p>
-      <p>
-        Messages may exist temporarily in memory for the time strictly necessary to
-        transmit them to the intended recipient.
-      </p>
+        <h2>5. Chat messages</h2>
+        <p>
+          Chat messages are not stored in the server database and no server-side chat history is
+          created. The chat operates in a pseudo peer-to-peer manner: the server only relays
+          messages between connected users and does not keep a persistent record of their content.
+        </p>
+        <p>
+          Messages may exist temporarily in memory for the time strictly necessary to transmit them
+          to the intended recipient.
+        </p>
 
-      <h2>6. Account deletion</h2>
-      <p>
-        Users can request account deletion from <strong>User Settings</strong>. After the
-        request is submitted, the account and its associated stored data are scheduled
-        for automatic permanent deletion at <strong>00:00 server local time on the same
-        calendar day</strong>.
-      </p>
-      <p>
-        Once deletion has been completed, the account and associated data cannot be
-        recovered.
-      </p>
+        <h2>6. Account deletion</h2>
+        <p>
+          Users can request account deletion from <strong>User Settings</strong>. After the request
+          is submitted, the account and its associated stored data are scheduled for automatic
+          permanent deletion at <strong>00:00 server local time on the same calendar day</strong>.
+        </p>
+        <p>
+          Once deletion has been completed, the account and associated data cannot be recovered.
+        </p>
 
-      <h2>7. End-of-project deletion</h2>
-      <p>
-        Regardless of individual deletion requests, all personal data and project
-        databases will be permanently deleted after the official project evaluation is
-        completed, except where a limited technical backup must be retained temporarily
-        to complete the deletion process.
-      </p>
+        <h2>7. End-of-project deletion</h2>
+        <p>
+          Regardless of individual deletion requests, all personal data and project databases will
+          be permanently deleted after the official project evaluation is completed, except where a
+          limited technical backup must be retained temporarily to complete the deletion process.
+        </p>
 
-      <h2>8. Data retention</h2>
-      <p>
-        Data is retained only for as long as necessary to operate and evaluate the
-        project, or until the user requests account deletion. Chat content is not retained
-        as a server-side history.
-      </p>
+        <h2>8. Data retention</h2>
+        <p>
+          Data is retained only for as long as necessary to operate and evaluate the project, or
+          until the user requests account deletion. Chat content is not retained as a server-side
+          history.
+        </p>
 
-      <h2>9. Data sharing</h2>
-      <p>
-        Data is not shared with advertisers or sold to third parties. Public profile and
-        game information is visible to other users of KingOfTheSleep as described in this
-        policy. Data may also be viewed by project evaluators when necessary to assess
-        the application's functionality.
-      </p>
+        <h2>9. Data sharing</h2>
+        <p>
+          Data is not shared with advertisers or sold to third parties. Public profile and game
+          information is visible to other users of KingOfTheSleep as described in this policy. Data
+          may also be viewed by project evaluators when necessary to assess the application's
+          functionality.
+        </p>
 
-      <h2>10. Security</h2>
-      <p>
-        Reasonable technical measures are used to protect account information, including
-        access controls, input validation, HTTPS for browser-to-server communication and
-        secure password hashing. No online service can guarantee absolute security.
-      </p>
+        <h2>10. Security</h2>
+        <p>
+          Reasonable technical measures are used to protect account information, including access
+          controls, input validation, HTTPS for browser-to-server communication and secure password
+          hashing. No online service can guarantee absolute security.
+        </p>
 
-      <h2>11. User rights and contact</h2>
-      <p>
-        Users may review or update their profile through User Settings and may request
-        account deletion through the same section. Privacy-related questions can be sent
-        to
-        <a href="mailto:eloymart@student.42urduliz.com">eloymart@student.42urduliz.com</a>.
-      </p>
-
+        <h2>11. User rights and contact</h2>
+        <p>
+          Users may review or update their profile through User Settings and may request account
+          deletion through the same section. Privacy-related questions can be sent to
+          <a href="mailto:eloymart@student.42urduliz.com">eloymart@student.42urduliz.com</a>.
+        </p>
 
         <h2>12. Changes to this policy</h2>
 
         <p>
-          This policy may be updated when the project's functionality
-          changes. The latest version will always be available from the
-          application's legal links.
+          This policy may be updated when the project's functionality changes. The latest version
+          will always be available from the application's legal links.
         </p>
       </article>
     </main>
 
     <footer class="legal-footer">
       <p>
-        <RouterLink to="/privacy">
-          Privacy Policy
-        </RouterLink>
+        <RouterLink to="/privacy"> Privacy Policy </RouterLink>
 
         <span aria-hidden="true"> · </span>
 
-        <RouterLink to="/terms">
-          Terms of Service
-        </RouterLink>
+        <RouterLink to="/terms"> Terms of Service </RouterLink>
       </p>
 
-      <p>
-        &copy; 2026 KingOfTheSleep — Educational project.
-      </p>
+      <p>&copy; 2026 KingOfTheSleep — Educational project.</p>
     </footer>
   </div>
 </template>
@@ -240,7 +204,7 @@ onBeforeUnmount(() => {
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
-    "Segoe UI",
+    'Segoe UI',
     sans-serif;
   line-height: 1.65;
 }
@@ -282,10 +246,7 @@ onBeforeUnmount(() => {
 .header-inner,
 .legal-page main,
 .legal-footer {
-  width: min(
-    calc(100% - 2rem),
-    var(--legal-max-width)
-  );
+  width: min(calc(100% - 2rem), var(--legal-max-width));
   margin-inline: auto;
 }
 

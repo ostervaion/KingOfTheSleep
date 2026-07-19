@@ -13,12 +13,12 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
-        {
+    {
       path: '/privacy',
       name: 'privacy',
       component: PrivacyPolicy,
     },
-            {
+    {
       path: '/terms',
       name: 'terms',
       component: TermsUse,

@@ -37,27 +37,16 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="legal-page">
-    <a class="skip-link" href="#main-content">
-      Skip to main content
-    </a>
+    <a class="skip-link" href="#main-content"> Skip to main content </a>
 
     <header class="legal-header">
       <div class="header-inner">
-        <RouterLink class="brand" to="/">
-          KingOfTheSleep
-        </RouterLink>
+        <RouterLink class="brand" to="/"> KingOfTheSleep </RouterLink>
 
         <nav aria-label="Legal pages">
-          <RouterLink to="/privacy">
-            Privacy Policy
-          </RouterLink>
+          <RouterLink to="/privacy"> Privacy Policy </RouterLink>
 
-          <RouterLink
-            to="/terms"
-            aria-current="page"
-          >
-            Terms of Service
-          </RouterLink>
+          <RouterLink to="/terms" aria-current="page"> Terms of Service </RouterLink>
         </nav>
       </div>
     </header>
@@ -73,62 +62,55 @@ onBeforeUnmount(() => {
 
         <div class="summary">
           <strong>Summary:</strong>
-          KingOfTheSleep is a temporary educational project. By using it,
-          you agree to use it lawfully and respectfully. All project data
-          will be permanently deleted after the project evaluation.
+          KingOfTheSleep is a temporary educational project. By using it, you agree to use it
+          lawfully and respectfully. All project data will be permanently deleted after the project
+          evaluation.
         </div>
 
         <h2>1. About KingOfTheSleep</h2>
 
         <p>
-          KingOfTheSleep is a student-built web application created
-          exclusively for educational, demonstration and evaluation
-          purposes.
+          KingOfTheSleep is a student-built web application created exclusively for educational,
+          demonstration and evaluation purposes.
         </p>
 
         <p>
-          It is not a commercial service and may be modified, interrupted
-          or discontinued at any time.
+          It is not a commercial service and may be modified, interrupted or discontinued at any
+          time.
         </p>
 
         <h2>2. Acceptance of these terms</h2>
 
         <p>
-          By creating an account or using the application, you agree to
-          these Terms of Service and to the
-          <RouterLink to="/privacy">
-            Privacy Policy
-          </RouterLink>.
+          By creating an account or using the application, you agree to these Terms of Service and
+          to the
+          <RouterLink to="/privacy"> Privacy Policy </RouterLink>.
         </p>
 
-        <p>
-          You should not use the application if you do not agree with
-          these terms.
-        </p>
+        <p>You should not use the application if you do not agree with these terms.</p>
 
         <h2>3. Account registration</h2>
 
         <p>
-          Users must provide accurate information and are responsible for
-          keeping their login credentials confidential.
+          Users must provide accurate information and are responsible for keeping their login
+          credentials confidential.
         </p>
 
         <p>
-          Users must not access another person's account without
-          permission or attempt to bypass authentication or authorization
-          controls.
+          Users must not access another person's account without permission or attempt to bypass
+          authentication or authorization controls.
         </p>
 
         <h2>4. Public and private information</h2>
 
         <p>
-          The user's email address and authentication credentials are
-          private and are not displayed to other users.
+          The user's email address and authentication credentials are private and are not displayed
+          to other users.
         </p>
 
         <p>
-          Other profile and game-related information may be publicly
-          visible inside the application. This may include:
+          Other profile and game-related information may be publicly visible inside the application.
+          This may include:
         </p>
 
         <ul>
@@ -141,106 +123,75 @@ onBeforeUnmount(() => {
         </ul>
 
         <p>
-          This information is used exclusively to calculate, operate and
-          display game-related features.
+          This information is used exclusively to calculate, operate and display game-related
+          features.
         </p>
 
         <h2>5. Permitted use</h2>
 
         <p>
-          Users may use KingOfTheSleep only for its intended educational
-          and game-related purposes.
+          Users may use KingOfTheSleep only for its intended educational and game-related purposes.
         </p>
 
         <p>Users must not:</p>
 
         <ul>
-          <li>
-            Harass, threaten, impersonate or abuse other users.
-          </li>
+          <li>Harass, threaten, impersonate or abuse other users.</li>
 
-          <li>
-            Upload unlawful, offensive, malicious or rights-infringing
-            content.
-          </li>
+          <li>Upload unlawful, offensive, malicious or rights-infringing content.</li>
 
-          <li>
-            Cheat, manipulate rankings or interfere with game results.
-          </li>
+          <li>Cheat, manipulate rankings or interfere with game results.</li>
 
-          <li>
-            Attempt to exploit, attack, overload or disrupt the
-            application.
-          </li>
+          <li>Attempt to exploit, attack, overload or disrupt the application.</li>
 
-          <li>
-            Attempt to access accounts, information or systems without
-            authorization.
-          </li>
+          <li>Attempt to access accounts, information or systems without authorization.</li>
 
-          <li>
-            Use automated tools to scrape, spam or interfere with the
-            service.
-          </li>
+          <li>Use automated tools to scrape, spam or interfere with the service.</li>
 
-          <li>
-            Introduce malware, malicious scripts or harmful files.
-          </li>
+          <li>Introduce malware, malicious scripts or harmful files.</li>
         </ul>
 
         <h2>6. User-provided content</h2>
 
         <p>
-          Users remain responsible for profile information, avatars and
-          any other content they submit to the application.
+          Users remain responsible for profile information, avatars and any other content they
+          submit to the application.
         </p>
 
         <p>
-          By uploading content, the user confirms that they have the
-          right to use it and grants the project the limited permission
-          necessary to store, process and display it within
+          By uploading content, the user confirms that they have the right to use it and grants the
+          project the limited permission necessary to store, process and display it within
           KingOfTheSleep.
         </p>
 
         <h2>7. Chat system</h2>
 
+        <p>Chat messages are transmitted through the server using a pseudo peer-to-peer model.</p>
+
         <p>
-          Chat messages are transmitted through the server using a
-          pseudo peer-to-peer model.
+          The server only relays messages between connected users. It does not create or retain a
+          persistent server-side chat history.
         </p>
 
         <p>
-          The server only relays messages between connected users. It
-          does not create or retain a persistent server-side chat
-          history.
+          Messages may remain temporarily in server memory only for the time necessary to transmit
+          them to the intended recipient.
         </p>
 
-        <p>
-          Messages may remain temporarily in server memory only for the
-          time necessary to transmit them to the intended recipient.
-        </p>
-
-        <p>
-          Users remain fully responsible for the messages they send.
-        </p>
+        <p>Users remain fully responsible for the messages they send.</p>
 
         <h2>8. Sleep-related information</h2>
 
         <div class="notice">
           <strong>Important:</strong>
-          KingOfTheSleep is a game and an educational project.
-          Sleep scores, parameters, recommendations, calculations and
-          visualisations are not medical advice, a medical diagnosis or
-          a substitute for assistance from a qualified healthcare
-          professional.
+          KingOfTheSleep is a game and an educational project. Sleep scores, parameters,
+          recommendations, calculations and visualisations are not medical advice, a medical
+          diagnosis or a substitute for assistance from a qualified healthcare professional.
         </div>
 
         <h2>9. Account suspension or removal</h2>
 
-        <p>
-          Access may be restricted, suspended or permanently removed
-          when a user:
-        </p>
+        <p>Access may be restricted, suspended or permanently removed when a user:</p>
 
         <ul>
           <li>Violates these Terms of Service.</li>
@@ -258,12 +209,9 @@ onBeforeUnmount(() => {
         </p>
 
         <p>
-          After the deletion request has been submitted, the account and
-          all associated stored data will be scheduled for automatic and
-          permanent deletion at
-          <strong>
-            00:00 server local time on the same calendar day
-          </strong>.
+          After the deletion request has been submitted, the account and all associated stored data
+          will be scheduled for automatic and permanent deletion at
+          <strong> 00:00 server local time on the same calendar day </strong>.
         </p>
 
         <p>The deleted information may include:</p>
@@ -278,50 +226,44 @@ onBeforeUnmount(() => {
         </ul>
 
         <p>
-          Once deletion has been completed, the account and associated
-          data cannot be recovered.
+          Once deletion has been completed, the account and associated data cannot be recovered.
         </p>
 
         <h2>11. End of the project</h2>
 
         <p>
-          All personal data, account information and project databases
-          will be permanently deleted after the official project
-          evaluation has been completed.
+          All personal data, account information and project databases will be permanently deleted
+          after the official project evaluation has been completed.
         </p>
 
-        <p>
-          The service may then be taken offline without further notice.
-        </p>
+        <p>The service may then be taken offline without further notice.</p>
 
         <h2>12. Availability and changes</h2>
 
         <p>
-          Because KingOfTheSleep is an educational project,
-          uninterrupted availability is not guaranteed.
+          Because KingOfTheSleep is an educational project, uninterrupted availability is not
+          guaranteed.
         </p>
 
         <p>
-          Features, accounts, rankings or game information may be
-          modified, reset or removed during development, testing or
-          evaluation.
+          Features, accounts, rankings or game information may be modified, reset or removed during
+          development, testing or evaluation.
         </p>
 
         <p>
-          These Terms of Service may also be updated when the
-          application's functionality changes.
+          These Terms of Service may also be updated when the application's functionality changes.
         </p>
 
         <h2>13. Disclaimer and limitation of responsibility</h2>
 
         <p>
-          The application is provided on an “as is” and “as available”
-          basis exclusively for educational purposes.
+          The application is provided on an “as is” and “as available” basis exclusively for
+          educational purposes.
         </p>
 
         <p>
-          To the extent permitted by applicable law, the project team is
-          not responsible for losses resulting from:
+          To the extent permitted by applicable law, the project team is not responsible for losses
+          resulting from:
         </p>
 
         <ul>
@@ -329,48 +271,36 @@ onBeforeUnmount(() => {
           <li>User misuse of the application.</li>
           <li>Loss of game progress or ranking information.</li>
           <li>Inaccurate game calculations.</li>
-          <li>
-            Reliance on sleep-related information as medical guidance.
-          </li>
+          <li>Reliance on sleep-related information as medical guidance.</li>
         </ul>
 
         <h2>14. Privacy</h2>
 
         <p>
-          Information about data collection, visibility, use, retention
-          and deletion is available in the
-          <RouterLink to="/privacy">
-            Privacy Policy
-          </RouterLink>.
+          Information about data collection, visibility, use, retention and deletion is available in
+          the
+          <RouterLink to="/privacy"> Privacy Policy </RouterLink>.
         </p>
 
         <h2>15. Contact</h2>
 
         <p>
           Questions about these terms can be sent to
-          <a href="mailto:eloymart@student.42urduliz.com">
-            eloymart@student.42urduliz.com
-          </a>.
+          <a href="mailto:eloymart@student.42urduliz.com"> eloymart@student.42urduliz.com </a>.
         </p>
       </article>
     </main>
 
     <footer class="legal-footer">
       <p>
-        <RouterLink to="/privacy">
-          Privacy Policy
-        </RouterLink>
+        <RouterLink to="/privacy"> Privacy Policy </RouterLink>
 
         <span aria-hidden="true"> · </span>
 
-        <RouterLink to="/terms">
-          Terms of Service
-        </RouterLink>
+        <RouterLink to="/terms"> Terms of Service </RouterLink>
       </p>
 
-      <p>
-        &copy; 2026 KingOfTheSleep — Educational project.
-      </p>
+      <p>&copy; 2026 KingOfTheSleep — Educational project.</p>
     </footer>
   </div>
 </template>
@@ -400,7 +330,7 @@ onBeforeUnmount(() => {
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
-    "Segoe UI",
+    'Segoe UI',
     sans-serif;
   line-height: 1.65;
 }
@@ -442,10 +372,7 @@ onBeforeUnmount(() => {
 .header-inner,
 .legal-page main,
 .legal-footer {
-  width: min(
-    calc(100% - 2rem),
-    var(--legal-max-width)
-  );
+  width: min(calc(100% - 2rem), var(--legal-max-width));
   margin-inline: auto;
 }
 

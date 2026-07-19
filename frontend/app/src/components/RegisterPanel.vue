@@ -41,9 +41,7 @@ async function register() {
     mensaje.value = '// usuario registrado'
     emit('login')
   } catch (error) {
-    mensaje.value = `// ${
-      error.response?.data?.detail || 'error al registrar'
-    }`
+    mensaje.value = `// ${error.response?.data?.detail || 'error al registrar'}`
   } finally {
     loading.value = false
   }
@@ -53,16 +51,12 @@ async function register() {
 <template>
   <form class="space-y-5" @submit.prevent="register">
     <div>
-      <span
-        class="mb-3 block text-[10px] uppercase tracking-[4px] text-(--accent)"
-      >
+      <span class="mb-3 block text-[10px] uppercase tracking-[4px] text-(--accent)">
         Register
       </span>
 
       <div class="space-y-4">
-        <label
-          class="block text-[10px] uppercase tracking-[2px] text-(--muted)"
-        >
+        <label class="block text-[10px] uppercase tracking-[2px] text-(--muted)">
           Usuario
 
           <input
@@ -75,9 +69,7 @@ async function register() {
           />
         </label>
 
-        <label
-          class="block text-[10px] uppercase tracking-[2px] text-(--muted)"
-        >
+        <label class="block text-[10px] uppercase tracking-[2px] text-(--muted)">
           Email
 
           <input
@@ -90,9 +82,7 @@ async function register() {
           />
         </label>
 
-        <label
-          class="block text-[10px] uppercase tracking-[2px] text-(--muted)"
-        >
+        <label class="block text-[10px] uppercase tracking-[2px] text-(--muted)">
           Contraseña
 
           <input
@@ -107,9 +97,7 @@ async function register() {
       </div>
     </div>
 
-    <div
-      class="rounded-2xl border border-(--border) bg-(--surface-soft) p-4"
-    >
+    <div class="rounded-2xl border border-(--border) bg-(--surface-soft) p-4">
       <div class="flex items-start gap-3">
         <input
           id="accept-legal"
@@ -119,10 +107,7 @@ async function register() {
           class="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-(--accent)"
         />
 
-        <label
-          for="accept-legal"
-          class="cursor-pointer text-xs leading-5 text-(--muted)"
-        >
+        <label for="accept-legal" class="cursor-pointer text-xs leading-5 text-(--muted)">
           I have read and accept the
 
           <RouterLink
@@ -142,8 +127,8 @@ async function register() {
             class="font-semibold text-(--accent) underline hover:text-(--button-hover)"
             @click.stop
           >
-            Privacy Policy
-          </RouterLink>.
+            Privacy Policy </RouterLink
+          >.
         </label>
       </div>
     </div>
@@ -154,19 +139,11 @@ async function register() {
       class="w-full rounded-2xl border border-(--accent) bg-(--surface-soft) px-4 py-3 text-sm font-semibold uppercase tracking-[2px] text-(--accent) transition-colors duration-150 hover:bg-(--surface) disabled:cursor-not-allowed disabled:opacity-40"
     >
       {{
-        loading
-          ? '// registrando...'
-          : acceptedTerms
-            ? '▶ Registrarse'
-            : 'Accept terms to register'
+        loading ? '// registrando...' : acceptedTerms ? '▶ Registrarse' : 'Accept terms to register'
       }}
     </button>
 
-    <p
-      v-if="mensaje"
-      role="status"
-      class="text-sm tracking-[1px] text-(--muted)"
-    >
+    <p v-if="mensaje" role="status" class="text-sm tracking-[1px] text-(--muted)">
       {{ mensaje }}
     </p>
 
