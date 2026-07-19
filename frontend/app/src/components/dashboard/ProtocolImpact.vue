@@ -39,7 +39,7 @@ const protocolImpacts = ref([
     </div>
 
     <div
-      class="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)_52px] items-center gap-2 px-6 pb-2 text-xs text-body sm:grid-cols-[120px_minmax(0,1fr)_100px] sm:gap-4"
+      class="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)_52px] items-center gap-2 px-6 pb-2 text-xs text-body sm:grid-cols-[120px_minmax(0,1fr)_100px] sm:gap-4 text-zinc-400"
     >
       <div class="min-w-0 truncate">protocol name</div>
       <div class="min-w-0 text-center">impact</div>

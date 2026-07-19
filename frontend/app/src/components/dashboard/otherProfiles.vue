@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import Chat from '@/components/Chat.vue'
+import ChatIcon from '@/assets/chat-icon_white.svg'
 
 const emit = defineEmits(['close', 'chat'])
 
@@ -46,11 +47,11 @@ function onChat() {
       </div>
     </div>
 
-    <div class="flex-1 min-h-0 overflow-y-auto px-5 pb-5 sm:px-6">
+    <div class="flex-1 min-h-0 overflow-y-auto px-5 pb-5 sm:px-6 ">
       <div class="rounded-lg p-5">
-        <div class="flex flex-col items-center text-center">
+        <div class="flex items-center gap-4">
           <div
-            class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[var(--kots-background-color)] shadow-md shadow-black/30 sm:h-28 sm:w-28"
+            class="h-24 w-24 items-center justify-center overflow-hidden rounded-full  bg-[var(--kots-background-color)]  sm:h-28 sm:w-28"
           >
             <img
               v-if="user.profilePicture"
@@ -59,9 +60,9 @@ function onChat() {
               class="h-full w-full object-cover"
             />
 
-            <span v-else class="text-3xl font-semibold uppercase text-cyan-200">
+            <div v-else class="text-3xl font-semibold uppercase text-cyan-200 ">
               {{ user.username?.charAt(0) || '?' }}
-            </span>
+            </div>
           </div>
 
           <h3 class="mt-4 text-xl font-semibold leading-tight text-white">
@@ -69,9 +70,9 @@ function onChat() {
           </h3>
         </div>
 
-        <div class="my-5 border-t border-white/10"></div>
+        <div class="my-5"></div>
 
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div class="rounded-lg bg-[var(--kots-background-color)] px-4 py-3 text-center">
             <p class="text-xs font-medium text-body text-neutral-400">Rank</p>
             <p class="mt-1 text-xl font-light text-white">#{{ user.rank }}</p>
@@ -91,13 +92,15 @@ function onChat() {
             </p>
           </div>
         </div>
-
+        <div class="flex justify-end items-center">
         <button
           @click="onChat"
-          class="mt-5 w-full rounded-md bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
+          class="mt-5 flex items-center justify-center gap-2 rounded-full bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
         >
-          Chat with {{ user.username }}
+          <ChatIcon class="h-5 w-5 shrink-0" />
+          <span>Chat with {{ user.username }}</span>
         </button>
+        </div>
       </div>
     </div>
   </div>

@@ -53,7 +53,7 @@ function buttonClass(ranking) {
       </div>
     </div>
 
-    <div class="grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body">
+    <div class="grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body text-zinc-400">
       <div>#</div>
       <div>player</div>
       <div class="text-right">points</div>

@@ -41,21 +41,21 @@ function closeDialog() {
       <div class="pt-2 px-5 flex items-center justify-between">
         <div class="pt-3 items-center">
           <BoxingGlove class="text-center -mt-0.5 w-6.5 h-6.5 mb-1" />
-          <p class="text-center text-xs font-medium text-body">battles</p>
+          <p class="text-center text-xs font-medium text-body text-zinc-400">battles</p>
           <p class="text-center mb-2 text-xl font-light text-white">18</p>
         </div>
         <div class="pt-3 items-center">
           <TriangleUp class="text-center -mt-0.5 w-6.5 h-6.5 mb-0.5" />
-          <p class="text-center text-xs font-medium text-body">wins</p>
+          <p class="text-center text-xs font-medium text-body text-zinc-400">wins</p>
           <p class="text-center mb-2 text-xl font-light text-white">14</p>
         </div>
         <div class="pt-3 items-center">
           <TriangleDown class="text-center -mt-0.5 w-6.5 h-6.5 mb-0.5" />
-          <p class="text-center text-xs font-medium text-body">looses</p>
+          <p class="text-center text-xs font-medium text-body text-zinc-400">looses</p>
           <p class="text-center mb-2 text-xl font-light text-white">4</p>
         </div>
         <div class="pt-3 items-center">
-          <p class="text-center text-xs font-medium text-body mb-0.5">win rate</p>
+          <p class="text-center text-xs font-medium text-body mb-0.5 text-zinc-400">win rate</p>
           <p class="text-center mb-2 text-xl font-light text-green-400">% 70</p>
         </div>
       </div>
@@ -64,7 +64,7 @@ function closeDialog() {
   <Teleport to="body">
     <dialog
       ref="dialog"
-      class="m-auto h-[90vh] w-[96vw] sm:w-[90vw] md:w-[500px] lg:w-[700px] max-w-[96vw] rounded-xl border-none bg-transparent p-0"
+    class="m-auto lg:w-[50vw] max-w-5xl overflow-y-auto rounded-xl border-none bg-transparent p-0 backdrop:bg-black/60 sm:w-[90vw]"
     >
       <BattleLog @close="closeDialog" />
     </dialog>

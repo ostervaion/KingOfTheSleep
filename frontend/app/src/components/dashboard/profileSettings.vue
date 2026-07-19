@@ -49,13 +49,13 @@ function onSaveChanges() {
       </div>
     </div>
 
-    <div class="flex-1 min-h-0 overflow-y-auto px-1 pb-8 sm:px-6 md:px-8 md:pb-10">
+    <div class="flex-1 min-h-0 overflow-y-auto px-5 pb-8 sm:px-6 md:px-8 md:pb-10">
       <div class="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex flex-col items-center gap-3 sm:flex-row sm:items-center">
           <img
             :src="example"
             alt="Profile picture"
-            class="h-24 w-24 rounded-full border border-white/10 object-cover shadow-md shadow-black/30 sm:h-28 sm:w-28"
+            class="h-24 w-24 rounded-full  sm:h-28 sm:w-28"
           />
 
           <div class="text-center sm:text-left">

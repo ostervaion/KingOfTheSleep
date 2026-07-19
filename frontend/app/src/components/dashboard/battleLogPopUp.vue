@@ -80,13 +80,17 @@ function loadLogs() {
 }
 
 const summary = computed(() => {
-  // Replace these fallback totals with API values when the full battle history is loaded.
   const battles = 18
   const wins = 14
   const losses = 4
   const winRate = 70
 
-  return { battles, wins, losses, winRate }
+  return {
+    battles,
+    wins,
+    losses,
+    winRate,
+  }
 })
 
 function onClose() {
@@ -95,8 +99,8 @@ function onClose() {
 </script>
 
 <template>
-  <section
-    class="font-inter flex max-h-[90vh] w-full flex-col overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] text-white shadow-md shadow-black/20"
+  <div
+    class="font-inter flex max-h-[90vh] min-h-0 w-full flex-1 flex-col overflow-hidden rounded-xl border-b border-(--border) bg-(--kots-blocks-color) text-white shadow-md shadow-black/20"
     role="dialog"
     aria-modal="true"
     aria-labelledby="battle-logs-title"
@@ -104,62 +108,92 @@ function onClose() {
     <div class="px-4 pb-1 pt-4 sm:px-6 md:px-8 md:pb-2 md:pt-5">
       <div class="flex items-start justify-end gap-4">
         <button
+          type="button"
+          class="rounded-full px-2 text-lg leading-none text-zinc-400 transition hover:text-white"
+          aria-label="Close battle logs"
           @click="onClose"
-          class="rounded-full px-2 text-lg leading-none text-neutral-400 transition hover:text-white"
         >
           ×
         </button>
       </div>
     </div>
 
-    <div class="flex-1 min-h-0 overflow-y-auto px-1 pb-8 sm:px-6 md:px-8 md:pb-10">
-      <div
-        class="grid grid-cols-2 gap-4 rounded-lg bg-white/[0.02] justify-between p-3 sm:grid-cols-4 sm:p-4"
-      >
-        <div class="flex min-w-0 items-center gap-2.5">
-          <BoxingGlove class="h-5 w-5 shrink-0 text-neutral-400" />
-          <div class="min-w-0">
-            <p class="text-xs font-medium text-body text-neutral-400">Battles</p>
-            <p class="mt-1 text-sm font-medium leading-none text-white">{{ summary.battles }}</p>
-          </div>
-        </div>
+    <div class="min-h-0 flex-1 overflow-y-auto pb-8 md:pb-10">
+      <div class="px-4 sm:px-6 md:px-8">
+        <div
+          class="grid grid-cols-2 justify-between gap-4 rounded-lg bg-white/[0.02] p-3 sm:grid-cols-4 sm:p-4"
+        >
+          <div class="flex min-w-0 items-center justify-center gap-2.5">
+            <BoxingGlove class="h-5 w-5 shrink-0 text-zinc-400" />
 
-        <div class="flex min-w-0 items-center gap-2.5">
-          <TriangleUp class="h-5 w-5 shrink-0" />
-          <div class="min-w-0">
-            <p class="text-xs font-medium text-body text-neutral-400">Wins</p>
-            <p class="mt-1 text-sm font-medium leading-none text-white">{{ summary.wins }}</p>
-          </div>
-        </div>
+            <div class="min-w-0">
+              <p class="text-body text-xs font-medium text-zinc-400">
+                Battles
+              </p>
 
-        <div class="flex min-w-0 items-center gap-2.5">
-          <TriangleDown class="h-5 w-5 shrink-0" />
-          <div class="min-w-0">
-            <p class="text-xs font-medium text-body text-neutral-400">Losses</p>
-            <p class="mt-1 text-sm font-medium leading-none text-white">{{ summary.losses }}</p>
+              <p class="mt-1 text-sm font-medium leading-none text-white">
+                {{ summary.battles }}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div class="flex min-w-0 items-center gap-2.5">
-          <div
-            class="grid h-5 w-5 shrink-0 place-items-center rounded-full border border-green-500/60 text-[10px] font-medium text-green-400"
-          >
-            %
+          <div class="flex min-w-0 items-center justify-center gap-2.5">
+            <TriangleUp class="h-5 w-5 shrink-0" />
+
+            <div class="min-w-0">
+              <p class="text-body text-xs font-medium text-zinc-400">
+                Wins
+              </p>
+
+              <p class="mt-1 text-sm font-medium leading-none text-white">
+                {{ summary.wins }}
+              </p>
+            </div>
           </div>
-          <div class="min-w-0">
-            <p class="text-xs font-medium text-body text-neutral-400">Win rate</p>
-            <p class="mt-1 text-sm font-medium leading-none text-green-400">
-              {{ summary.winRate }}%
-            </p>
+
+          <div class="flex min-w-0 items-center justify-center gap-2.5">
+            <TriangleDown class="h-5 w-5 shrink-0" />
+
+            <div class="min-w-0">
+              <p class="text-body text-xs font-medium text-zinc-400">
+                Losses
+              </p>
+
+              <p class="mt-1 text-sm font-medium leading-none text-white">
+                {{ summary.losses }}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex min-w-0 items-center justify-center gap-2.5">
+            <div
+              class="grid h-5 w-5 shrink-0 place-items-center rounded-full border border-green-500/60 text-[10px] font-medium text-green-400"
+            >
+              %
+            </div>
+
+            <div class="min-w-0">
+              <p class="text-body text-xs font-medium text-zinc-400">
+                Win rate
+              </p>
+
+              <p class="mt-1 text-sm font-medium leading-none text-green-400">
+                {{ summary.winRate }}%
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <ul class="mt-4">
-        <BattleLogsCard v-for="log in battleLogs" :key="log.enemy_user_name" v-bind="log" />
+      <ul class="mt-4 w-full">
+        <BattleLogsCard
+          v-for="log in battleLogs"
+          :key="log.enemy_user_name"
+          v-bind="log"
+        />
       </ul>
     </div>
-  </section>
+  </div>
 </template>
 
 <style scoped>

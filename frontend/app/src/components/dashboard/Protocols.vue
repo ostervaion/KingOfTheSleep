@@ -70,7 +70,7 @@ function buttonClass(ranking) {
       </div>
     </div>
 
-    <div class="grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body">
+    <div class="grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body text-zinc-400">
       <div>
         <ThumbsUpIcon class="-mt-0.5 w-5 h-5" />
       </div>
@@ -92,7 +92,7 @@ function buttonClass(ranking) {
         />
       </ul>
     </div>
-    <div class="mt-4 grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body">
+    <div class="mt-4 grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body text-zinc-400">
       <div>
         <ThumbsDownIcon class="-mt-0.5 w-5 h-5" />
       </div>

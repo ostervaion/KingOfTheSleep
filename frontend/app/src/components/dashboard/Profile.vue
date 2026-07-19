@@ -81,10 +81,10 @@ function loadUsersData() {
 
     <div class="flex-1 min-h-0 flex justify-between gap-4 px-6 py-5 min-w-0">
       <div class="min-w-0 flex-1">
-        <p class="text-xs font-medium tracking-wide text-body">rank</p>
+        <p class="text-xs font-medium tracking-wide text-body text-zinc-400">rank</p>
         <p class="mb-4 text-xl font-light leading-tight text-white">#{{ usersData.rank }}</p>
 
-        <p class="text-xs font-medium % tracking-wide text-body">level</p>
+        <p class="text-xs font-medium % tracking-wide text-body text-zinc-400">level</p>
         <p class="mb-2 text-xl font-light leading-tight text-white">{{ usersData.level }}</p>
 
         <div class="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-neutral-800">
@@ -126,7 +126,7 @@ function loadUsersData() {
     <!-- log out button -->
     <dialog
       ref="dialog"
-      class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent p-0"
+      class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent"
     >
       <LogOut @close="closeDialog" />
     </dialog>
