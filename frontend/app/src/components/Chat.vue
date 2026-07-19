@@ -98,12 +98,12 @@ onUnmounted(() => {
             <p class="text-sm font-medium text-[#e8e8f0] leading-none">
               {{ isGlobal ? 'Chat global' : props.to_user }}
             </p>
-            <p v-if="isGlobal" class="text-xs mt-1 text-[#555]">Todos los usuarios</p>
+            <p v-if="isGlobal" class="text-xs mt-1 text-[#555]">All users</p>
             <p v-else class="text-xs mt-1 flex items-center gap-1.5">
               <span
                 :class="['w-2 h-2 rounded-full', isTargetOnline ? 'bg-[#4caf50]' : 'bg-[#f44336]']"
               ></span>
-              <span class="text-[#555]">{{ isTargetOnline ? 'Conectado' : 'Desconectado' }}</span>
+              <span class="text-[#555]">{{ isTargetOnline ? 'Conected' : 'Disconected' }}</span>
             </p>
           </div>
         </div>

@@ -21,6 +21,7 @@ from models import (
     UserPublic,
     UserProfile,
     UserUpdate,
+    Friend
 )
 from security import (
     authenticate_user,
@@ -49,6 +50,56 @@ AVATAR_DIR.mkdir(parents=True, exist_ok=True)
 @router.get("/")
 def root():
     return {"message": "API running"}
+
+@router.get("/friends", response_model=list[str])
+def list_friends(
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session),
+):
+    friend_rows = session.exec(
+        select(Friend).where(Friend.user_id == current_user.id)
+    ).all()
+ 
+    friend_ids = [row.friend_id for row in friend_rows]
+    if not friend_ids:
+        return []
+ 
+    friends = session.exec(
+        select(User).where(User.id.in_(friend_ids))
+    ).all()
+ 
+    return [friend.username for friend in friends]
+ 
+ 
+@router.post("/friends/{username}", status_code=status.HTTP_201_CREATED)
+def add_friend(
+    username: str,
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session),
+):
+    if username == current_user.username:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No puedes añadirte a ti mismo como amigo")
+ 
+    friend_user = get_user_by_username(session, username)
+    if friend_user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
+ 
+    existing = session.exec(
+        select(Friend).where(
+            Friend.user_id == current_user.id,
+            Friend.friend_id == friend_user.id,
+        )
+    ).first()
+    if existing:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Ya sois amigos")
+ 
+    # Creamos la relación en los dos sentidos para que sea simétrica de inmediato
+    session.add(Friend(user_id=current_user.id, friend_id=friend_user.id))
+    session.add(Friend(user_id=friend_user.id, friend_id=current_user.id))
+    session.commit()
+ 
+    return {"message": f"{username} añadido como amigo"}
+
 
 
 @router.post("/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
