@@ -30,7 +30,7 @@ async function fetchDashboard() {
       ...response.data,
       ranking: Array.isArray(response.data?.ranking) ? response.data.ranking : [],
     }
-    console.log("Updating")
+    console.log('Updating')
   } catch (error) {
     console.error('Error cargando dashboard:', error)
   }

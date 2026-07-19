@@ -380,7 +380,7 @@ function openRegistration() {
       </section>
     </div>
   </div>
-  <AppFooter/>
+  <AppFooter />
 </template>
 
 <style scoped>
