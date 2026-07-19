@@ -3,7 +3,8 @@ import { useAuthStore } from '@/stores/auth'
 import HomeView from '../views/HomeView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import AdminView from '../views/AdminView.vue'
-
+import PrivacyPolicy from '@/views/PrivacyPolicy.vue'
+import TermsUse from '@/views/TermsUse.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -11,6 +12,16 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+    },
+        {
+      path: '/privacy',
+      name: 'privacy',
+      component: PrivacyPolicy,
+    },
+            {
+      path: '/terms',
+      name: 'terms',
+      component: TermsUse,
     },
     {
       path: '/dashboard',
