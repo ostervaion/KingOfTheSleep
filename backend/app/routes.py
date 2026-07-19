@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
 from pydantic import BaseModel
-
+from ws import broadcast_fetch
 from config import ACCESS_TOKEN_EXPIRE_MINUTES
 from database import get_session
 from models import (
@@ -195,6 +195,10 @@ def get_me(
         ),
     }
 
+@router.get("/dashboard/refresh")
+async def trigger_dashboard_refresh():
+    await broadcast_fetch()
+    return {"status": "ok"}
 
 def _build_ranking(session, current_user_id: int):
     all_scores = session.exec(

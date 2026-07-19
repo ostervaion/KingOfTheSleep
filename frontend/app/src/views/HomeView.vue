@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import LoginPanel from '@/components/LoginPanel.vue'
+import AppFooter from '@/components/Footer.vue'
 import RegisterPanel from '@/components/RegisterPanel.vue'
 import placeholderImage from '@/assets/placeholder-7.png'
 import ArenaImage from '@/assets/ArenaImage.png'
@@ -379,6 +380,7 @@ function openRegistration() {
       </section>
     </div>
   </div>
+  <AppFooter/>
 </template>
 
 <style scoped>

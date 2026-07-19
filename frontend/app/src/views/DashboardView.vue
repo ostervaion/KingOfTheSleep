@@ -9,12 +9,19 @@ import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Battle from '@/components/dashboard/Battle.vue'
 import ChatButton from '@/components/dashboard/ChatButton.vue'
 import { useWebSocket } from '@/composables/useWebSocket'
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
 import api from '@/api/api'
 import SleepDataForm from '@/components/SleepDataForm.vue'
 
 const dashboard = ref(null)
-const { connect, disconnect } = useWebSocket()
+const { connect, disconnect, updateDashboard } = useWebSocket()
+
+watch(updateDashboard, (newValue) => {
+  if (newValue === true) {
+    fetchDashboard()
+  }
+  updateDashboard.value = false
+})
 
 async function fetchDashboard() {
   try {
@@ -23,6 +30,7 @@ async function fetchDashboard() {
       ...response.data,
       ranking: Array.isArray(response.data?.ranking) ? response.data.ranking : [],
     }
+    console.log("Updating")
   } catch (error) {
     console.error('Error cargando dashboard:', error)
   }

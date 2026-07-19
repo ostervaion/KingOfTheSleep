@@ -19,6 +19,14 @@ async def broadcast_presence(username: str, online: bool):
         except Exception:
             pass
 
+async def broadcast_fetch():
+    payload = json.dumps({"type": "fetch"})
+    for conn in list(connections.keys()):
+        try:
+            await conn.send_text(payload)
+        except Exception:
+            pass
+
 def unregister_connection(websocket: WebSocket):
     username = connections.pop(websocket, None)
     if username:
