@@ -4,14 +4,27 @@ import BattleLogsCard from '@/components/dashboard/battleLogsCard.vue'
 import BoxingGlove from '@/assets/boxing-glove.svg'
 import TriangleUp from '@/assets/triangle-up.svg'
 import TriangleDown from '@/assets/triangle-down.svg'
-
+import api from '@/api/api'
 const emit = defineEmits(['close'])
 
 const battleLogs = ref([])
+const isLoading = ref(false)
 
-onMounted(loadLogs)
+//onMounted(loadLogs)
 
-function loadLogs() {
+async function loadLogs() {
+  isLoading.value = true
+  try {
+    const response = await api.get('/battleData')
+    console.log(response.data)
+    battleLogs.value = response.data // adjust to your real response shape
+  } catch (error) {
+    console.error('Error cargando battle logs:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+/*
   battleLogs.value = [
     {
       victory: true,
@@ -77,14 +90,26 @@ function loadLogs() {
       enemy_protocol: ['kaka', 'culo', 'pedo', 'pis'],
     },
   ]
-}
+*/
+defineExpose({ loadLogs })
+
+const props = defineProps({
+  todayStats: {
+    type: Object,
+    default: () => ({ wins: 0, losses: 0, battles: [] }),
+  },
+})
 
 const summary = computed(() => {
   // Replace these fallback totals with API values when the full battle history is loaded.
-  const battles = 18
-  const wins = 14
-  const losses = 4
-  const winRate = 70
+  const battles = computed(() => props.todayStats.battles?.length ?? 0)
+  const wins = computed(() => props.todayStats.wins ?? 0)
+  const losses = computed(() => props.todayStats.losses ?? 0)
+  const winRate = computed(() => {
+    const total = wins.value + losses.value
+    if (total === 0) return 0
+    return Math.round((wins.value / total) * 100)
+  })
 
   return { battles, wins, losses, winRate }
 })

@@ -4,7 +4,7 @@ from uuid import uuid4
 from collections import defaultdict
 from sqlalchemy import func, case, and_, or_
 from sqlalchemy.orm import aliased
-
+from controllers import today_stats_controller
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
@@ -288,50 +288,15 @@ def _lobby_state(session, current_user_id: int, now: datetime) -> bool:
 
     return today_data is not None
 
-def _today_stats(session, actual_user_id: int, now: datetime) -> TodayStatsRead:
 
-    today = now.date()
-    winsLoses = session.exec(
-        select(
-            func.count(case((and_(CombatHistory.winner_user_id == actual_user_id, func.date(CombatHistory.created_at) == today,), 1,))).label("wins"),
-            func.count(case((and_(CombatHistory.loser_user_id == actual_user_id, func.date(CombatHistory.created_at) == today,), 1,))).label("losses"),
-        )
-    ).one()
 
-    winner = aliased(User)
-    loser = aliased(User)
-    last_battles = session.exec(
-        select(CombatHistory.id,
-                winner.username.label("winner"),
-                loser.username.label("loser"),)
-        .join(winner, CombatHistory.winner_user_id == winner.id)
-        .join(loser, CombatHistory.loser_user_id == loser.id)
-        .where(
-            or_(
-                CombatHistory.winner_user_id == actual_user_id,
-                CombatHistory.loser_user_id == actual_user_id,
-            )
-            , func.date(CombatHistory.created_at) == today
-        )
-        .order_by(CombatHistory.id.desc())
-        .limit(5)
-    ).all()
-    battles = []
-    for id, winner, loser in last_battles:
-        battles.append(ResumedBattleRead(
-            id = id,
-            winner_name = winner,
-            loser_name = loser,
-        )
-        )
-    stats = TodayStatsRead(
-        wins = winsLoses.wins,
-        losses = winsLoses.losses,
-        battles = battles
-    )
-    print("////////////TODAY_STATS//////////////")
-    print(stats)
-    return stats
+@router.get("/battleData")
+async def getBattleData(
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session)
+):
+    now = datetime.now(timezone.utc)
+    return today_stats_controller._today_battles(session, current_user, now)
 
 @router.get("/dashboard")
 async def dashboard_fake(
@@ -345,7 +310,7 @@ async def dashboard_fake(
     sleep_score = _build_sleep_score(session, current_user.id, now)
     protocol_impact = _build_protocol_impacts(session, current_user.id)
     lobby = _lobby_state(session, current_user.id, now)
-    today_stats = _today_stats(session, current_user.id, now)
+    today_stats = today_stats_controller._today_stats(session, current_user.id, now)
     return {
         "nextBattle": next_battle,
         "sleepScore": sleep_score,

@@ -74,7 +74,6 @@ function updateActiveMobilePage() {
         <div class="grid h-full min-h-0 grid-rows-[1fr_auto] gap-4">
           <Lobby class="h-full min-h-0" />
           <TodayStats :today-stats="dashboard?.todayStats || []" class="min-h-0" />
-
         </div>
       </section>
 
@@ -99,8 +98,10 @@ function updateActiveMobilePage() {
 
       <!-- Page 5: Protocol Impact -->
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
-        <ProtocolsImpact :protocol-impacts="dashboard?.protocolImpacts || []" class="h-full min-h-0" />
-
+        <ProtocolsImpact
+          :protocol-impacts="dashboard?.protocolImpacts || []"
+          class="h-full min-h-0"
+        />
       </section>
     </div>
 
@@ -129,7 +130,7 @@ function updateActiveMobilePage() {
       <section class="flex flex-col gap-4 min-h-0">
         <SleepDataForm v-if="!dashboard?.lobby" @saved="fetchDashboard" />
         <Lobby v-else />
-        <TodayStats :today-stats="dashboard?.todayStats || []"/>
+        <TodayStats :today-stats="dashboard?.todayStats || []" />
       </section>
 
       <section class="flex flex-col gap-4 min-h-0">

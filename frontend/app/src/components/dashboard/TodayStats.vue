@@ -8,9 +8,14 @@ import TriangleDown from '@/assets/triangle-down.svg'
 import BattleLog from '@/components/dashboard/battleLogPopUp.vue'
 
 const dialog = ref(null)
+const battleLogRef = ref(null)
 
-function openDialog() {
+//function openDialog() {
+//  dialog.value.showModal()
+//}
+async function openDialog() {
   dialog.value.showModal()
+  battleLogRef.value?.loadLogs() // always refresh on open
 }
 
 function closeDialog() {
@@ -77,10 +82,7 @@ const winRateColor = computed(() => {
         </div>
         <div class="pt-3 items-center">
           <p class="text-center text-xs font-medium text-body mb-0.5">win rate</p>
-          <p
-            class="text-center mb-2 text-xl font-light"
-            :class="winRateColor"
-          >{{ winRate }}%</p>
+          <p class="text-center mb-2 text-xl font-light" :class="winRateColor">{{ winRate }}%</p>
         </div>
       </div>
     </div>
@@ -90,7 +92,7 @@ const winRateColor = computed(() => {
       ref="dialog"
       class="m-auto h-[90vh] w-[96vw] sm:w-[90vw] md:w-[500px] lg:w-[700px] max-w-[96vw] rounded-xl border-none bg-transparent p-0"
     >
-      <BattleLog @close="closeDialog" />
+      <BattleLog ref="battleLogRef" @close="closeDialog" />
     </dialog>
   </Teleport>
 </template>
