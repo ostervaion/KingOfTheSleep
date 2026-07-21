@@ -33,5 +33,11 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('username')
   }
 
-  return { token, username, isAuthenticated, login, logout }
+  const authMode = ref('default')
+
+  function setAuthMode(newMode) {
+    authMode.value = newMode
+  }
+
+  return { authMode, setAuthMode, token, username, isAuthenticated, login, logout }
 })

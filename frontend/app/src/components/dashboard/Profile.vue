@@ -16,7 +16,6 @@ var usersData = ref({
 const dialog = ref(null)
 const dialog_settings = ref(null)
 
-
 function openDialog() {
   dialog.value.showModal()
 }
@@ -58,7 +57,10 @@ function loadUsersData() {
         </div>
         <div class="flex rounded-full px-1.25 text-right">
           <div class="flex rounded-full px-1.25 py-0.75 bg-(--kots-background-color) m-2">
-            <button @click="openDialogSettings" class="p5 px-2 py-0.5 leading-none text-xs font-medium text-white text-heading">
+            <button
+              @click="openDialogSettings"
+              class="p5 px-2 py-0.5 leading-none text-xs font-medium text-white text-heading"
+            >
               settings
             </button>
           </div>
@@ -119,24 +121,23 @@ function loadUsersData() {
       </div>
     </div>
   </div>
-  
-<Teleport to="body">
-  <!-- log out button -->
-  <dialog
-    ref="dialog"
-    class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent p-0"
-  >
-    <LogOut @close="closeDialog" />
-  </dialog>
 
-  <!-- profile settings button -->
-  <dialog
-    ref="dialog_settings"
-    class="m-auto w-[720px] max-w-[94vw] rounded-xl border-none bg-transparent p-0"
-  >
-    <ProfileSettings @close="closeDialogSettings" />
-  </dialog>
-</Teleport>
+  <Teleport to="body">
+    <dialog
+      ref="dialog"
+      class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent p-0"
+    >
+      <LogOut @close="closeDialog" />
+    </dialog>
+
+    <!-- profile settings button -->
+    <dialog
+      ref="dialog_settings"
+      class="m-auto w-[720px] max-w-[94vw] rounded-xl border-none bg-transparent p-0"
+    >
+      <ProfileSettings @close="closeDialogSettings" />
+    </dialog>
+  </Teleport>
 </template>
 
 <style scoped>

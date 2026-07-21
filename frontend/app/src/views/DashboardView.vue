@@ -6,15 +6,22 @@ import ProtocolsImpact from '@/components/dashboard/ProtocolImpact.vue'
 import SleepScore from '@/components/dashboard/SleepScore.vue'
 import Profile from '@/components/dashboard/Profile.vue'
 import TodayStats from '@/components/dashboard/TodayStats.vue'
-import Lobby from '@/components/dashboard/Lobby.vue'
-import { useAppStore } from '@/stores/app'
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import Battle from '@/components/dashboard/Battle.vue'
+import ChatButton from '@/components/dashboard/ChatButton.vue'
+import { useWebSocket } from '@/composables/useWebSocket'
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue'
 import api from '@/api/api'
 import SleepDataForm from '@/components/SleepDataForm.vue'
 
 const dashboard = ref(null)
+const { connect, disconnect, updateDashboard } = useWebSocket()
 
-const appStore = useAppStore()
+watch(updateDashboard, (newValue) => {
+  if (newValue === true) {
+    fetchDashboard()
+  }
+  updateDashboard.value = false
+})
 
 async function fetchDashboard() {
   try {
@@ -23,6 +30,7 @@ async function fetchDashboard() {
       ...response.data,
       ranking: Array.isArray(response.data?.ranking) ? response.data.ranking : [],
     }
+    console.log('Updating')
   } catch (error) {
     console.error('Error cargando dashboard:', error)
   }
@@ -32,12 +40,13 @@ let intervalId = null
 
 onMounted(() => {
   fetchDashboard()
-  appStore.onDashboard = true
   intervalId = setInterval(fetchDashboard, 30000)
+  connect()
 })
 
 onUnmounted(() => {
   clearInterval(intervalId)
+  disconnect()
 })
 
 const mobileScroller = ref(null)
@@ -72,7 +81,7 @@ function updateActiveMobilePage() {
       <!-- Page 1: Lobby + TodayStats -->
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
         <div class="grid h-full min-h-0 grid-rows-[1fr_auto] gap-4">
-          <Lobby class="h-full min-h-0" />
+          <Battle class="h-full min-h-0" />
           <TodayStats class="min-h-0" />
         </div>
       </section>
@@ -110,7 +119,8 @@ function updateActiveMobilePage() {
         v-for="index in mobilePages"
         :key="index"
         class="h-2 rounded-full transition-all duration-200"
-        :class="activeMobilePage === index - 1 ?  'w-6 bg-cyan-200' : 'w-2 bg-white/40'"/>
+        :class="activeMobilePage === index - 1 ? 'w-6 bg-cyan-200' : 'w-2 bg-white/40'"
+      />
     </div>
   </div>
 
@@ -124,8 +134,8 @@ function updateActiveMobilePage() {
       class="mx-auto grid w-full flex-1 min-h-0 min-w-0 gap-4 items-stretch lg:grid-cols-[1fr_1.2fr_1.2fr]"
     >
       <section class="flex flex-col gap-4 min-h-0">
-      <SleepDataForm v-if="!dashboard?.lobby" @saved="fetchDashboard" />
-        <Lobby v-else/>
+        <SleepDataForm v-if="!dashboard?.lobby" @saved="fetchDashboard" />
+        <Battle v-else />
         <TodayStats />
       </section>
 
@@ -141,4 +151,5 @@ function updateActiveMobilePage() {
       </section>
     </div>
   </div>
+  <ChatButton />
 </template>

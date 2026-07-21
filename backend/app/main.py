@@ -14,6 +14,7 @@ from battle_scheduler import battle_scheduler
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    create_db_and_tables()
     task = asyncio.create_task(battle_scheduler())
     yield
     task.cancel()

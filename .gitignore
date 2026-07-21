@@ -18,3 +18,4 @@ frontend/app/.pnpm-store/
 # OS
 .DS_Store
 Thumbs.db
+.vscode

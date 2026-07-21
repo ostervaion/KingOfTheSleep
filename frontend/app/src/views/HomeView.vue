@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import LoginPanel from '@/components/LoginPanel.vue'
+import AppFooter from '@/components/Footer.vue'
 import RegisterPanel from '@/components/RegisterPanel.vue'
 import placeholderImage from '@/assets/placeholder-7.png'
 import ArenaImage from '@/assets/ArenaImage.png'
@@ -10,8 +11,9 @@ import RankingsImage from '@/assets/RankingsImage.png'
 import ProtocolsImage from '@/assets/ProtocolsImage.png'
 import ChatImage from '@/assets/ChatImage.png'
 import DashboardImage from '@/assets/DashboardImage.png'
-
-const mode = ref('default')
+import Menu from '@/components/Menu.vue'
+import { useAuthStore } from '@/stores/auth'
+const appStore = useAuthStore()
 const homeEmail = ref('')
 
 const benefits = [
@@ -54,18 +56,21 @@ const steps = [
 ]
 
 function submitJoin() {
-  mode.value = 'register'
+  appStore.setAuthMode('register')
 }
 
 function openRegistration() {
-  mode.value = 'register'
+  appStore.setAuthMode('register')
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
 
 <template>
+  <Menu />
   <div class="font-inter min-h-screen overflow-hidden bg-[#171715] text-white">
-    <div class="mx-auto w-full max-w-[1240px] px-6 pb-8 pt-6 sm:px-8 lg:px-12 lg:pb-12 lg:pt-8 xl:px-16">
+    <div
+      class="mx-auto w-full max-w-[1240px] px-6 pb-8 pt-6 sm:px-8 lg:px-12 lg:pb-12 lg:pt-8 xl:px-16"
+    >
       <!-- HERO -->
       <section
         class="grid items-stretch gap-10 border-b border-white/10 pb-14 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16 lg:pb-16"
@@ -75,11 +80,13 @@ function openRegistration() {
             <h1
               class="mt-8 max-w-[520px] text-[clamp(3rem,5.2vw,5.25rem)] font-semibold leading-[0.98] tracking-[-0.06em]"
             >
-              Enter the arena and <span class="text-cyan-200">master</span> your <span class="text-cyan-200">sleep</span>.
+              Enter the arena and <span class="text-cyan-200">master</span> your
+              <span class="text-cyan-200">sleep</span>.
             </h1>
 
             <p class="mt-6 max-w-[470px] text-base leading-7 text-white/60 sm:text-lg sm:leading-8">
-              Maximize your sleep quality with a competitive auto-battle game powered by your real sleep data.
+              Maximize your sleep quality with a competitive auto-battle game powered by your real
+              sleep data.
             </p>
           </div>
 
@@ -88,15 +95,15 @@ function openRegistration() {
               <img
                 :src="placeholderImage"
                 alt=""
-                class="h-9 w-9 shrink-0 rounded-md  object-cover"
+                class="h-9 w-9 shrink-0 rounded-md object-cover"
               />
               <p class="text-[11px] leading-4 text-white/65">{{ benefit }}</p>
             </div>
           </div>
         </div>
 
-        <div class="rounded-2xl  bg-[#1B1B19] p-4 sm:p-5">
-          <div class="relative overflow-hidden rounded-xl  bg-[#171715]">
+        <div class="rounded-2xl bg-[#1B1B19] p-4 sm:p-5">
+          <div class="relative overflow-hidden rounded-xl bg-[#171715]">
             <img
               :src="placeholderImage"
               alt="Product preview placeholder"
@@ -110,15 +117,15 @@ function openRegistration() {
             </button>
           </div>
 
-          <div class="mt-4 rounded-xl  bg-[#171715] p-3 sm:p-4">
-            <template v-if="mode === 'default'">
+          <div class="mt-4 rounded-xl bg-[#171715] p-3 sm:p-4">
+            <template v-if="appStore.authMode === 'default'">
               <form class="space-y-3" @submit.prevent="submitJoin">
                 <input
                   v-model="homeEmail"
                   type="email"
                   required
                   placeholder="Type your email here..."
-                  class="h-12 w-full rounded-lg  bg-[#1B1B19] px-4 text-sm text-white outline-none placeholder:text-white/35 focus:border-[#FACC15]"
+                  class="h-12 w-full rounded-lg bg-[#1B1B19] px-4 text-sm text-white outline-none placeholder:text-white/35 focus:border-[#FACC15]"
                 />
                 <button
                   type="submit"
@@ -126,30 +133,20 @@ function openRegistration() {
                 >
                   Join <span aria-hidden="true">→</span>
                 </button>
-                <button
-                  type="button"
-                  class="mx-auto block text-xs text-white/45 transition hover:text-white/75"
-                  @click="mode = 'login'"
-                >
+                <button type="button" @click="appStore.setAuthMode('login')">
                   If you already have an account, we'll log you in
                 </button>
               </form>
             </template>
 
             <div v-else class="relative">
-              <button
-                type="button"
-                class="mb-4 text-xs font-medium text-[#FACC15]"
-                @click="mode = 'default'"
-              >
-                ← Back
-              </button>
-              <LoginPanel v-if="mode === 'login'" />
+              <button @click="appStore.setAuthMode('default')">← Back</button>
+              <LoginPanel v-if="appStore.authMode === 'login'" />
               <RegisterPanel
                 v-else
                 :email="homeEmail"
-                @back="mode = 'default'"
-                @login="mode = 'login'"
+                @back="appStore.setAuthMode('default')"
+                @login="appStore.setAuthMode('login')"
               />
             </div>
           </div>
@@ -160,7 +157,7 @@ function openRegistration() {
       <section class="border-b border-white/10 py-16 sm:py-20 lg:py-24">
         <div class="flex justify-center">
           <div class="rounded-lg border border-cyan-200 px-2 text-gray-800 leading-none">
-            <h2 class="text-heading text-xl  text-cyan-200">How it works</h2>
+            <h2 class="text-heading text-xl text-cyan-200">How it works</h2>
           </div>
         </div>
 
@@ -174,7 +171,10 @@ function openRegistration() {
             :key="step.number"
             class="relative grid min-h-[160px] grid-cols-[56px_1fr] items-center gap-5 py-3 md:grid-cols-[1fr_72px_1fr] md:gap-8"
           >
-            <div v-if="step.side === 'left'" class="hidden items-center justify-end gap-5 text-right md:flex">
+            <div
+              v-if="step.side === 'left'"
+              class="hidden items-center justify-end gap-5 text-right md:flex"
+            >
               <div class="max-w-[270px]">
                 <h3 class="text-lg font-semibold tracking-[-0.025em]">{{ step.title }}</h3>
                 <p class="mt-2 text-sm leading-6 text-white/50">{{ step.text }}</p>
@@ -182,7 +182,7 @@ function openRegistration() {
               <img
                 :src="placeholderImage"
                 alt=""
-                class="h-[82px] w-[82px] shrink-0 rounded-xl  object-cover"
+                class="h-[82px] w-[82px] shrink-0 rounded-xl object-cover"
               />
             </div>
             <div v-else class="hidden md:block"></div>
@@ -197,7 +197,7 @@ function openRegistration() {
               <img
                 :src="placeholderImage"
                 alt=""
-                class="h-[82px] w-[82px] shrink-0 rounded-xl  object-cover"
+                class="h-[82px] w-[82px] shrink-0 rounded-xl object-cover"
               />
               <div class="max-w-[270px]">
                 <h3 class="text-lg font-semibold tracking-[-0.025em]">{{ step.title }}</h3>
@@ -210,7 +210,7 @@ function openRegistration() {
               <img
                 :src="placeholderImage"
                 alt=""
-                class="h-14 w-14 shrink-0 rounded-lg  object-cover"
+                class="h-14 w-14 shrink-0 rounded-lg object-cover"
               />
               <div>
                 <h3 class="text-base font-semibold">{{ step.title }}</h3>
@@ -231,14 +231,15 @@ function openRegistration() {
 
         <div class="grid gap-3 md:grid-cols-12 md:auto-rows-[230px]">
           <article
-            class="relative min-h-[520px] overflow-hidden rounded-2xl  bg-[#1B1B19] md:col-span-5 md:row-span-2 md:min-h-0"
+            class="relative min-h-[520px] overflow-hidden rounded-2xl bg-[#1B1B19] md:col-span-5 md:row-span-2 md:min-h-0"
           >
             <div class="relative z-10 max-w-[230px] p-6 lg:p-7">
               <h2 class="text-3xl font-semibold leading-[0.98] tracking-[-0.045em]">
                 Enter the<br />Sleep Arena
               </h2>
               <p class="mt-5 text-sm leading-6 text-white/55">
-                King Of The Sleep turns sleep improvement into something you can see, feel, and compete with.
+                King Of The Sleep turns sleep improvement into something you can see, feel, and
+                compete with.
               </p>
             </div>
             <img
@@ -248,25 +249,30 @@ function openRegistration() {
             />
           </article>
 
-          <article class="min-h-[260px] overflow-hidden rounded-2xl bg-[#1B1B19] p-6 md:col-span-7 md:min-h-0">
+          <article
+            class="min-h-[260px] overflow-hidden rounded-2xl bg-[#1B1B19] p-6 md:col-span-7 md:min-h-0"
+          >
             <div class="grid h-full gap-5 sm:grid-cols-[0.85fr_1.45fr] sm:items-center">
               <div>
                 <h2 class="text-2xl font-semibold leading-[0.98] tracking-[-0.04em]">
                   Better Sleep<br />Becomes Rewarding
                 </h2>
                 <p class="mt-4 text-sm leading-6 text-white/55">
-                  See your progress, rank, level, and recovery score so better nights stop feeling invisible.
+                  See your progress, rank, level, and recovery score so better nights stop feeling
+                  invisible.
                 </p>
               </div>
               <img
                 :src="ProfileImage"
                 alt="Profile section placeholder"
-                class="h-full min-h-[130px] w-full rounded-xl  object-contain"
+                class="h-full min-h-[130px] w-full rounded-xl object-contain"
               />
             </div>
           </article>
 
-          <article class="flex min-h-[260px] flex-col overflow-hidden rounded-2xl bg-[#1B1B19] p-6 md:col-span-3 md:min-h-0">
+          <article
+            class="flex min-h-[260px] flex-col overflow-hidden rounded-2xl bg-[#1B1B19] p-6 md:col-span-3 md:min-h-0"
+          >
             <h2 class="text-xl font-semibold leading-[1] tracking-[-0.035em]">
               Consistency<br />Becomes a Game
             </h2>
@@ -280,12 +286,15 @@ function openRegistration() {
             />
           </article>
 
-          <article class="flex min-h-[260px] flex-col overflow-hidden rounded-2xl bg-[#1B1B19] p-6 md:col-span-4 md:min-h-0">
+          <article
+            class="flex min-h-[260px] flex-col overflow-hidden rounded-2xl bg-[#1B1B19] p-6 md:col-span-4 md:min-h-0"
+          >
             <h2 class="text-xl font-semibold leading-[1] tracking-[-0.035em]">
               Your Routine<br />Becomes a Strategy
             </h2>
             <p class="mt-3 text-xs leading-5 text-white/50">
-              Refine your habits, learn from top players, and discover what helps you recover better.
+              Refine your habits, learn from top players, and discover what helps you recover
+              better.
             </p>
             <img
               :src="ProtocolsImage"
@@ -299,32 +308,38 @@ function openRegistration() {
               Tomorrow's Battle Gives<br />Tonight a Purpose
             </h2>
             <p class="mt-4 text-xs leading-5 text-white/50">
-              Every upcoming battle gives you a clear reason to care about recovery, consistency, and sleep quality before bed.
+              Every upcoming battle gives you a clear reason to care about recovery, consistency,
+              and sleep quality before bed.
             </p>
           </article>
 
-          <article class="min-h-[230px] overflow-hidden rounded-2xl bg-[#1B1B19] p-4 md:col-span-3 md:min-h-0">
+          <article
+            class="min-h-[230px] overflow-hidden rounded-2xl bg-[#1B1B19] p-4 md:col-span-3 md:min-h-0"
+          >
             <img
               :src="RankingsImage"
               alt="Rankings placeholder"
-              class="h-full min-h-[145px] w-full rounded-xl  object-cover"
+              class="h-full min-h-[145px] w-full rounded-xl object-cover"
             />
           </article>
 
-          <article class="min-h-[260px] overflow-hidden rounded-2xl bg-[#1B1B19] p-5 md:col-span-4 md:min-h-0">
+          <article
+            class="min-h-[260px] overflow-hidden rounded-2xl bg-[#1B1B19] p-5 md:col-span-4 md:min-h-0"
+          >
             <div class="grid h-full gap-4 sm:grid-cols-[0.8fr_1.2fr]">
               <div>
                 <h2 class="text-xl font-semibold leading-[1] tracking-[-0.035em]">
                   Learn from<br />the Arena
                 </h2>
                 <p class="mt-3 text-[11px] leading-5 text-white/50">
-                  Chat with the player community or message rivals directly about routines, protocols, and strategies.
+                  Chat with the player community or message rivals directly about routines,
+                  protocols, and strategies.
                 </p>
               </div>
               <img
                 :src="ChatImage"
                 alt="Community chat placeholder"
-                class="h-full min-h-[130px] w-full rounded-xl  object-cover"
+                class="h-full min-h-[130px] w-full rounded-xl object-cover"
               />
             </div>
           </article>
@@ -348,10 +363,14 @@ function openRegistration() {
           </div>
         </div>
 
-        <p class="mx-auto mt-6 max-w-[680px] text-center text-base leading-7 text-white/55 sm:text-lg sm:leading-8">
-See how your sleep, battles, protocols, and rankings connect in one place so you always know what helped, what changed, and what to improve next.        </p>
+        <p
+          class="mx-auto mt-6 max-w-[680px] text-center text-base leading-7 text-white/55 sm:text-lg sm:leading-8"
+        >
+          See how your sleep, battles, protocols, and rankings connect in one place so you always
+          know what helped, what changed, and what to improve next.
+        </p>
 
-        <div class="mt-10 overflow-hidden  p-3 sm:mt-12 sm:p-4 lg:p-5">
+        <div class="mt-10 overflow-hidden p-3 sm:mt-12 sm:p-4 lg:p-5">
           <img
             :src="DashboardImage"
             alt="Dashboard placeholder"
@@ -361,6 +380,7 @@ See how your sleep, battles, protocols, and rankings connect in one place so you
       </section>
     </div>
   </div>
+  <AppFooter />
 </template>
 
 <style scoped>
