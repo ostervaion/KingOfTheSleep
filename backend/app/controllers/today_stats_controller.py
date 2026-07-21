@@ -61,26 +61,14 @@ def _today_battles(session, actual_user_id: int, now: datetime):
             enemy_user.username.label("enemy_username"),
             enemy_profile.user_avatar_path.label("enemy_user_avatar"),
             enemy_profile.game_avatar_path.label("enemy_game_avatar"),
-            enemy_sleep.time_in_bed,
-            enemy_sleep.awake_time,
-            enemy_sleep.light_sleep,
-            enemy_sleep.slow_wave,
-            enemy_sleep.rem,
-            enemy_sleep.disturbance,
-            enemy_sleep.baseline,
-            enemy_sleep.debt,
-            enemy_sleep.strain,
-            enemy_sleep.nap,
-            enemy_sleep.respiratory_rate,
-            enemy_sleep.performance,
-            enemy_sleep.consistency,
-            enemy_sleep.efficiency,
+            enemy_sleep
         )
         .join(enemy_user, enemy_user.id == enemy_id)
-        .outerjoin(enemy_profile, enemy_profile.user_id == enemy_id)
-        .outerjoin(
+        .join(enemy_profile, enemy_profile.user_id == enemy_id)
+        .join(
             enemy_sleep,
-            and_(enemy_sleep.user_id == enemy_id, func.date(enemy_sleep.created_at) == today),
+            and_(enemy_sleep.user_id == enemy_id,
+            func.date(enemy_sleep.created_at) == today)
         )
         .where(
             or_(
@@ -91,10 +79,11 @@ def _today_battles(session, actual_user_id: int, now: datetime):
         )
         .order_by(CombatHistory.id.desc())
     ).all()
-    print("////////////////////////////7")
+    print("////////////////////////////")
     if battles:
         print(battles[0]._mapping.keys())
-
+    print("////////////////////////////")
+    print(battles)
     result = {
         "me": {
             "username": me.username,
