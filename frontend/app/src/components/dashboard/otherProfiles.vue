@@ -47,11 +47,11 @@ function onChat() {
       </div>
     </div>
 
-    <div class="flex-1 min-h-0 overflow-y-auto px-5 pb-5 sm:px-6 ">
+    <div class="flex-1 min-h-0 overflow-y-auto px-5 pb-5 sm:px-6">
       <div class="rounded-lg p-5">
         <div class="flex items-center gap-4">
           <div
-            class="h-24 w-24 items-center justify-center overflow-hidden rounded-full  bg-[var(--kots-background-color)]  sm:h-28 sm:w-28"
+            class="h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[var(--kots-background-color)] sm:h-28 sm:w-28"
           >
             <img
               v-if="user.profilePicture"
@@ -60,7 +60,7 @@ function onChat() {
               class="h-full w-full object-cover"
             />
 
-            <div v-else class="text-3xl font-semibold uppercase text-cyan-200 ">
+            <div v-else class="text-3xl font-semibold uppercase text-cyan-200">
               {{ user.username?.charAt(0) || '?' }}
             </div>
           </div>
@@ -93,13 +93,13 @@ function onChat() {
           </div>
         </div>
         <div class="flex justify-end items-center">
-        <button
-          @click="onChat"
-          class="mt-5 flex items-center justify-center gap-2 rounded-full bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
-        >
-          <ChatIcon class="h-5 w-5 shrink-0" />
-          <span>Chat with {{ user.username }}</span>
-        </button>
+          <button
+            @click="onChat"
+            class="mt-5 flex items-center justify-center gap-2 rounded-full bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
+          >
+            <ChatIcon class="h-5 w-5 shrink-0" />
+            <span>Chat with {{ user.username }}</span>
+          </button>
         </div>
       </div>
     </div>

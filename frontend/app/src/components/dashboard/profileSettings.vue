@@ -55,7 +55,7 @@ function onSaveChanges() {
           <img
             :src="example"
             alt="Profile picture"
-            class="h-24 w-24 rounded-full  sm:h-28 sm:w-28"
+            class="h-24 w-24 rounded-full sm:h-28 sm:w-28"
           />
 
           <div class="text-center sm:text-left">

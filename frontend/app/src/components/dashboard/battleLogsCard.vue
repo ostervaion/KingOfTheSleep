@@ -107,10 +107,7 @@ const score = computed(() => ({
     </button>
 
     <!-- Expanded battle information -->
-    <div
-      v-show="expanded"
-      class="px-4 pb-4 sm:px-6 sm:pb-5 md:px-8"
-    >
+    <div v-show="expanded" class="px-4 pb-4 sm:px-6 sm:pb-5 md:px-8">
       <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px] lg:gap-6">
         <!-- Stats -->
         <div class="min-w-0">
@@ -153,10 +150,7 @@ const score = computed(() => ({
                 <div
                   class="absolute left-1/2 top-0 h-full rounded-r-full bg-red-500"
                   :style="{
-                    width: `${Math.min(
-                      (props.enemy_stats?.[stat] || 0) * 5,
-                      50,
-                    )}%`,
+                    width: `${Math.min((props.enemy_stats?.[stat] || 0) * 5, 50)}%`,
                   }"
                 />
 
@@ -175,37 +169,27 @@ const score = computed(() => ({
 
         <!-- Protocols -->
         <aside class="min-w-0">
-          <p class="text-body mb-2.5 text-xs font-medium text-zinc-400">
-            Protocols
-          </p>
+          <p class="text-body mb-2.5 text-xs font-medium text-zinc-400">Protocols</p>
 
           <div class="space-y-2 text-xs leading-relaxed text-zinc-400">
             <p>
-              <span class="font-medium text-white">
-                {{ player.name }}:
-              </span>
+              <span class="font-medium text-white"> {{ player.name }}: </span>
 
               <template v-if="player.protocol.length">
                 {{ player.protocol.join(', ') }}
               </template>
 
-              <span v-else>
-                No protocol
-              </span>
+              <span v-else> No protocol </span>
             </p>
 
             <p>
-              <span class="font-medium text-white">
-                {{ props.enemy_user_name }}:
-              </span>
+              <span class="font-medium text-white"> {{ props.enemy_user_name }}: </span>
 
               <template v-if="props.enemy_protocol.length">
                 {{ props.enemy_protocol.join(', ') }}
               </template>
 
-              <span v-else>
-                No protocol
-              </span>
+              <span v-else> No protocol </span>
             </p>
           </div>
         </aside>

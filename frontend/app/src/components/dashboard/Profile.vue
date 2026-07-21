@@ -48,7 +48,7 @@ function loadUsersData() {
 </script>
 <template>
   <div
-    class="font-inter flex flex-col flex-2 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
+    class="font-inter flex flex-col h-full flex-2 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >
     <div class="px-6 pt-3">
       <div class="flex items-center justify-between">

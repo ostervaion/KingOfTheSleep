@@ -10,9 +10,10 @@ import Battle from '@/components/dashboard/Battle.vue'
 import ChatButton from '@/components/dashboard/ChatButton.vue'
 import { useAppStore } from '@/stores/app'
 import { useWebSocket } from '@/composables/useWebSocket'
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 import api from '@/api/api'
 import SleepDataForm from '@/components/SleepDataForm.vue'
+import { startDashboardTour } from '@/tours/dashboardTour'
 
 const dashboard = ref(null)
 const appStore = useAppStore()
@@ -32,11 +33,16 @@ async function fetchDashboard() {
 
 let intervalId = null
 
-onMounted(() => {
-  fetchDashboard()
+onMounted(async () => {
+  await fetchDashboard()
+
   appStore.onDashboard = true
   intervalId = setInterval(fetchDashboard, 30000)
   connect()
+
+  await nextTick()
+
+  startDashboardTour()
 })
 
 onUnmounted(() => {
@@ -63,7 +69,7 @@ function updateActiveMobilePage() {
   <!-- PARA LA VERSIÓN MÓVIL O TABLET -->
   <div class="relative flex h-dvh flex-col overflow-hidden text-(--text) lg:hidden">
     <!-- Always visible top bar -->
-    <div class="shrink-0 px-4 pt-4">
+    <div id="next-battle-mobile" class="shrink-0 px-4 pt-4">
       <NextBattle :next-battle="dashboard?.nextBattle" class="w-full" />
     </div>
 
@@ -76,33 +82,40 @@ function updateActiveMobilePage() {
       <!-- Page 1: Lobby + TodayStats -->
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
         <div class="grid h-full min-h-0 grid-rows-[1fr_auto] gap-4">
-          <Battle class="h-full min-h-0" />
+          <Battle id="battle-mobile" class="h-full min-h-0" />
+          <div id="today-stats-mobile">
           <TodayStats class="min-h-0" />
+          </div>
         </div>
       </section>
 
       <!-- Page 2: Ranking -->
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
-        <Ranking class="h-full min-h-0" />
+        <Ranking id="ranking-mobile" class="h-full min-h-0" />
       </section>
 
       <!-- Page 3: Protocols -->
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
-        <Protocols class="h-full min-h-0" />
+        <Protocols id="protocols-mobile" class="h-full min-h-0" />
       </section>
 
       <!-- Page 4: Profile + SleepScore -->
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
         <div class="grid h-full min-h-0 grid-rows-2 gap-4">
-          <Profile class="h-full min-h-0" />
-
-          <SleepScore :sleep-score="dashboard?.sleepScore" class="h-full min-h-0" />
+          <div id="profile-mobile">
+            <Profile class="h-full min-h-0" />
+          </div>
+          <SleepScore
+            id="sleep-score-mobile"
+            :sleep-score="dashboard?.sleepScore"
+            class="h-full min-h-0"
+          />
         </div>
       </section>
 
       <!-- Page 5: Protocol Impact -->
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
-        <ProtocolsImpact class="h-full min-h-0" />
+        <ProtocolsImpact id="protocol-impact-mobile" class="h-full min-h-0" />
       </section>
     </div>
 
@@ -123,26 +136,34 @@ function updateActiveMobilePage() {
   <div
     class="hidden h-[calc(100dvh-64px)] flex-col gap-3 overflow-hidden px-8 py-4 mt-5 text-(--text) lg:flex"
   >
-    <NextBattle :next-battle="dashboard?.nextBattle" />
+    <NextBattle id="next-battle" :next-battle="dashboard?.nextBattle" />
 
     <div
       class="mx-auto grid w-full flex-1 min-h-0 min-w-0 gap-4 items-stretch lg:grid-cols-[1fr_1.2fr_1.2fr]"
     >
       <section class="flex flex-col gap-4 min-h-0">
         <SleepDataForm v-if="!dashboard?.lobby" @saved="fetchDashboard" />
-        <Battle v-else />
-        <TodayStats />
+
+        <div v-else id="battle">
+          <Battle />
+        </div>
+
+        <div id="today-stats">
+          <TodayStats />
+        </div>
       </section>
 
       <section class="flex flex-col gap-4 min-h-0">
-        <Ranking :ranking-data="dashboard?.ranking || []" />
-        <Protocols />
+        <Ranking id="ranking" :ranking-data="dashboard?.ranking || []" />
+        <Protocols id="protocols" />
       </section>
 
       <section class="flex flex-col gap-4 min-h-0 min-w-0">
-        <Profile />
-        <SleepScore :sleep-score="dashboard?.sleepScore" />
-        <ProtocolsImpact />
+          <div id="user-profile">
+            <Profile />
+          </div>
+        <SleepScore id="sleep-score" :sleep-score="dashboard?.sleepScore" />
+        <ProtocolsImpact id="protocol-impact" />
       </section>
     </div>
   </div>

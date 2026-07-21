@@ -127,9 +127,7 @@ function onClose() {
             <BoxingGlove class="h-5 w-5 shrink-0 text-zinc-400" />
 
             <div class="min-w-0">
-              <p class="text-body text-xs font-medium text-zinc-400">
-                Battles
-              </p>
+              <p class="text-body text-xs font-medium text-zinc-400">Battles</p>
 
               <p class="mt-1 text-sm font-medium leading-none text-white">
                 {{ summary.battles }}
@@ -141,9 +139,7 @@ function onClose() {
             <TriangleUp class="h-5 w-5 shrink-0" />
 
             <div class="min-w-0">
-              <p class="text-body text-xs font-medium text-zinc-400">
-                Wins
-              </p>
+              <p class="text-body text-xs font-medium text-zinc-400">Wins</p>
 
               <p class="mt-1 text-sm font-medium leading-none text-white">
                 {{ summary.wins }}
@@ -155,9 +151,7 @@ function onClose() {
             <TriangleDown class="h-5 w-5 shrink-0" />
 
             <div class="min-w-0">
-              <p class="text-body text-xs font-medium text-zinc-400">
-                Losses
-              </p>
+              <p class="text-body text-xs font-medium text-zinc-400">Losses</p>
 
               <p class="mt-1 text-sm font-medium leading-none text-white">
                 {{ summary.losses }}
@@ -173,9 +167,7 @@ function onClose() {
             </div>
 
             <div class="min-w-0">
-              <p class="text-body text-xs font-medium text-zinc-400">
-                Win rate
-              </p>
+              <p class="text-body text-xs font-medium text-zinc-400">Win rate</p>
 
               <p class="mt-1 text-sm font-medium leading-none text-green-400">
                 {{ summary.winRate }}%
@@ -186,11 +178,7 @@ function onClose() {
       </div>
 
       <ul class="mt-4 w-full">
-        <BattleLogsCard
-          v-for="log in battleLogs"
-          :key="log.enemy_user_name"
-          v-bind="log"
-        />
+        <BattleLogsCard v-for="log in battleLogs" :key="log.enemy_user_name" v-bind="log" />
       </ul>
     </div>
   </div>

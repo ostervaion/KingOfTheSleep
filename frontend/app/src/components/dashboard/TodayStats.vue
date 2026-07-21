@@ -64,7 +64,7 @@ function closeDialog() {
   <Teleport to="body">
     <dialog
       ref="dialog"
-    class="m-auto lg:w-[50vw] max-w-5xl overflow-y-auto rounded-xl border-none bg-transparent p-0 backdrop:bg-black/60 sm:w-[90vw]"
+      class="m-auto lg:w-[50vw] max-w-5xl overflow-y-auto rounded-xl border-none bg-transparent p-0 backdrop:bg-black/60 sm:w-[90vw]"
     >
       <BattleLog @close="closeDialog" />
     </dialog>

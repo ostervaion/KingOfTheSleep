@@ -128,7 +128,7 @@ const chartOptions = {
 
 <template>
   <div
-    class="font-inter flex min-h-0 flex-2 flex-col overflow-hidden rounded-xl border-b border-[color:var(--border)] bg-(--kots-blocks-color) shadow-md shadow-black/20"
+    class="font-inter flex min-h-0 h-full flex-2 flex-col overflow-hidden rounded-xl border-b border-[color:var(--border)] bg-(--kots-blocks-color) shadow-md shadow-black/20"
   >
     <div class="flex items-start justify-between gap-4 px-5 pt-5 sm:px-6 sm:pt-6">
       <div>

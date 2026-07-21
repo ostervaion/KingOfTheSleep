@@ -20,7 +20,7 @@ function onClose() {
 
 <template>
   <div
-    class="font-inter overflow-hidden rounded-xl  bg-[var(--kots-blocks-color)] shadow-xl shadow-black/40"
+    class="font-inter overflow-hidden rounded-xl bg-[var(--kots-blocks-color)] shadow-xl shadow-black/40"
   >
     <div class="px-6 py-5">
       <div class="mb-4 flex items-start justify-between gap-4">
