@@ -25,21 +25,27 @@ function closeDialog() {
 const props = defineProps({
   todayStats: {
     type: Object,
-    default: () => ({ wins: 0, losses: 0, battles: [] }),
+    default: () => ({ wins: 0, losses: 0 }),
   },
 })
-const totalBattles = computed(() => props.todayStats.battles?.length ?? 0)
-const wins = computed(() => props.todayStats.wins ?? 0)
-const losses = computed(() => props.todayStats.losses ?? 0)
-const winRate = computed(() => {
-  const total = wins.value + losses.value
-  if (total === 0) return 0
-  return Math.round((wins.value / total) * 100)
+
+const summary = computed(() => {
+  // Replace these fallback totals with API values when the full battle history is loaded.
+  const battles = computed(() => props.todayStats.wins + props.todayStats.losses ?? 0)
+  const wins = computed(() => props.todayStats.wins ?? 0)
+  const losses = computed(() => props.todayStats.losses ?? 0)
+  const winRate = computed(() => {
+    const total = wins.value + losses.value
+    if (total === 0) return 0
+    return Math.round((wins.value / total) * 100)
+  })
+
+  return { battles, wins, losses, winRate }
 })
 
 const winRateColor = computed(() => {
-  if (winRate.value >= 60) return 'text-green-400'
-  if (winRate.value <= 40) return 'text-red-400'
+  if (summary.winRate >= 60) return 'text-green-400'
+  if (summary.winRate <= 40) return 'text-red-400'
   return 'text-orange-400'
 })
 </script>
@@ -68,21 +74,23 @@ const winRateColor = computed(() => {
         <div class="pt-3 items-center">
           <BoxingGlove class="text-center -mt-0.5 w-6.5 h-6.5 mb-1" />
           <p class="text-center text-xs font-medium text-body">battles</p>
-          <p class="text-center mb-2 text-xl font-light text-white">{{ totalBattles }}</p>
+          <p class="text-center mb-2 text-xl font-light text-white">{{ summary.battles }}</p>
         </div>
         <div class="pt-3 items-center">
           <TriangleUp class="text-center -mt-0.5 w-6.5 h-6.5 mb-0.5" />
           <p class="text-center text-xs font-medium text-body">wins</p>
-          <p class="text-center mb-2 text-xl font-light text-white">{{ wins }}</p>
+          <p class="text-center mb-2 text-xl font-light text-white">{{ summary.wins }}</p>
         </div>
         <div class="pt-3 items-center">
           <TriangleDown class="text-center -mt-0.5 w-6.5 h-6.5 mb-0.5" />
           <p class="text-center text-xs font-medium text-body">looses</p>
-          <p class="text-center mb-2 text-xl font-light text-white">{{ losses }}</p>
+          <p class="text-center mb-2 text-xl font-light text-white">{{ summary.losses }}</p>
         </div>
         <div class="pt-3 items-center">
           <p class="text-center text-xs font-medium text-body mb-0.5">win rate</p>
-          <p class="text-center mb-2 text-xl font-light" :class="winRateColor">{{ winRate }}%</p>
+          <p class="text-center mb-2 text-xl font-light" :class="winRateColor">
+            {{ summary.winRate }}%
+          </p>
         </div>
       </div>
     </div>
@@ -92,7 +100,7 @@ const winRateColor = computed(() => {
       ref="dialog"
       class="m-auto h-[90vh] w-[96vw] sm:w-[90vw] md:w-[500px] lg:w-[700px] max-w-[96vw] rounded-xl border-none bg-transparent p-0"
     >
-      <BattleLog ref="battleLogRef" @close="closeDialog" />
+      <BattleLog ref="battleLogRef" :summary="summary" @close="closeDialog" />
     </dialog>
   </Teleport>
 </template>

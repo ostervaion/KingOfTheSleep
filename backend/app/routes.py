@@ -296,7 +296,7 @@ async def getBattleData(
     session=Depends(get_session)
 ):
     now = datetime.now(timezone.utc)
-    return today_stats_controller._today_battles(session, current_user, now)
+    return today_stats_controller._today_battles(session, current_user.id, now)
 
 @router.get("/dashboard")
 async def dashboard_fake(

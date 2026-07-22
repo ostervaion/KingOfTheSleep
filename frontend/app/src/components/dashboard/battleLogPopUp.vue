@@ -94,24 +94,16 @@ async function loadLogs() {
 defineExpose({ loadLogs })
 
 const props = defineProps({
-  todayStats: {
+  summary: {
     type: Object,
-    default: () => ({ wins: 0, losses: 0, battles: [] }),
+    default: () => ({ battles: 0, wins: 0, losses: 0, winRate: 0 }),
   },
 })
 
-const summary = computed(() => {
-  // Replace these fallback totals with API values when the full battle history is loaded.
-  const battles = computed(() => props.todayStats.battles?.length ?? 0)
-  const wins = computed(() => props.todayStats.wins ?? 0)
-  const losses = computed(() => props.todayStats.losses ?? 0)
-  const winRate = computed(() => {
-    const total = wins.value + losses.value
-    if (total === 0) return 0
-    return Math.round((wins.value / total) * 100)
-  })
-
-  return { battles, wins, losses, winRate }
+const winRateColor = computed(() => {
+  if (props.summary.winRate >= 60) return 'text-green-400'
+  if (props.summary.winRate <= 40) return 'text-red-400'
+  return 'text-orange-400'
 })
 
 function onClose() {
@@ -173,7 +165,7 @@ function onClose() {
           </div>
           <div class="min-w-0">
             <p class="text-xs font-medium text-body text-neutral-400">Win rate</p>
-            <p class="mt-1 text-sm font-medium leading-none text-green-400">
+            <p class="mt-1 text-sm font-medium leading-none text-green-400" :class="winRateColor">
               {{ summary.winRate }}%
             </p>
           </div>

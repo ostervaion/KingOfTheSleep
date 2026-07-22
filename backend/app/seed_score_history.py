@@ -5,7 +5,7 @@ from random import choice, random, randint
 from sqlmodel import Session, select
 
 from database import engine
-from models import Protocol, ScoreHistory, User, UserProtocol, CombatHistory, ScoreHistory, User
+from models import Protocol, ScoreHistory, User, UserProtocol, CombatHistory, ScoreHistory, User, SleepData
 from security import hash_password
 
 # Fijamos la semilla para que los nombres aleatorios sigan un patrón predecible
@@ -126,6 +126,52 @@ def _seed_user_protocols(session: Session, users: list[User], protocols: list[Pr
 
     session.commit()
 
+def _seed_sleep_data(session: Session, users: list[User], now: datetime) -> None:
+    """
+    Genera un registro de SleepData por cada offset en SCORE_OFFSETS para
+    cada usuario dado, con valores aleatorios pero dentro de rangos realistas
+    (inspirados en métricas estilo Whoop).
+    """
+    if not users:
+        return
+
+    new_records = []
+    for user in users:
+        for offset in SCORE_OFFSETS:
+            created_at = now - timedelta(days=offset)
+
+            time_in_bed = round(randint(360, 540) / 60, 2)      # 6h-9h en horas
+            awake_time = round(randint(5, 45) / 60, 2)          # 5-45 min
+            light_sleep = round(randint(90, 240) / 60, 2)       # 1.5h-4h
+            slow_wave = round(randint(45, 120) / 60, 2)         # 45min-2h
+            rem = round(randint(45, 120) / 60, 2)                # 45min-2h
+
+            new_records.append(
+                SleepData(
+                    created_at=created_at,
+                    user_id=user.id,
+                    username=user.username,
+                    time_in_bed=time_in_bed,
+                    awake_time=awake_time,
+                    light_sleep=light_sleep,
+                    slow_wave=slow_wave,
+                    rem=rem,
+                    disturbance=randint(0, 8),
+                    baseline=round(randint(700, 900) / 100, 2),  # 7.0h-9.0h necesidad base
+                    debt=round(randint(0, 240) / 60, 2),          # 0h-4h de deuda
+                    strain=randint(0, 21),
+                    nap=round(choice([0, 0, 0, randint(10, 45)]) / 60, 2),
+                    respiratory_rate=randint(12, 18),
+                    performance=randint(40, 100),
+                    consistency=randint(30, 100),
+                    efficiency=randint(60, 100),
+                )
+            )
+
+    session.add_all(new_records)
+    session.commit()
+    print(f"Se han generado {len(new_records)} registros de SleepData.")
+
 def _seed_combat_history(session: Session, battles_per_user: int = 4) -> None:
     """
     Genera un mínimo de 'battles_per_user' registros de CombatHistory
@@ -206,17 +252,27 @@ def seed_score_history(backfill_existing: bool = True):
                 )
         session.commit()
 
+        print(f"Generando datos de sueño (SleepData) para los {len(nuevos_usuarios)} nuevos usuarios...")
+        _seed_sleep_data(session, nuevos_usuarios, now)
+
         print(f"Generando uso de protocolos para los {len(nuevos_usuarios)} nuevos usuarios...")
         _seed_user_protocols(session, nuevos_usuarios, protocols, now)
 
         if backfill_existing:
             existing_with_no_protocols = []
+            existing_with_no_sleep = []
             for user in usuarios_antes:
                 has_protocols = session.exec(
                     select(UserProtocol).where(UserProtocol.user_id == user.id)
                 ).first()
                 if not has_protocols:
                     existing_with_no_protocols.append(user)
+
+                has_sleep = session.exec(
+                    select(SleepData).where(SleepData.user_id == user.id)
+                ).first()
+                if not has_sleep:
+                    existing_with_no_sleep.append(user)
 
             if existing_with_no_protocols:
                 print(
@@ -227,9 +283,18 @@ def seed_score_history(backfill_existing: bool = True):
             else:
                 print("Backfill: todos los usuarios existentes ya tenían protocolos asignados.")
 
+            if existing_with_no_sleep:
+                print(
+                    f"Backfill: generando SleepData para "
+                    f"{len(existing_with_no_sleep)} usuarios existentes sin datos de sueño..."
+                )
+                _seed_sleep_data(session, existing_with_no_sleep, now)
+            else:
+                print("Backfill: todos los usuarios existentes ya tenían datos de sueño.")
+
         print(
             f"¡Seed completado con éxito! Se han acumulado {len(nuevos_usuarios)} usuarios más "
-            f"con 5 registros de historial y protocolos asignados cada uno."
+            f"con 5 registros de historial, sleep data y protocolos asignados cada uno."
         )
 
         print(f"Generando un mínimo de {MINIMO_BATALLAS_HOY} batallas para hoy...")
