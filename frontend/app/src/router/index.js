@@ -5,6 +5,7 @@ import DashboardView from '../views/DashboardView.vue'
 import AdminView from '../views/AdminView.vue'
 import PrivacyPolicy from '@/views/PrivacyPolicy.vue'
 import TermsUse from '@/views/TermsUse.vue'
+import ApiPlayground from '@/views/ApiPlayground.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -33,6 +34,12 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: AdminView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/public_api',
+      name: 'public_api',
+      component: ApiPlayground,
       meta: { requiresAuth: true },
     },
   ],

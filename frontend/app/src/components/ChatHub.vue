@@ -43,7 +43,7 @@ async function loadFriends() {
 
 function selectTab(tab) {
   activeTab.value = tab
-  if (tab === 'friends' && friends.value.length === 0 && !friendsLoading.value) {
+  if (tab === 'friends') {
     loadFriends()
   }
 }
