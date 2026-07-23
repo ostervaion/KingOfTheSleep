@@ -23,7 +23,6 @@ const achievements = ref({
   },
 })
 
-
 var usersData = ref({
   rank: '',
   level: '',
@@ -31,9 +30,6 @@ var usersData = ref({
   nextxp: '',
   todaysSleepScore: '',
 })
-
-
-
 
 const dialog = ref(null)
 const dialog_settings = ref(null)
@@ -105,31 +101,23 @@ function loadUsersData() {
       <div class="min-w-0 flex-1">
         <div class="flex justify-items-start">
           <div class="pr-7">
-        <p class="text-xs font-medium tracking-wide text-body text-zinc-400">rank</p>
-        <p class="mb-4 text-xl font-light leading-tight text-white">#{{ usersData.rank }}</p>
-        </div>
-<div>
-  <p class="text-xs font-medium tracking-wide text-body text-zinc-400">
-    achievements
-  </p>
+            <p class="text-xs font-medium tracking-wide text-body text-zinc-400">rank</p>
+            <p class="mb-4 text-xl font-light leading-tight text-white">#{{ usersData.rank }}</p>
+          </div>
+          <div>
+            <p class="text-xs font-medium tracking-wide text-body text-zinc-400">achievements</p>
 
-  <div class="mt-1 flex items-center gap-2">
-    <div
-      v-for="(achievement, name) in achievements"
-      :key="name"
-    >
-      <div
-        v-if="achievement.unlocked"
-        class="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden"
-      >
-        <component
-          :is="achievement.icon"
-          class="h-full w-full object-contain"
-        />
-      </div>
-    </div>
-  </div>
-</div>
+            <div class="mt-1 flex items-center gap-2">
+              <div v-for="(achievement, name) in achievements" :key="name">
+                <div
+                  v-if="achievement.unlocked"
+                  class="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden"
+                >
+                  <component :is="achievement.icon" class="h-full w-full object-contain" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <p class="text-xs font-medium % tracking-wide text-body text-zinc-400">level</p>
         <p class="mb-2 text-xl font-light leading-tight text-white">{{ usersData.level }}</p>

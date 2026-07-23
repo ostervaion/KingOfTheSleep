@@ -122,7 +122,7 @@ onUnmounted(() => {
         class="h-72 overflow-y-auto flex flex-col gap-2 px-4 py-4 bg-[#1a1a1f]"
       >
         <p v-if="conversationMessages.length === 0" class="text-sm text-[#555] text-center mt-8">
-          Esperando mensajes...
+          Waiting messages...
         </p>
 
         <!-- Iteramos sobre los mensajes filtrados para esta conversación -->
@@ -160,13 +160,13 @@ onUnmounted(() => {
           :disabled="!isConnected || !isAuthenticated"
           class="flex-1 bg-[#25252e] border border-[#333] rounded-lg px-3 py-2 text-sm text-[#e0e0e0] placeholder-[#555] outline-none focus:border-[#5555aa] disabled:opacity-50 transition-colors"
           :placeholder="
-            isConnected && isAuthenticated ? 'Escribe un mensaje...' : 'Conectando al servidor...'
+            isConnected && isAuthenticated ? 'Write a message...' : 'Conecting...'
           "
           @keyup.enter="handleSend"
         />
         <button
           @click="handleSend"
-          :disabled="!isConnected || !isAuthenticated"
+          :disabled="!isTargetOnline || !isAuthenticated || props.to_user == myUsername"
           class="bg-[#3d3d7a] hover:bg-[#4a4a99] disabled:bg-[#252535] disabled:text-[#555] px-4 py-2 rounded-lg text-[#aaaaee] text-sm font-medium transition-colors"
         >
           ➤

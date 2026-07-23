@@ -78,11 +78,8 @@ function updateActiveMobilePage() {
     </div>
 
     <!-- Horizontal pages -->
-    <div
-      ref="mobileScroller"
-      @scroll="updateActiveMobilePage"
-      class="no-scrollbar flex min-h-0 flex-1 w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden scroll-smooth"
-    >
+    <div ref="mobileScroller" @scroll="updateActiveMobilePage"
+      class="no-scrollbar flex min-h-0 flex-1 w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden scroll-smooth">
       <!-- Page 1: Lobby + TodayStats -->
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
         <div class="grid h-full min-h-0 grid-rows-[1fr_auto] gap-4">
@@ -109,11 +106,7 @@ function updateActiveMobilePage() {
           <div id="profile-mobile">
             <Profile class="h-full min-h-0" />
           </div>
-          <SleepScore
-            id="sleep-score-mobile"
-            :sleep-score="dashboard?.sleepScore"
-            class="h-full min-h-0"
-          />
+          <SleepScore id="sleep-score-mobile" :sleep-score="dashboard?.sleepScore" class="h-full min-h-0" />
         </div>
       </section>
 
@@ -125,34 +118,25 @@ function updateActiveMobilePage() {
 
     <!-- Mobile dots -->
     <div
-      class="pt-5 pointer-events-none absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full px-3 py-0"
-    >
-      <span
-        v-for="index in mobilePages"
-        :key="index"
-        class="h-2 rounded-full transition-all duration-200"
-        :class="activeMobilePage === index - 1 ? 'w-6 bg-cyan-200' : 'w-2 bg-white/40'"
-      />
+      class="pt-5 pointer-events-none absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full px-3 py-0">
+      <span v-for="index in mobilePages" :key="index" class="h-2 rounded-full transition-all duration-200"
+        :class="activeMobilePage === index - 1 ? 'w-6 bg-cyan-200' : 'w-2 bg-white/40'" />
     </div>
   </div>
 
   <!-- PARA ORDENADOR -->
-  <div
-    class="hidden h-[calc(100dvh-64px)] flex-col gap-3 overflow-hidden px-8 py-4 mt-5 text-(--text) lg:flex"
-  >
+  <div class="hidden h-[calc(100dvh-64px)] flex-col gap-3 overflow-hidden px-8 py-4 mt-5 text-(--text) lg:flex">
     <NextBattle id="next-battle" :next-battle="dashboard?.nextBattle" />
 
-    <div
-      class="mx-auto grid w-full flex-1 min-h-0 min-w-0 gap-4 items-stretch lg:grid-cols-[1fr_1.2fr_1.2fr]"
-    >
-      <section class="flex flex-col gap-4 min-h-0">
-        <SleepDataForm v-if="!dashboard?.lobby" @saved="fetchDashboard" />
+    <div class="mx-auto grid w-full flex-1 min-h-0 min-w-0 gap-4 items-stretch lg:grid-cols-[1fr_1.2fr_1.2fr]">
+      <section class="flex min-h-0 flex-col gap-4">
+        <SleepDataForm v-if="!dashboard?.lobby" class="flex-1 min-h-0" @saved="fetchDashboard" />
 
-        <div v-else id="battle">
-          <Battle />
+        <div v-else id="battle" class="flex-1 min-h-0 overflow-hidden">
+          <Battle class="h-full w-full" :lobby="dashboard.lobby" />
         </div>
 
-        <div id="today-stats">
+        <div id="today-stats" class="shrink-0">
           <TodayStats />
         </div>
       </section>

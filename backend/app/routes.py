@@ -100,7 +100,57 @@ def add_friend(
  
     return {"message": f"{username} añadido como amigo"}
 
+@router.delete("/friends/{username}", status_code=status.HTTP_200_OK)
+def delete_friend(
+    username: str,
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session),
+):
+    if username == current_user.username:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No puedes eliminarte a ti mismo",
+        )
 
+    friend_user = get_user_by_username(session, username)
+
+    if friend_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado",
+        )
+
+    # Relación: usuario actual -> amigo
+    friendship = session.exec(
+        select(Friend).where(
+            Friend.user_id == current_user.id,
+            Friend.friend_id == friend_user.id,
+        )
+    ).first()
+
+    # Relación inversa: amigo -> usuario actual
+    reverse_friendship = session.exec(
+        select(Friend).where(
+            Friend.user_id == friend_user.id,
+            Friend.friend_id == current_user.id,
+        )
+    ).first()
+
+    if friendship is None and reverse_friendship is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No sois amigos",
+        )
+
+    if friendship is not None:
+        session.delete(friendship)
+
+    if reverse_friendship is not None:
+        session.delete(reverse_friendship)
+
+    session.commit()
+
+    return {"message": f"{username} eliminado de tus amigos"}
 
 @router.post("/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
 def register(user_data: UserCreate, session=Depends(get_session)):
