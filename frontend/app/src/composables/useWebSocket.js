@@ -1,12 +1,43 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const ws = ref(null)
 const isConnected = ref(false)
 const isAuthenticated = ref(false)
 const onlineUsers = ref(new Set())
+const updateDashboard = ref(false)
 
 const chatMessages = ref([])
+const globalMessages = ref([])
 const myUsername = ref('')
+
+// Chat actualmente abierto por el usuario: null (cerrado), 'global', o un username.
+// Se usa para no marcar como "no leído" lo que ya se está viendo.
+const activeChatTarget = ref(null)
+
+// Contadores de mensajes no leídos
+const unreadPrivate = ref({}) // { username: count }
+const unreadGlobal = ref(0)
+
+const totalUnread = computed(() => {
+  const privateTotal = Object.values(unreadPrivate.value).reduce((a, b) => a + b, 0)
+  return privateTotal + unreadGlobal.value
+})
+
+// Lista de personas con las que hay conversación (te han escrito o les has escrito),
+// ordenadas por el mensaje más reciente primero.
+const conversations = computed(() => {
+  const map = new Map()
+  for (const msg of chatMessages.value) {
+    const other = msg.from === myUsername.value ? msg.to : msg.from
+    if (!other || other === myUsername.value) continue
+    map.set(other, msg) // se queda con el último mensaje de esa persona
+  }
+  return Array.from(map.entries()).map(([username, lastMessage]) => ({
+    username,
+    lastMessage,
+    unread: unreadPrivate.value[username] || 0,
+  }))
+})
 
 export function useWebSocket() {
   const API_WS_URL = 'api/ws'
@@ -55,6 +86,21 @@ export function useWebSocket() {
           case 'chat:message':
             // Guardamos el mensaje en nuestra lista global de chats
             chatMessages.value.push(payload)
+
+            if (payload.from !== myUsername.value && activeChatTarget.value !== payload.from) {
+              unreadPrivate.value = {
+                ...unreadPrivate.value,
+                [payload.from]: (unreadPrivate.value[payload.from] || 0) + 1,
+              }
+            }
+            break
+
+          case 'chat:global':
+            globalMessages.value.push(payload)
+
+            if (payload.from !== myUsername.value && activeChatTarget.value !== 'global') {
+              unreadGlobal.value += 1
+            }
             break
 
           case 'error':
@@ -63,6 +109,10 @@ export function useWebSocket() {
 
           case 'presence:list':
             onlineUsers.value = new Set(payload.online)
+            break
+          case 'fetch':
+            updateDashboard.value = true
+            console.log('FETCH')
             break
 
           case 'presence:update':
@@ -100,6 +150,22 @@ export function useWebSocket() {
     }
   }
 
+  // Marca qué chat está viendo el usuario ahora mismo y limpia sus no leídos.
+  // target: null (nada abierto), 'global', o un username.
+  function setActiveChat(target) {
+    activeChatTarget.value = target
+
+    if (target === 'global') {
+      unreadGlobal.value = 0
+    } else if (target) {
+      if (unreadPrivate.value[target]) {
+        const next = { ...unreadPrivate.value }
+        delete next[target]
+        unreadPrivate.value = next
+      }
+    }
+  }
+
   function sendPayload(type, data) {
     if (!ws.value || ws.value.readyState !== WebSocket.OPEN) {
       console.warn('No se puede enviar el mensaje, el socket está cerrado.')
@@ -121,7 +187,14 @@ export function useWebSocket() {
     isConnected,
     isAuthenticated,
     chatMessages,
+    globalMessages,
     myUsername,
     onlineUsers,
+    updateDashboard,
+    conversations,
+    unreadPrivate,
+    unreadGlobal,
+    totalUnread,
+    setActiveChat,
   }
 }

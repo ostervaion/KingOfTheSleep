@@ -1,23 +1,40 @@
 <script setup>
-import { ref, onMounted, nextTick, computed } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
 import { useWebSocket } from '@/composables/useWebSocket' // Importamos el nuevo composable unificado
 
 const emit = defineEmits(['close'])
 const props = defineProps({
+  // Si scope es 'global' se ignora to_user y se usa el chat global
+  scope: {
+    type: String,
+    default: 'private',
+  },
   to_user: {
     type: String,
-    required: true,
+    default: null,
   },
 })
 
-const { chatMessages, isConnected, isAuthenticated, sendPayload, onlineUsers } = useWebSocket()
+const isGlobal = computed(() => props.scope === 'global')
 
-const isTargetOnline = computed(() => onlineUsers.value.has(props.to_user))
+const {
+  chatMessages,
+  globalMessages,
+  isConnected,
+  isAuthenticated,
+  sendPayload,
+  onlineUsers,
+  myUsername,
+  setActiveChat,
+} = useWebSocket()
+
+const isTargetOnline = computed(() => !isGlobal.value && onlineUsers.value.has(props.to_user))
 
 const messageText = ref('')
 const messagesContainer = ref(null)
 
 const conversationMessages = computed(() => {
+  if (isGlobal.value) return globalMessages.value
   return chatMessages.value.filter((msg) => msg.from === props.to_user || msg.to === props.to_user)
 })
 
@@ -35,10 +52,16 @@ function handleSend() {
   }
   if (!messageText.value.trim()) return
 
-  sendPayload('chat:message', {
-    to: props.to_user,
-    text: messageText.value.trim(),
-  })
+  if (isGlobal.value) {
+    sendPayload('chat:global', {
+      text: messageText.value.trim(),
+    })
+  } else {
+    sendPayload('chat:message', {
+      to: props.to_user,
+      text: messageText.value.trim(),
+    })
+  }
 
   messageText.value = ''
 
@@ -46,7 +69,14 @@ function handleSend() {
 }
 
 onMounted(() => {
+  // Avisamos al composable de qué chat estamos viendo, para que no cuente
+  // como "no leídos" los mensajes de esta conversación mientras está abierta.
+  setActiveChat(isGlobal.value ? 'global' : props.to_user)
   scrollToBottom()
+})
+
+onUnmounted(() => {
+  setActiveChat(null)
 })
 </script>
 
@@ -62,15 +92,18 @@ onMounted(() => {
           <div
             class="w-8 h-8 rounded-full bg-[#2a2a3a] flex items-center justify-center text-[#8888cc] text-sm font-semibold"
           >
-            {{ props.to_user[0].toUpperCase() }}
+            {{ isGlobal ? '🌐' : props.to_user[0].toUpperCase() }}
           </div>
           <div>
-            <p class="text-sm font-medium text-[#e8e8f0] leading-none">{{ props.to_user }}</p>
-            <p class="text-xs mt-1 flex items-center gap-1.5">
+            <p class="text-sm font-medium text-[#e8e8f0] leading-none">
+              {{ isGlobal ? 'Chat global' : props.to_user }}
+            </p>
+            <p v-if="isGlobal" class="text-xs mt-1 text-[#555]">All users</p>
+            <p v-else class="text-xs mt-1 flex items-center gap-1.5">
               <span
                 :class="['w-2 h-2 rounded-full', isTargetOnline ? 'bg-[#4caf50]' : 'bg-[#f44336]']"
               ></span>
-              <span class="text-[#555]">{{ isTargetOnline ? 'Conectado' : 'Desconectado' }}</span>
+              <span class="text-[#555]">{{ isTargetOnline ? 'Conected' : 'Disconected' }}</span>
             </p>
           </div>
         </div>
@@ -96,23 +129,23 @@ onMounted(() => {
         <div
           v-for="(msg, index) in conversationMessages"
           :key="index"
-          :class="['flex', msg.from === props.to_user ? 'justify-start' : 'justify-end']"
+          :class="['flex', msg.from === myUsername ? 'justify-end' : 'justify-start']"
         >
           <div
             :class="[
               'max-w-[75%] px-3 py-2',
-              msg.from === props.to_user
-                ? 'bg-[#25252e] rounded-tl rounded-tr-xl rounded-br-xl rounded-bl-xl'
-                : 'bg-[#2d2d4a] rounded-tl-xl rounded-tr rounded-br-xl rounded-bl-xl',
+              msg.from === myUsername
+                ? 'bg-[#2d2d4a] rounded-tl-xl rounded-tr rounded-br-xl rounded-bl-xl'
+                : 'bg-[#25252e] rounded-tl rounded-tr-xl rounded-br-xl rounded-bl-xl',
             ]"
           >
             <p
               :class="[
                 'text-[10px] mb-1',
-                msg.from === props.to_user ? 'text-[#555]' : 'text-[#8888aa] text-right',
+                msg.from === myUsername ? 'text-[#8888aa] text-right' : 'text-[#555]',
               ]"
             >
-              {{ msg.from === props.to_user ? msg.from : 'tú' }}
+              {{ msg.from === myUsername ? 'tú' : msg.from }}
             </p>
             <p class="text-sm text-[#ddd]">{{ msg.text }}</p>
           </div>

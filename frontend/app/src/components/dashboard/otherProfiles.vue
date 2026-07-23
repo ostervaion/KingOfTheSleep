@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Chat from '@/components/Chat.vue'
 import ChatIcon from '@/assets/chat-icon_white.svg'
+import api from '@/api/api'
 
 const emit = defineEmits(['close', 'chat'])
 
@@ -20,14 +21,59 @@ const props = defineProps({
 
 const selectedUser = ref(null)
 
+// 'idle' | 'loading' | 'added' | 'already' | 'error'
+const friendStatus = ref('idle')
+
+const friendButtonLabel = {
+  idle: 'Add as Friend',
+  loading: 'Adding...',
+  added: 'Friend added ✓',
+  already: 'Already friends',
+  error: 'Retry',
+}
+
 function onClose() {
   emit('close')
+}
+
+async function checkIfAlreadyFriend() {
+  try {
+    const { data } = await api.get('/friends')
+    if (data.includes(props.user.username)) {
+      friendStatus.value = 'already'
+    }
+  } catch (err) {
+    // Si falla la comprobación no bloqueamos el botón, simplemente se
+    // reintentará el estado real al pulsar "Add as Friend"
+    console.error('No se pudo comprobar la lista de amigos:', err)
+  }
+}
+
+async function addFriend() {
+  if (friendStatus.value === 'loading' || friendStatus.value === 'already') return
+
+  friendStatus.value = 'loading'
+  try {
+    await api.post(`/friends/${props.user.username}`)
+    friendStatus.value = 'added'
+  } catch (err) {
+    if (err.response?.status === 400 && err.response?.data?.detail === 'Ya sois amigos') {
+      friendStatus.value = 'already'
+    } else {
+      friendStatus.value = 'error'
+      console.error('Error al añadir amigo:', err)
+    }
+  }
 }
 
 function onChat() {
   selectedUser.value = props.user.username
   emit('chat', props.user)
 }
+
+onMounted(() => {
+  checkIfAlreadyFriend()
+})
 </script>
 
 <template>
@@ -101,6 +147,30 @@ function onChat() {
             <span>Chat with {{ user.username }}</span>
           </button>
         </div>
+
+        <button
+          @click="addFriend"
+          :disabled="friendStatus === 'loading' || friendStatus === 'already'"
+          :class="[
+            'mt-5 w-full rounded-md px-4 py-2.5 text-xs font-semibold transition',
+            friendStatus === 'added'
+              ? 'bg-emerald-200 text-[#171715]'
+              : friendStatus === 'already'
+                ? 'bg-white/10 text-neutral-400 cursor-not-allowed'
+                : friendStatus === 'error'
+                  ? 'bg-red-300 text-[#171715] hover:bg-red-200'
+                  : 'bg-cyan-200 text-[#171715] hover:bg-cyan-50 disabled:opacity-60',
+          ]"
+        >
+          {{ friendButtonLabel[friendStatus] }}
+        </button>
+
+        <button
+          @click="onChat"
+          class="mt-5 w-full rounded-md bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
+        >
+          Chat with {{ user.username }}
+        </button>
       </div>
     </div>
   </div>

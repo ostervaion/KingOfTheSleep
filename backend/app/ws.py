@@ -19,6 +19,25 @@ async def broadcast_presence(username: str, online: bool):
         except Exception:
             pass
 
+async def broadcast_chat_global(sender: str, text: str):
+    payload = json.dumps({
+        "type": "chat:global",
+        "payload": {"from": sender, "text": text}
+    })
+    for conn in list(connections.keys()):
+        try:
+            await conn.send_text(payload)
+        except Exception:
+            pass
+
+async def broadcast_fetch():
+    payload = json.dumps({"type": "fetch"})
+    for conn in list(connections.keys()):
+        try:
+            await conn.send_text(payload)
+        except Exception:
+            pass
+
 def unregister_connection(websocket: WebSocket):
     username = connections.pop(websocket, None)
     if username:
@@ -104,8 +123,14 @@ async def websocket_endpoint(websocket: WebSocket):
                 
                 await websocket.send_text(json.dumps(payload))
 
+            elif msg_type == "chat:global":
+                text = data.get("text")
+                if not text:
+                    continue
+
+                await broadcast_chat_global(sender, text)
+
             elif msg_type.startswith("game:"):
-                # Aquí procesarías la lógica del juego usando 'sender'
                 pass
 
     except WebSocketDisconnect:

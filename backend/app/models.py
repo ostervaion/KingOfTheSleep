@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel,  UniqueConstraint
 from pydantic import EmailStr
 from datetime import datetime
 
@@ -73,6 +73,19 @@ class UserProtocol(SQLModel, table=True):
     protocol_id: Optional[int] = Field(default=None, foreign_key="protocols.id", index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
 
+# Tabla de amistades. Al añadir un amigo se crean las dos filas (user_id->friend_id
+# y friend_id->user_id) para que la relación sea simétrica desde el primer momento
+# (sin flujo de solicitud/aceptación).
+class Friend(SQLModel, table=True):
+    __tablename__ = "friends"
+    __table_args__ = (UniqueConstraint("user_id", "friend_id", name="uq_friend_pair"),)
+ 
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: Optional[int] = Field(default=None, foreign_key="users.id", index=True)
+    friend_id: Optional[int] = Field(default=None, foreign_key="users.id", index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+
+
 # Asumimos que esto es lo que usara Mugi para gestionar avatares de juego.
 class GameAvatar(SQLModel, table=True):
     __tablename__ = "game_avatars"
@@ -118,6 +131,14 @@ class UserPublic(SQLModel):
 class Token(SQLModel):
     access_token: str
     token_type: str
+
+
+# Payload para el PATCH de /profile. Todos los campos son opcionales:
+# el usuario puede mandar solo el email, solo el password, o ambos.
+class UserUpdate(SQLModel):
+    email: Optional[EmailStr] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
 
 
 class TokenData(SQLModel):

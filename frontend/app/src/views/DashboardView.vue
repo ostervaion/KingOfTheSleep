@@ -8,16 +8,21 @@ import Profile from '@/components/dashboard/Profile.vue'
 import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Battle from '@/components/dashboard/Battle.vue'
 import ChatButton from '@/components/dashboard/ChatButton.vue'
-import { useAppStore } from '@/stores/app'
 import { useWebSocket } from '@/composables/useWebSocket'
-import { ref, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, nextTick, watch, computed, onMounted, onUnmounted } from 'vue'
 import api from '@/api/api'
 import SleepDataForm from '@/components/SleepDataForm.vue'
 import { startDashboardTour } from '@/tours/dashboardTour'
 
 const dashboard = ref(null)
-const appStore = useAppStore()
-const { connect, disconnect } = useWebSocket()
+const { connect, disconnect, updateDashboard } = useWebSocket()
+
+watch(updateDashboard, (newValue) => {
+  if (newValue === true) {
+    fetchDashboard()
+  }
+  updateDashboard.value = false
+})
 
 async function fetchDashboard() {
   try {
@@ -26,6 +31,7 @@ async function fetchDashboard() {
       ...response.data,
       ranking: Array.isArray(response.data?.ranking) ? response.data.ranking : [],
     }
+    console.log('Updating')
   } catch (error) {
     console.error('Error cargando dashboard:', error)
   }
@@ -34,9 +40,7 @@ async function fetchDashboard() {
 let intervalId = null
 
 onMounted(async () => {
-  await fetchDashboard()
-
-  appStore.onDashboard = true
+  fetchDashboard()
   intervalId = setInterval(fetchDashboard, 30000)
   connect()
 

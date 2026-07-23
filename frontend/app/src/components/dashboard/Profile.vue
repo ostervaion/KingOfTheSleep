@@ -170,7 +170,6 @@ function loadUsersData() {
   </div>
 
   <Teleport to="body">
-    <!-- log out button -->
     <dialog
       ref="dialog"
       class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent"

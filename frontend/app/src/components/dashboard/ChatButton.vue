@@ -1,8 +1,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useDraggable } from '@vueuse/core'
-import Chat from '@/components/dashboard/profileSettings.vue'
+import { useWebSocket } from '@/composables/useWebSocket'
+import ChatHub from '@/components/ChatHub.vue'
 import ChatIcon from '@/assets/chat-icon.svg'
+
+const { totalUnread } = useWebSocket()
 
 const button = ref(null)
 const dragged = ref(false)
@@ -49,6 +52,12 @@ function closeDialog() {
     @click="handleClick"
   >
     <ChatIcon class="h-7 w-auto text-cyan-200" />
+    <span
+      v-if="totalUnread > 0"
+      class="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 rounded-full bg-[#e8455a] text-[11px] text-white flex items-center justify-center font-semibold border-2 border-[#0f0f12]"
+    >
+      {{ totalUnread > 9 ? '9+' : totalUnread }}
+    </span>
   </button>
 
   <Teleport to="body">
@@ -56,7 +65,7 @@ function closeDialog() {
       ref="dialog"
       class="m-auto h-[90vh] w-[96vw] sm:w-[90vw] md:w-[500px] lg:w-[700px] max-w-[96vw] rounded-xl border-none bg-transparent p-0"
     >
-      <Chat @close="closeDialog" />
+      <ChatHub @close="closeDialog" />
     </dialog>
   </Teleport>
 </template>

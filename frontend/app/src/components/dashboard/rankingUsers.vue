@@ -10,6 +10,7 @@ const props = defineProps({
   name: String,
   points: String,
   posChange: String,
+  profilePicture: String,
   trend: {
     type: String,
     default: 'same',
@@ -40,12 +41,16 @@ function closeDialog() {
 <template>
   <li
     @click="openDialog"
-    class="cursor-pointer odd:bg-white/[0.015] even:bg-transparent transition hover:bg-white/[0.04]"
+    class="cursor-pointer odd:bg-white/[0.015] even:bg-transparent transition hover:scale-102 hover:bg-white/[0.04]"
   >
     <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
       <div class="text-sm text-heading">{{ props.ranking }}</div>
       <div class="flex items-center gap-3">
-        <img class="h-8 w-8 rounded-full object-cover" :src="example" alt="" />
+        <img
+          class="h-8 w-8 rounded-full object-cover"
+          :src="props.profilePicture || example"
+          alt=""
+        />
         <span class="text-sm text-heading">{{ props.name }}</span>
       </div>
 
@@ -68,7 +73,7 @@ function closeDialog() {
       <OtherProfiles
         :user="{
           username: props.name,
-          profilePicture: example,
+          profilePicture: props.profilePicture || example,
           rank: props.ranking,
           level: '42',
           points: props.points,
