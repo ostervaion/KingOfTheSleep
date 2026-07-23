@@ -173,7 +173,12 @@ function onClose() {
       </div>
 
       <ul class="mt-4">
-        <BattleLogsCard v-for="log in battleLogs" :key="log.enemy_user_name" v-bind="log" />
+        <BattleLogsCard
+          v-for="log in battleLogs.battles"
+          :key="log.combat_id"
+          v-bind="log"
+          :me="battleLogs.me"
+        />
       </ul>
     </div>
   </section>

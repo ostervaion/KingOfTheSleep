@@ -28,8 +28,6 @@ def _today_stats(session, actual_user_id: int, now: datetime) -> TodayStatsRead:
         wins = winsLoses.wins,
         losses = winsLoses.losses,
     )
-    print("////////////TODAY_STATS//////////////")
-    print(stats)
     return stats
 
 def _today_battles(session, actual_user_id: int, now: datetime):
@@ -96,15 +94,10 @@ def _today_battles(session, actual_user_id: int, now: datetime):
         for user_id, protocol_name in protocol_rows:
             protocols_by_user[user_id].append(protocol_name)
     # ----------------------------------------------------------------
-    print("////////////////////////////")
-    if battles:
-        print(battles[0]._mapping.keys())
-    print("////////////////////////////")
-    print(me)
     result = {
         "me": {
-            "username": me.username,
-            "sleep": me.SleepData.dict() if me.SleepData else None,
+            "name": me.username,
+            "stats": me.SleepData.dict() if me.SleepData else None,
             "user_avatar": me.user_avatar_path,
             "game_avatar": me.game_avatar_path,
         } if me else None,
@@ -121,6 +114,4 @@ def _today_battles(session, actual_user_id: int, now: datetime):
             for b in battles
         ],
     }
-
-    print(result)
     return result

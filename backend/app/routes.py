@@ -4,7 +4,7 @@ from uuid import uuid4
 from collections import defaultdict
 from sqlalchemy import func, case, and_, or_
 from sqlalchemy.orm import aliased
-from controllers import today_stats_controller
+from controllers import today_stats_controller, protocol_ranking_controller
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
@@ -311,13 +311,15 @@ async def dashboard_fake(
     protocol_impact = _build_protocol_impacts(session, current_user.id)
     lobby = _lobby_state(session, current_user.id, now)
     today_stats = today_stats_controller._today_stats(session, current_user.id, now)
+    protocols = protocol_ranking_controller._protocol_stats(session)
     return {
         "nextBattle": next_battle,
         "sleepScore": sleep_score,
         "ranking": ranking,
         "protocolImpacts": protocol_impact,
         "lobby": lobby,
-        "todayStats": today_stats
+        "todayStats": today_stats,
+        "protocols": protocols
     }
 
 

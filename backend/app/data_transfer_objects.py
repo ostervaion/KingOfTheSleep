@@ -19,6 +19,17 @@ class ResumedBattleRead(BaseModel):
     winner_name: str
     loser_name: str
     
+class RankedProtocolData(BaseModel):
+
+    ranking: int
+    protocol: str
+    usage: int  #should this be a float?
+    winrate: float
+
+class RankedProtocolsRead(BaseModel):
+
+    winner_protocols: list[RankedProtocolData]
+    loser_protocols: list[RankedProtocolData]
 
 class TodayStatsRead(BaseModel):
 
