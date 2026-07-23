@@ -124,7 +124,7 @@ export function startDashboardTour() {
 
   const driverObj = driver({
     showProgress: true,
-    allowClose: false,
+    allowClose: true,
     popoverClass: 'kots-driver-popover',
     steps: isDesktop ? desktopSteps : mobileSteps,
   })

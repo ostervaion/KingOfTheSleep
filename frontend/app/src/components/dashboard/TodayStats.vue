@@ -24,8 +24,8 @@ function closeDialog() {
   >
     <div class="px-6 pb-4 pt-5.5">
       <div class="flex items-center justify-between">
-        <div class="border border-cyan-200 rounded-md px-2 py-0.5 text-gray-800 leading-none">
-          <h2 class="text-cyan-200 text-sm font-medium text-heading">Today's Stats</h2>
+        <div class="border border-cyan-200 rounded-md px-1.5 py-0.5 text-gray-800 leading-none">
+          <h2 class="text-cyan-200 text-xs font-medium text-heading">Today's Stats</h2>
         </div>
         <div class="flex rounded-full px-1.25 text-right">
           <div class="flex rounded-full px-1.25 py-0.75 bg-(--kots-background-color)">

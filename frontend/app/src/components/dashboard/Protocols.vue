@@ -51,12 +51,12 @@ function buttonClass(ranking) {
 
 <template>
   <div
-    class="font-inter flex flex-col flex-1 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) shadow-md shadow-black/20 border-b border-[color:var(--border)]"
+    class="font-inter flex flex-col flex-2 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) shadow-md shadow-black/20 border-b border-[color:var(--border)]"
   >
     <div class="px-6 pb-4 pt-4">
       <div class="flex items-center justify-between">
-        <div class="border border-cyan-200 rounded-md px-2 py-0.5 text-gray-800 leading-none">
-          <h2 class="text-cyan-200 text-sm font-medium text-heading">Protocols</h2>
+        <div class="border border-cyan-200 rounded-md px-1.5 py-0.5 text-gray-800 leading-none">
+          <h2 class="text-cyan-200 text-xs font-medium text-heading">Protocols</h2>
         </div>
         <div class="flex rounded-full bg-(--kots-background-color) px-1.25 py-0.75">
           <button :class="buttonClass('today')" @click="updateButtonColor('today')">today</button>
