@@ -2,18 +2,18 @@
 import { computed, ref } from 'vue'
 import api from '@/api/api'
 
-import PerformanceIcon from '@/assets/triangle-up.svg'
-import ConsistencyIcon from '@/assets/lamb_battle.svg'
-import EfficiencyIcon from '@/assets/lamb_battle.svg'
-import DisturbanceIcon from '@/assets/lamb_battle.svg'
-import TimeInBedIcon from '@/assets/lamb_battle.svg'
-import AwakeTimeIcon from '@/assets/lamb_battle.svg'
-import LightSleepIcon from '@/assets/lamb_battle.svg'
-import SlowWaveIcon from '@/assets/lamb_battle.svg'
-import RemIcon from '@/assets/lamb_battle.svg'
-import BaselineIcon from '@/assets/lamb_battle.svg'
-import DebtIcon from '@/assets/lamb_battle.svg'
-import StrainIcon from '@/assets/lamb_battle.svg'
+import PerformanceIcon from '@/assets/performance.svg'
+import ConsistencyIcon from '@/assets/consistency.svg'
+import EfficiencyIcon from '@/assets/efficiency.svg'
+import DisturbanceIcon from '@/assets/disturbance.svg'
+import TimeInBedIcon from '@/assets/timeInBed.svg'
+import AwakeTimeIcon from '@/assets/awakeTime.svg'
+import LightSleepIcon from '@/assets/lightSleep.svg'
+import SlowWaveIcon from '@/assets/slowWave.svg'
+import RemIcon from '@/assets/rem.svg'
+import BaselineIcon from '@/assets/baseline.svg'
+import DebtIcon from '@/assets/debt.svg'
+import StrainIcon from '@/assets/strain.svg'
 import NapIcon from '@/assets/lamb_battle.svg'
 import RespiratoryRateIcon from '@/assets/lamb_battle.svg'
 
@@ -31,7 +31,7 @@ const formData = ref({
   lightSleep: 2,
   slowWave: 3,
   rem: 2,
-  disturbance: 0,
+  disturbance: 15,
   baseline: 8,
   debt: 0,
   strain: 1,
@@ -223,7 +223,7 @@ const resetForm = () => {
 
 <template>
   <div
-    class="font-inter flex h-full min-h-0 w-full min-w-0 flex-6 flex-col overflow-auto rounded-xl border border-[color:var(--border)] bg-(--kots-blocks-color) p-4 text-sm text-(--text) sm:p-6"
+    class="font-inter flex h-full min-h-0 w-full min-w-0 flex-6 flex-col overflow-auto rounded-xl border-b border-(--border) shadow-md shadow-black/20 bg-(--kots-blocks-color) p-4 text-sm text-(--text) sm:p-6"
   >
     <form
       v-if="step === 1"
@@ -304,7 +304,7 @@ const resetForm = () => {
             <div class="mt-3 flex shrink-0 justify-center">
               <component
                 :is="fieldIcons[field.key]"
-                class="h-4 w-4 shrink-0 opacity-80"
+                class="h-6 w-6 shrink-0 opacity-80"
                 aria-hidden="true"
               />
             </div>
