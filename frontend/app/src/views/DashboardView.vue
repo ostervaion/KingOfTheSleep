@@ -13,6 +13,9 @@ import { ref, nextTick, watch, computed, onMounted, onUnmounted } from 'vue'
 import api from '@/api/api'
 import SleepDataForm from '@/components/SleepDataForm.vue'
 import { startDashboardTour } from '@/tours/dashboardTour'
+import { useAuthStore } from '@/stores/auth'
+
+const auth = useAuthStore()
 
 const dashboard = ref(null)
 const { connect, disconnect, updateDashboard } = useWebSocket()
@@ -46,7 +49,11 @@ onMounted(async () => {
 
   await nextTick()
 
-  startDashboardTour()
+  if(auth.tutorial)
+{
+    startDashboardTour()
+    auth.removeTutorial()
+}
 })
 
 onUnmounted(() => {
