@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import LoginPanel from '@/components/LoginPanel.vue'
+import AppFooter from '@/components/Footer.vue'
 import RegisterPanel from '@/components/RegisterPanel.vue'
 import placeholderImage from '@/assets/placeholder-7.png'
 import ArenaImage from '@/assets/ArenaImage.png'
@@ -10,8 +11,9 @@ import RankingsImage from '@/assets/RankingsImage.png'
 import ProtocolsImage from '@/assets/ProtocolsImage.png'
 import ChatImage from '@/assets/ChatImage.png'
 import DashboardImage from '@/assets/DashboardImage.png'
-
-const mode = ref('default')
+import Menu from '@/components/Menu.vue'
+import { useAuthStore } from '@/stores/auth'
+const appStore = useAuthStore()
 const homeEmail = ref('')
 
 const benefits = [
@@ -54,16 +56,17 @@ const steps = [
 ]
 
 function submitJoin() {
-  mode.value = 'register'
+  appStore.setAuthMode('register')
 }
 
 function openRegistration() {
-  mode.value = 'register'
+  appStore.setAuthMode('register')
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
 
 <template>
+  <Menu />
   <div class="font-inter min-h-screen overflow-hidden bg-[#171715] text-white">
     <div
       class="mx-auto w-full max-w-[1240px] px-6 pb-8 pt-6 sm:px-8 lg:px-12 lg:pb-12 lg:pt-8 xl:px-16"
@@ -115,7 +118,7 @@ function openRegistration() {
           </div>
 
           <div class="mt-4 rounded-xl bg-[#171715] p-3 sm:p-4">
-            <template v-if="mode === 'default'">
+            <template v-if="appStore.authMode === 'default'">
               <form class="space-y-3" @submit.prevent="submitJoin">
                 <input
                   v-model="homeEmail"
@@ -130,30 +133,20 @@ function openRegistration() {
                 >
                   Join <span aria-hidden="true">→</span>
                 </button>
-                <button
-                  type="button"
-                  class="mx-auto block text-xs text-white/45 transition hover:text-white/75"
-                  @click="mode = 'login'"
-                >
+                <button type="button" @click="appStore.setAuthMode('login')">
                   If you already have an account, we'll log you in
                 </button>
               </form>
             </template>
 
             <div v-else class="relative">
-              <button
-                type="button"
-                class="mb-4 text-xs font-medium text-[#FACC15]"
-                @click="mode = 'default'"
-              >
-                ← Back
-              </button>
-              <LoginPanel v-if="mode === 'login'" />
+              <button @click="appStore.setAuthMode('default')">← Back</button>
+              <LoginPanel v-if="appStore.authMode === 'login'" />
               <RegisterPanel
                 v-else
                 :email="homeEmail"
-                @back="mode = 'default'"
-                @login="mode = 'login'"
+                @back="appStore.setAuthMode('default')"
+                @login="appStore.setAuthMode('login')"
               />
             </div>
           </div>
@@ -387,6 +380,7 @@ function openRegistration() {
       </section>
     </div>
   </div>
+  <AppFooter />
 </template>
 
 <style scoped>

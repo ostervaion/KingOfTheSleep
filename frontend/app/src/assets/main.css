@@ -31,5 +31,54 @@
 html,
 body,
 #app {
-  background-color: #facc15;
+  background-color: #1f1f1d;
+}
+
+.driver-popover.kots-driver-popover {
+  background-color: #171715;
+  border-radius: 0.5rem;
+  color: white;
+  padding: 18px;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 40%);
+}
+
+.driver-popover.kots-driver-popover .driver-popover-title {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.driver-popover.kots-driver-popover .driver-popover-description {
+  @apply text-zinc-400 text-sm;
+  line-height: 1;
+}
+
+.driver-popover.kots-driver-popover .driver-popover-progress-text {
+  color: #a2a1a6;
+}
+
+.driver-popover.kots-driver-popover .driver-popover-prev-btn,
+.driver-popover.kots-driver-popover .driver-popover-next-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  text-shadow: none;
+}
+
+.driver-popover.kots-driver-popover .driver-popover-prev-btn {
+  background-color: #2a2a27;
+  color: white;
+}
+
+.driver-popover.kots-driver-popover .driver-popover-next-btn {
+  background-color: #a5f3fc;
+  color: #171715;
+}
+
+.driver-popover.kots-driver-popover .driver-popover-close-btn {
+  color: #a2a1a6;
+}
+
+.driver-popover.kots-driver-popover .driver-popover-close-btn:hover {
+  color: white;
 }

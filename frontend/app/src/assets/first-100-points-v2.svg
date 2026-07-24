@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" role="img" aria-labelledby="title">
+  <title id="title">First 100 points</title>
+  <rect x="2" y="2" width="60" height="60" rx="20" fill="transparent"/>
+  <g fill="none" stroke="#4ADE80" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="4" y="4" width="56" height="56" rx="10"/>
+    <path d="M14 27h5v15"/>
+    <circle cx="28" cy="35" r="8"/>
+    <circle cx="43" cy="35" r="8"/>
+    <path d="m50 16 2 4 5 .7-3.5 3.4.8 4.9-4.3-2.3-4.3 2.3.8-4.9-3.5-3.4 5-.7z"/>
+  </g>
+</svg>
