@@ -6,6 +6,7 @@ import AdminView from '../views/AdminView.vue'
 import PrivacyPolicy from '@/views/PrivacyPolicy.vue'
 import TermsUse from '@/views/TermsUse.vue'
 import ApiPlayground from '@/views/ApiPlayground.vue'
+import ApiDocs from '@/views/ApiDocs.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -41,6 +42,11 @@ const router = createRouter({
       name: 'public_api',
       component: ApiPlayground,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/api_docs',
+      name: 'api_docs',
+      component: ApiDocs,
     },
   ],
 })

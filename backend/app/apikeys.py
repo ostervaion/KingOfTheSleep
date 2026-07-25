@@ -1,5 +1,4 @@
 
-
 import hashlib
 import hmac
 import secrets
@@ -14,7 +13,7 @@ from database import get_session
 from models import User
 from security import get_current_active_user
 
-API_KEY_PREFIX = "kots_"  # prefijo visible para identificar keys de esta app
+API_KEY_PREFIX = "kots_"
 
 
 class APIKey(SQLModel, table=True):
@@ -37,7 +36,7 @@ class APIKeyCreate(SQLModel):
 class APIKeyCreated(SQLModel):
     id: int
     name: str
-    api_key: str  # texto plano — se devuelve UNA sola vez, aquí
+    api_key: str
 
 
 class APIKeyPublic(SQLModel):
@@ -50,8 +49,6 @@ class APIKeyPublic(SQLModel):
 
 
 def _hash_key(raw_key: str) -> str:
-    # HMAC con SECRET_KEY como "pepper": si alguien filtra solo la tabla
-    # api_keys (sin el .env), no puede ni precomputar hashes candidatos.
     return hmac.new(SECRET_KEY.encode(), raw_key.encode(), hashlib.sha256).hexdigest()
 
 
@@ -66,10 +63,6 @@ def get_api_key_user(
     x_api_key: str = Header(..., alias="X-API-Key"),
     session: Session = Depends(get_session),
 ) -> User:
-    """
-    Dependency para proteger endpoints públicos con API key en vez de JWT.
-    Uso: `api_user: User = Depends(get_api_key_user)` en cualquier ruta.
-    """
     if not x_api_key:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="API key requerida")
 
@@ -89,9 +82,6 @@ def get_api_key_user(
 
     return owner
 
-
-# Rutas de gestión de keys — protegidas con el login normal (JWT), no con
-# API key, porque para crear una API key primero necesitas estar logueado.
 router = APIRouter(prefix="/admin/apikeys", tags=["API Keys"])
 
 

@@ -1,9 +1,9 @@
 <script setup>
 import { computed, reactive, ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
+import api from "@/api/api";
 
 const auth = useAuthStore();
-const apiBase = ref(import.meta.env.VITE_API_BASE || "");
 
 const response = reactive({
   method: "",
@@ -22,38 +22,25 @@ async function request(method, path, body = null, headers = {}) {
   response.loading = true;
 
   try {
-    const options = {
+    const res = await api.request({
       method,
-      headers: {
-        "Content-Type": "application/json",
-        ...headers,
-      },
-    };
-
-    if (body !== null) {
-      options.body = JSON.stringify(body);
-    }
-
-    const res = await fetch(`${apiBase.value}${path}`, options);
-    const text = await res.text();
+      url: path,
+      data: body,
+      headers,
+    });
 
     response.status = res.status;
-    response.ok = res.ok;
-
-    try {
-      response.body = text ? JSON.parse(text) : null;
-    } catch {
-      response.body = text;
-    }
+    response.ok = true;
+    response.body = res.data;
 
     return {
-      ok: res.ok,
-      body: response.body,
+      ok: true,
+      body: res.data,
     };
   } catch (error) {
     response.ok = false;
-    response.status = "error de red";
-    response.body = String(error);
+    response.status = error.response?.status ?? "network error";
+    response.body = error.response?.data ?? String(error);
 
     return {
       ok: false,
@@ -63,8 +50,6 @@ async function request(method, path, body = null, headers = {}) {
     response.loading = false;
   }
 }
-
-/* API KEYS */
 
 const apiKeys = ref([]);
 const newKeyName = ref("");
@@ -124,8 +109,6 @@ async function revokeApiKey(id) {
 function copyKey(key) {
   navigator.clipboard?.writeText(key);
 }
-
-/* SLEEP DATA */
 
 const fields = [
   "time_in_bed",
@@ -219,14 +202,6 @@ function deleteSleepData() {
   <main class="api-playground">
     <header>
       <h1>Public API Playground</h1>
-
-      <label>
-        Base URL
-        <input
-          v-model="apiBase"
-          placeholder="http://localhost:8000"
-        />
-      </label>
     </header>
 
     <section>
@@ -235,26 +210,26 @@ function deleteSleepData() {
       <div class="row">
         <input
           v-model="newKeyName"
-          placeholder="Nombre de la API key"
+          placeholder="API key name"
           @keyup.enter="createApiKey"
         />
 
         <button class="accent" @click="createApiKey">
-          Generar
+          Generate
         </button>
 
         <button @click="loadApiKeys">
-          Refrescar
+          Refresh
         </button>
       </div>
 
       <div v-if="createdKey" class="message">
-        <p>Copia esta key ahora. No volverá a mostrarse.</p>
+        <p>Copy this key now. It won't be shown again.</p>
 
         <div class="row">
           <code>{{ createdKey.api_key }}</code>
           <button @click="copyKey(createdKey.api_key)">
-            Copiar
+            Copy
           </button>
         </div>
       </div>
@@ -263,10 +238,10 @@ function deleteSleepData() {
         <table>
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Prefijo</th>
-              <th>Activa</th>
-              <th>Creada</th>
+              <th>Name</th>
+              <th>Prefix</th>
+              <th>Active</th>
+              <th>Created</th>
               <th></th>
             </tr>
           </thead>
@@ -275,11 +250,11 @@ function deleteSleepData() {
             <tr v-for="key in apiKeys" :key="key.id">
               <td>{{ key.name }}</td>
               <td>{{ key.key_prefix }}…</td>
-              <td>{{ key.active ? "Sí" : "No" }}</td>
+              <td>{{ key.active ? "Yes" : "No" }}</td>
               <td>{{ new Date(key.created_at).toLocaleString() }}</td>
               <td>
                 <button class="danger" @click="revokeApiKey(key.id)">
-                  Revocar
+                  Revoke
                 </button>
               </td>
             </tr>
@@ -288,12 +263,12 @@ function deleteSleepData() {
       </div>
 
       <p v-else class="muted">
-        No hay API keys cargadas.
+        No API keys loaded.
       </p>
     </section>
 
     <section>
-      <h2>Probar sleep-data</h2>
+      <h2>Test sleep-data</h2>
 
       <input
         v-model="testApiKey"
@@ -303,13 +278,13 @@ function deleteSleepData() {
 
       <div class="two-columns">
         <article>
-          <h3>Listar datos</h3>
+          <h3>List data</h3>
 
           <input
             v-model.number="listLimit"
             type="number"
             min="1"
-            placeholder="Límite"
+            placeholder="Limit"
           />
 
           <button @click="listSleepData">
@@ -318,7 +293,7 @@ function deleteSleepData() {
         </article>
 
         <article>
-          <h3>Buscar o eliminar por ID</h3>
+          <h3>Find or delete by ID</h3>
 
           <input
             v-model="targetId"
@@ -338,7 +313,7 @@ function deleteSleepData() {
       </div>
 
       <article>
-        <h3>Crear o actualizar datos</h3>
+        <h3>Create or update data</h3>
 
         <div class="form-grid">
           <label v-for="field in fields" :key="field">
@@ -365,11 +340,11 @@ function deleteSleepData() {
     </section>
 
     <section>
-      <h2>Respuesta</h2>
+      <h2>Response</h2>
 
       <div class="response-header">
         <strong>{{ response.method || "—" }}</strong>
-        <span>{{ response.url || "Todavía no hay peticiones" }}</span>
+        <span>{{ response.url || "No requests yet" }}</span>
 
         <span
           v-if="response.status !== null"
@@ -379,7 +354,7 @@ function deleteSleepData() {
         </span>
 
         <span v-if="response.loading">
-          Cargando...
+          Loading...
         </span>
       </div>
 
