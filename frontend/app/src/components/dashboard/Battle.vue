@@ -38,7 +38,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="font-inter text-sm text-heading flex-6 min-h-0 bg-(--kots-blocks-color) rounded-xl overflow-hidden border-b border-[color:var(--border)] p-4"
+    class="font-inter text-sm text-heading flex-6 min-h-0 bg-(--kots-blocks-color) rounded-xl overflow-hidden border-b border-(--border) shadow-md shadow-black/20 p-4"
   >
     <div ref="gameContainer" class="h-full w-full min-h-0 min-w-0 overflow-hidden rounded-sm"></div>
   </div>

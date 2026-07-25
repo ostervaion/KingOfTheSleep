@@ -51,7 +51,7 @@ onUnmounted(() => {
 <template>
   <div
     v-if="props.nextBattle"
-    class="font-inter relative flex min-w-0 items-center justify-between gap-2 rounded-full border-b border-[color:var(--border)] bg-(--kots-blocks-color) px-3 py-2 text-heading sm:gap-4 sm:px-4 sm:py-3 lg:p-4 lg:px-6"
+    class="font-inter relative flex min-w-0 items-center justify-between gap-2 rounded-full border-b border-[color:var(--border)] bg-(--kots-blocks-color) shadow-md shadow-black/20 px-3 py-2 text-heading sm:gap-4 sm:px-4 sm:py-3 lg:p-4 lg:px-6"
   >
     <!-- Ranking -->
     <div class="flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-2">
@@ -78,13 +78,13 @@ onUnmounted(() => {
               lg:absolute lg:left-1/2 lg:top-1/2 lg:flex-none
              lg:-translate-x-1/2 lg:-translate-y-1/2">
       <span
-        class="hidden relative shrink-0 items-center rounded-md bg-yellow-400 px-2 py-1.5 text-[10px] font-bold leading-none text-gray-800 sm:inline-flex lg:text-sm"
+        class="hidden shrink-0 items-center rounded-md bg-yellow-400 px-2 py-1.5 text-[10px] font-bold leading-none text-gray-800 sm:inline-flex lg:text-sm"
       >
         NEXT BATTLE IN
       </span>
 
       <span
-        class="inline-flex relative shrink-0 items-center rounded-md bg-yellow-400 px-1.5 py-1 text-[9px] font-bold leading-none text-gray-800 sm:hidden"
+        class="inline-flex shrink-0 items-center rounded-md bg-yellow-400 px-1.5 py-1 text-[9px] font-bold leading-none text-gray-800 sm:hidden"
       >
         NEXT BATTLE IN
       </span>
@@ -103,11 +103,14 @@ onUnmounted(() => {
       <span class="hidden text-zinc-400 text-xs lg:inline"> until daily reset</span>
     </div>
   </div>
-
-  <div
-    v-else
-    class="font-inter rounded-full border-b border-[color:var(--border)] bg-(--kots-blocks-color) px-3 py-2 text-sm text-heading sm:px-4 sm:py-3 lg:p-4"
-  >
-    Loading next battle...
+<div
+  v-else
+  class="font-inter rounded-full border-b border-[color:var(--border)] bg-yellow-400 px-3 py-2 text-sm sm:px-4 sm:py-3 lg:p-4"
+>
+  <div class="flex items-cente rounded-md justify-center">
+    <span class="font-inter text-sm font-bold text-(--kots-blocks-color) animate-pulse">
+      LOADING NEXT BATTLE
+    </span>
   </div>
+</div>
 </template>

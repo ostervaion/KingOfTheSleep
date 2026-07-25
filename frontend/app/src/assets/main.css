@@ -49,8 +49,8 @@ body,
 }
 
 .driver-popover.kots-driver-popover .driver-popover-description {
-  @apply text-zinc-400 text-sm;
-  line-height: 1;
+  @apply font-inter text-white text-xs tracking-wide;
+  line-height: 1.5;
 }
 
 .driver-popover.kots-driver-popover .driver-popover-progress-text {
@@ -81,4 +81,8 @@ body,
 
 .driver-popover.kots-driver-popover .driver-popover-close-btn:hover {
   color: white;
+}
+
+.driver-popover.kots-driver-popover .driver-popover-arrow {
+  color: #2a2a27;
 }
