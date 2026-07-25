@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" role="img" aria-labelledby="title">
+  <title id="title">Tutorial completed</title>
+  <rect x="2" y="2" width="60" height="60" rx="20" fill="transparent"/>
+  <g fill="none" stroke="#38BDF8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="4" y="4" width="56" height="56" rx="10"/>
+    <path d="M16 18c7-2 12-1 16 3v27c-4-4-9-5-16-3z"/>
+    <path d="M48 18c-7-2-12-1-16 3v27c4-4 9-5 16-3z"/>
+    <path d="m38 31 4 4 8-9"/>
+    <path d="M21 28h6M21 35h6M21 42h6"/>
+  </g>
+</svg>

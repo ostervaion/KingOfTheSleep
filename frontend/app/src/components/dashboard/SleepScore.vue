@@ -128,12 +128,12 @@ const chartOptions = {
 
 <template>
   <div
-    class="font-inter flex min-h-0 flex-2 flex-col overflow-hidden rounded-xl border-b border-[color:var(--border)] bg-(--kots-blocks-color) shadow-md shadow-black/20"
+    class="font-inter flex min-h-0 h-full flex-2 flex-col overflow-hidden rounded-xl border-b border-[color:var(--border)] bg-(--kots-blocks-color) shadow-md shadow-black/20"
   >
     <div class="flex items-start justify-between gap-4 px-5 pt-5 sm:px-6 sm:pt-6">
       <div>
-        <div class="mb-3 inline-flex rounded-md border border-cyan-200 px-2 py-0.5 leading-none">
-          <h2 class="text-heading text-sm font-medium text-cyan-200">Sleep score</h2>
+        <div class="mb-3 inline-flex rounded-md border border-cyan-200 px-1.5 py-0.5 leading-none">
+          <h2 class="text-cyan-200 text-xs font-medium text-heading">Sleep score</h2>
         </div>
       </div>
 

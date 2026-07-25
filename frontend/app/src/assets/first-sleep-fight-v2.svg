@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-labelledby="title">
+  <title id="title">First sleep fight</title>
+  <rect x="2" y="2" width="60" height="60" rx="20" fill="#FFFFFF"/>
+  <g fill="none" stroke="#A78BFA" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="4" y="4" width="56" height="56" rx="15"/>
+    <path d="M27 15a14 14 0 1 0 13 21A16 16 0 0 1 27 15z"/>
+    <path d="M39 18h4M41 16v4M45 20h3"/>
+    <path d="M22 45 42 25"/>
+    <path d="M26 22l16 16"/>
+  </g>
+</svg>

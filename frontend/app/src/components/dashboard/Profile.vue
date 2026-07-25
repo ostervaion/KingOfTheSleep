@@ -4,6 +4,24 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import LogOut from '@/components/dashboard/logOut.vue'
 import ProfileSettings from '@/components/dashboard/profileSettings.vue'
+import TutorialCompletedIcon from '@/assets/tutorial-completed-v2.svg'
+import FirstVictoryFightIcon from '@/assets/achievement-v2.svg'
+import First100PointsIcon from '@/assets/first-100-points-v2.svg'
+
+const achievements = ref({
+  tutorialCompleted: {
+    unlocked: true,
+    icon: TutorialCompletedIcon,
+  },
+  firstSleepFight: {
+    unlocked: true,
+    icon: FirstVictoryFightIcon,
+  },
+  first100Points: {
+    unlocked: true,
+    icon: First100PointsIcon,
+  },
+})
 
 var usersData = ref({
   rank: '',
@@ -48,12 +66,12 @@ function loadUsersData() {
 </script>
 <template>
   <div
-    class="font-inter flex flex-col flex-2 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
+    class="font-inter flex flex-col h-full flex-2 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >
     <div class="px-6 pt-3">
       <div class="flex items-center justify-between">
-        <div class="border border-cyan-200 rounded-md px-2 py-0.5 text-gray-800 leading-none">
-          <h2 class="text-cyan-200 text-sm font-medium text-heading">Profile</h2>
+        <div class="border border-cyan-200 rounded-md px-1.5 py-0.5 leading-none">
+          <h2 class="text-cyan-200 text-xs font-medium text-heading">Profile</h2>
         </div>
         <div class="flex rounded-full px-1.25 text-right">
           <div class="flex rounded-full px-1.25 py-0.75 bg-(--kots-background-color) m-2">
@@ -81,10 +99,27 @@ function loadUsersData() {
 
     <div class="flex-1 min-h-0 flex justify-between gap-4 px-6 py-5 min-w-0">
       <div class="min-w-0 flex-1">
-        <p class="text-xs font-medium tracking-wide text-body">rank</p>
-        <p class="mb-4 text-xl font-light leading-tight text-white">#{{ usersData.rank }}</p>
+        <div class="flex justify-items-start">
+          <div class="pr-7">
+            <p class="text-xs font-medium tracking-wide text-body text-zinc-400">rank</p>
+            <p class="mb-4 text-xl font-light leading-tight text-white">#{{ usersData.rank }}</p>
+          </div>
+          <div>
+            <p class="text-xs font-medium tracking-wide text-body text-zinc-400">achievements</p>
 
-        <p class="text-xs font-medium % tracking-wide text-body">level</p>
+            <div class="mt-1 flex items-center gap-2">
+              <div v-for="(achievement, name) in achievements" :key="name">
+                <div
+                  v-if="achievement.unlocked"
+                  class="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden"
+                >
+                  <component :is="achievement.icon" class="h-full w-full object-contain" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs font-medium % tracking-wide text-body text-zinc-400">level</p>
         <p class="mb-2 text-xl font-light leading-tight text-white">{{ usersData.level }}</p>
 
         <div class="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-neutral-800">
@@ -125,7 +160,7 @@ function loadUsersData() {
   <Teleport to="body">
     <dialog
       ref="dialog"
-      class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent p-0"
+      class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent"
     >
       <LogOut @close="closeDialog" />
     </dialog>

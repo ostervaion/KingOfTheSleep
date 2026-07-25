@@ -1,23 +1,69 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import api from '@/api/api'
 import Chat from '@/components/Chat.vue'
-import SleepDataForm from '@/components/SleepDataForm.vue'
 
-// ===== USUARIOS =====
-const usuarios = ref([])
+const checkingAccess = ref(true)
+const isAdmin = ref(false)
+const users = ref([])
 const selectedUser = ref(null)
+const editingUser = ref(null)
+const editError = ref('')
+const editLoading = ref(false)
+const battleNextTime = ref(null)
+const battleInfo = ref(null)
+const battleQueue = ref([])
+const newBattleMinutes = ref(5)
+const newIntervalMinutes = ref(120)
+const battleLoading = ref(false)
+const intervalLoading = ref(false)
+const errorMessage = ref('')
+const successMessage = ref('')
+const refreshTimer = ref(null)
+
+const editForm = ref({
+  username: '',
+  email: '',
+  password: '',
+  role: 'user',
+  active: true,
+})
+
+const timeDisplay = computed(() => {
+  if (!battleNextTime.value) return 'Loading...'
+
+  const { hours, minutes, seconds } = battleNextTime.value
+  return `${hours}h ${minutes}m ${seconds}s`
+})
+
+const nextBattleFormatted = computed(() => {
+  if (!battleNextTime.value?.next_battle_time) return '--'
+
+  return new Date(battleNextTime.value.next_battle_time).toLocaleString('en-GB')
+})
+
+async function checkAdminAccess() {
+  try {
+    const { data } = await api.get('/me')
+    isAdmin.value = data.role === 'admin'
+  } catch (error) {
+    console.error(error)
+    isAdmin.value = false
+  } finally {
+    checkingAccess.value = false
+  }
+}
 
 async function loadUsers() {
   try {
-    const response = await api.get('/all_users')
-    usuarios.value = response.data
+    const { data } = await api.get('/all_users')
+    users.value = Array.isArray(data) ? data : []
   } catch (error) {
     console.error(error)
   }
 }
 
-async function deteleUser(username) {
+async function deleteUser(username) {
   try {
     await api.delete(`/users/${username}`)
     await loadUsers()
@@ -26,29 +72,51 @@ async function deteleUser(username) {
   }
 }
 
-// ===== BATALLAS =====
-const battleNextTime = ref(null)
-const battleInfo = ref(null)
-const battleQueue = ref([])
-const newBattleMinutes = ref(5)
-const newIntervalMinutes = ref(120)
-const loading = ref(false)
-const loadingInterval = ref(false)
-const errorMsg = ref('')
-const successMsg = ref('')
-const autoRefreshInterval = ref(null)
+function openEditUser(user) {
+  editingUser.value = user
+  editForm.value = {
+    username: user.username || '',
+    email: user.email || '',
+    password: '',
+    role: user.role || 'user',
+    active: user.active ?? true,
+  }
+  editError.value = ''
+}
 
-// Formato de tiempo formateado
-const timeDisplay = computed(() => {
-  if (!battleNextTime.value) return 'Cargando...'
-  const data = battleNextTime.value
-  return `${data.hours}h ${data.minutes}m ${data.seconds}s`
-})
+function closeEditUser() {
+  editingUser.value = null
+  editError.value = ''
+}
 
-const nextBattleFormatted = computed(() => {
-  if (!battleNextTime.value) return '--'
-  return new Date(battleNextTime.value.next_battle_time).toLocaleString('es-ES')
-})
+async function saveEditUser() {
+  if (!editingUser.value) return
+
+  editLoading.value = true
+  editError.value = ''
+
+  const payload = {
+    username: editForm.value.username,
+    email: editForm.value.email,
+    role: editForm.value.role,
+    active: editForm.value.active,
+  }
+
+  if (editForm.value.password) {
+    payload.password = editForm.value.password
+  }
+
+  try {
+    await api.patch(`/admin/users/${editingUser.value.username}`, payload)
+    await loadUsers()
+    closeEditUser()
+  } catch (error) {
+    editError.value = error.response?.data?.detail || 'Could not save the changes.'
+    console.error(error)
+  } finally {
+    editLoading.value = false
+  }
+}
 
 async function fetchBattleInfo() {
   try {
@@ -62,362 +130,392 @@ async function fetchBattleInfo() {
     battleInfo.value = infoResponse.data
     battleQueue.value = queueResponse.data.battles || []
   } catch (error) {
-    console.error('Error fetching battle info:', error)
+    console.error('Could not load battle information:', error)
   }
 }
 
 async function scheduleExtraBattle() {
   if (newBattleMinutes.value <= 0) {
-    errorMsg.value = 'Los minutos deben ser mayor a 0'
+    errorMessage.value = 'Minutes must be greater than 0.'
     return
   }
 
-  loading.value = true
-  errorMsg.value = ''
-  successMsg.value = ''
+  battleLoading.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
 
   try {
-    const response = await api.post('/admin/battles/schedule-extra', {
+    await api.post('/admin/battles/schedule-extra', {
       minutes_from_now: newBattleMinutes.value,
     })
 
-    successMsg.value = `✓ Batalla programada en ${newBattleMinutes.value} minutos`
+    successMessage.value = `Battle scheduled in ${newBattleMinutes.value} minutes.`
     newBattleMinutes.value = 5
-
-    // Recargar información
-    await new Promise((resolve) => setTimeout(resolve, 500))
     await fetchBattleInfo()
   } catch (error) {
-    errorMsg.value = error.response?.data?.detail || 'Error al programar batalla'
+    errorMessage.value = error.response?.data?.detail || 'Could not schedule the battle.'
     console.error(error)
   } finally {
-    loading.value = false
+    battleLoading.value = false
   }
 }
 
 async function changeBattleInterval() {
   if (newIntervalMinutes.value <= 0) {
-    errorMsg.value = 'El intervalo debe ser mayor a 0'
+    errorMessage.value = 'The interval must be greater than 0.'
     return
   }
 
-  loadingInterval.value = true
-  errorMsg.value = ''
-  successMsg.value = ''
+  intervalLoading.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
 
   try {
-    const response = await api.post('/admin/battles/set-interval', {
+    await api.post('/admin/battles/set-interval', {
       interval_minutes: newIntervalMinutes.value,
     })
 
-    successMsg.value = `✓ Intervalo actualizado a ${newIntervalMinutes.value} minutos`
-
-    // Recargar información
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    successMessage.value = `Battle interval updated to ${newIntervalMinutes.value} minutes.`
     await fetchBattleInfo()
   } catch (error) {
-    errorMsg.value = error.response?.data?.detail || 'Error al cambiar intervalo'
+    errorMessage.value = error.response?.data?.detail || 'Could not update the interval.'
     console.error(error)
   } finally {
-    loadingInterval.value = false
+    intervalLoading.value = false
   }
 }
 
-// Auto-refresh cada 5 segundos
 function startAutoRefresh() {
-  if (autoRefreshInterval.value) return
-  autoRefreshInterval.value = setInterval(fetchBattleInfo, 5000)
+  if (refreshTimer.value) return
+  refreshTimer.value = setInterval(fetchBattleInfo, 5000)
 }
 
 function stopAutoRefresh() {
-  if (autoRefreshInterval.value) {
-    clearInterval(autoRefreshInterval.value)
-    autoRefreshInterval.value = null
-  }
+  if (!refreshTimer.value) return
+  clearInterval(refreshTimer.value)
+  refreshTimer.value = null
 }
 
-onMounted(() => {
-  loadUsers()
-  fetchBattleInfo()
+onMounted(async () => {
+  await checkAdminAccess()
+  if (!isAdmin.value) return
+
+  await Promise.all([loadUsers(), fetchBattleInfo()])
   startAutoRefresh()
 })
 
-// Cleanup on unmount
-import { onUnmounted } from 'vue'
-onUnmounted(() => {
-  stopAutoRefresh()
-})
+onUnmounted(stopAutoRefresh)
 </script>
 
 <template>
-  <SleepDataForm />
-  <div class="min-h-full px-4 py-8 sm:px-6 md:px-8 space-y-6">
-    <Chat v-if="selectedUser" :to_user="selectedUser" @close="selectedUser = null" />
+  <div class="min-h-full bg-neutral-950 text-white">
+    <div v-if="checkingAccess" class="flex min-h-[60vh] items-center justify-center px-4">
+      <p class="text-sm text-neutral-400">Checking access...</p>
+    </div>
 
-    <!-- ===== PANEL DE BATALLAS ===== -->
-    <div
-      class="relative w-full bg-[#111] border-2 border-[#1a1a1a] outline outline-1 outline-[#2a2a2a] px-6 py-8 sm:px-8 font-mono"
-    >
-      <span
-        class="absolute top-[-2px] left-[-2px] w-3 h-3 border-t-2 border-l-2 border-[#ff6b6b]"
-      />
-      <span
-        class="absolute top-[-2px] right-[-2px] w-3 h-3 border-t-2 border-r-2 border-[#ff6b6b]"
-      />
-      <span
-        class="absolute bottom-[-2px] left-[-2px] w-3 h-3 border-b-2 border-l-2 border-[#ff6b6b]"
-      />
-      <span
-        class="absolute bottom-[-2px] right-[-2px] w-3 h-3 border-b-2 border-r-2 border-[#ff6b6b]"
-      />
-
-      <h2
-        class="text-[#ff6b6b] text-xs sm:text-sm tracking-[4px] uppercase font-normal mb-6 before:content-['[_'] after:content-['_]']"
-      >
-        ⚔️ Control de Batallas
-      </h2>
-
-      <!-- Mostrar mensajes de error/éxito -->
-      <div
-        v-if="errorMsg"
-        class="mb-4 p-3 bg-red-950/40 border border-red-500/50 text-red-400 text-xs rounded"
-      >
-        {{ errorMsg }}
+    <div v-else-if="!isAdmin" class="flex min-h-[60vh] items-center justify-center px-4">
+      <div class="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-900 p-8 text-center">
+        <h1 class="mb-2 text-lg font-semibold">Access denied</h1>
+        <p class="text-sm text-neutral-400">This page is only available to administrators.</p>
       </div>
+    </div>
+
+    <main v-else class="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
+      <Chat v-if="selectedUser" :to_user="selectedUser" @close="selectedUser = null" />
+
       <div
-        v-if="successMsg"
-        class="mb-4 p-3 bg-green-950/40 border border-green-500/50 text-green-400 text-xs rounded"
+        v-if="editingUser"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+        @click.self="closeEditUser"
       >
-        {{ successMsg }}
-      </div>
+        <div class="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-900 p-6 shadow-xl">
+          <h2 class="mb-5 text-lg font-semibold">Edit user</h2>
 
-      <!-- Estado Actual -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <!-- Próxima Batalla -->
-        <div class="bg-[#0a0a0a] border border-[#1a1a1a] p-4 rounded">
-          <div class="text-[#ff6b6b] text-[10px] tracking-[2px] uppercase mb-2">
-            ⏰ Próxima Batalla
+          <div
+            v-if="editError"
+            class="mb-4 rounded-md border border-red-900 bg-red-950/40 px-3 py-2 text-sm text-red-300"
+          >
+            {{ editError }}
           </div>
-          <div class="text-[#9d6fe8] text-lg font-mono mb-1">{{ timeDisplay }}</div>
-          <div class="text-[#666] text-[10px]">{{ nextBattleFormatted }}</div>
-        </div>
 
-        <!-- Configuración Actual -->
-        <div class="bg-[#0a0a0a] border border-[#1a1a1a] p-4 rounded">
-          <div class="text-[#ff6b6b] text-[10px] tracking-[2px] uppercase mb-2">
-            ⚙️ Configuración
-          </div>
-          <div class="text-gray-400 text-[12px] space-y-1">
+          <div class="space-y-4">
             <div>
-              Intervalo:
-              <span class="text-[#9d6fe8]">{{ battleInfo?.interval_minutes ?? '--' }} min</span>
+              <label class="mb-1 block text-sm text-neutral-300">Username</label>
+              <input
+                v-model="editForm.username"
+                type="text"
+                class="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none focus:border-neutral-400"
+              />
             </div>
+
             <div>
-              Verificación:
-              <span class="text-[#9d6fe8]"
-                >{{ battleInfo?.check_interval_seconds ?? '--' }} seg</span
+              <label class="mb-1 block text-sm text-neutral-300">Email</label>
+              <input
+                v-model="editForm.email"
+                type="email"
+                class="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none focus:border-neutral-400"
+              />
+            </div>
+
+            <div>
+              <label class="mb-1 block text-sm text-neutral-300">New password</label>
+              <input
+                v-model="editForm.password"
+                type="password"
+                placeholder="Leave blank to keep the current password"
+                class="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-neutral-400"
+              />
+            </div>
+
+            <div>
+              <label class="mb-1 block text-sm text-neutral-300">Role</label>
+              <select
+                v-model="editForm.role"
+                class="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none focus:border-neutral-400"
               >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+
+            <label class="flex items-center gap-2 text-sm text-neutral-300">
+              <input v-model="editForm.active" type="checkbox" class="h-4 w-4" />
+              Active account
+            </label>
+          </div>
+
+          <div class="mt-6 flex gap-3">
+            <button
+              type="button"
+              :disabled="editLoading"
+              class="flex-1 rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50"
+              @click="saveEditUser"
+            >
+              {{ editLoading ? 'Saving...' : 'Save' }}
+            </button>
+            <button
+              type="button"
+              class="flex-1 rounded-md border border-neutral-700 px-4 py-2 text-sm text-white hover:bg-neutral-800"
+              @click="closeEditUser"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <section class="rounded-lg border border-neutral-800 bg-neutral-900 p-5 sm:p-6">
+        <div class="mb-6 flex items-center justify-between gap-4">
+          <div>
+            <h1 class="text-xl font-semibold">Battle controls</h1>
+            <p class="mt-1 text-sm text-neutral-400">Manage battle timing and review the queue.</p>
+          </div>
+          <button
+            type="button"
+            class="rounded-md border border-neutral-700 px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white"
+            @click="fetchBattleInfo"
+          >
+            Refresh
+          </button>
+        </div>
+
+        <div
+          v-if="errorMessage"
+          class="mb-4 rounded-md border border-red-900 bg-red-950/40 px-3 py-2 text-sm text-red-300"
+        >
+          {{ errorMessage }}
+        </div>
+
+        <div
+          v-if="successMessage"
+          class="mb-4 rounded-md border border-green-900 bg-green-950/40 px-3 py-2 text-sm text-green-300"
+        >
+          {{ successMessage }}
+        </div>
+
+        <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="rounded-md border border-neutral-800 bg-neutral-950 p-4">
+            <p class="text-sm text-neutral-400">Next battle</p>
+            <p class="mt-2 text-2xl font-semibold">{{ timeDisplay }}</p>
+            <p class="mt-1 text-sm text-neutral-500">{{ nextBattleFormatted }}</p>
+          </div>
+
+          <div class="rounded-md border border-neutral-800 bg-neutral-950 p-4">
+            <p class="text-sm text-neutral-400">Current settings</p>
+            <div class="mt-2 space-y-1 text-sm">
+              <p>
+                Interval:
+                <span class="text-neutral-300">{{ battleInfo?.interval_minutes ?? '--' }} minutes</span>
+              </p>
+              <p>
+                Check frequency:
+                <span class="text-neutral-300">
+                  {{ battleInfo?.check_interval_seconds ?? '--' }} seconds
+                </span>
+              </p>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Acciones -->
-      <div class="space-y-4">
-        <!-- Programar Batalla Adicional -->
-        <div class="border-t border-[#1a1a1a] pt-4">
-          <h3 class="text-[#9d6fe8] text-[10px] tracking-[2px] uppercase mb-3">
-            📅 Programar Batalla Adicional
-          </h3>
-          <div class="flex flex-col sm:flex-row gap-2">
-            <input
-              v-model.number="newBattleMinutes"
-              type="number"
-              min="1"
-              max="10080"
-              placeholder="Minutos desde ahora"
-              class="flex-1 bg-[#0a0a0a] border border-[#1a1a1a] text-[#9d6fe8] px-3 py-2 text-sm rounded placeholder-[#333] focus:border-[#9d6fe8] outline-none"
-            />
-            <button
-              @click="scheduleExtraBattle"
-              :disabled="loading"
-              class="bg-[#ff6b6b]/10 border border-[#ff6b6b]/50 text-[#ff6b6b] text-[11px] tracking-[2px] uppercase px-4 py-2 rounded hover:bg-[#ff6b6b]/20 hover:border-[#ff6b6b] active:scale-95 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {{ loading ? '⏳ Programando...' : '▶ Programar' }}
-            </button>
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div class="rounded-md border border-neutral-800 p-4">
+            <h2 class="mb-3 font-medium">Schedule an extra battle</h2>
+            <div class="flex flex-col gap-2 sm:flex-row">
+              <input
+                v-model.number="newBattleMinutes"
+                type="number"
+                min="1"
+                max="10080"
+                placeholder="Minutes from now"
+                class="min-w-0 flex-1 rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-neutral-400"
+              />
+              <button
+                type="button"
+                :disabled="battleLoading"
+                class="rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50"
+                @click="scheduleExtraBattle"
+              >
+                {{ battleLoading ? 'Scheduling...' : 'Schedule' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="rounded-md border border-neutral-800 p-4">
+            <h2 class="mb-3 font-medium">Change battle interval</h2>
+            <div class="flex flex-col gap-2 sm:flex-row">
+              <input
+                v-model.number="newIntervalMinutes"
+                type="number"
+                min="1"
+                max="10080"
+                placeholder="Minutes between battles"
+                class="min-w-0 flex-1 rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-neutral-400"
+              />
+              <button
+                type="button"
+                :disabled="intervalLoading"
+                class="rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50"
+                @click="changeBattleInterval"
+              >
+                {{ intervalLoading ? 'Updating...' : 'Update' }}
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Cambiar Intervalo -->
-        <div class="border-t border-[#1a1a1a] pt-4">
-          <h3 class="text-[#9d6fe8] text-[10px] tracking-[2px] uppercase mb-3">
-            🔄 Cambiar Intervalo de Batallas
-          </h3>
-          <div class="flex flex-col sm:flex-row gap-2">
-            <input
-              v-model.number="newIntervalMinutes"
-              type="number"
-              min="1"
-              max="10080"
-              placeholder="Minutos entre batallas"
-              class="flex-1 bg-[#0a0a0a] border border-[#1a1a1a] text-[#9d6fe8] px-3 py-2 text-sm rounded placeholder-[#333] focus:border-[#9d6fe8] outline-none"
-            />
-            <button
-              @click="changeBattleInterval"
-              :disabled="loadingInterval"
-              class="bg-[#9d6fe8]/10 border border-[#9d6fe8]/50 text-[#9d6fe8] text-[11px] tracking-[2px] uppercase px-4 py-2 rounded hover:bg-[#9d6fe8]/20 hover:border-[#9d6fe8] active:scale-95 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {{ loadingInterval ? '⏳ Actualizando...' : '▶ Actualizar' }}
-            </button>
+        <div class="mt-6 border-t border-neutral-800 pt-6">
+          <div class="mb-3 flex items-center justify-between">
+            <h2 class="font-medium">Battle queue</h2>
+            <span class="text-sm text-neutral-500">{{ battleQueue.length }} queued</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table v-if="battleQueue.length" class="w-full min-w-[560px] text-left text-sm">
+              <thead class="border-b border-neutral-800 text-neutral-500">
+                <tr>
+                  <th class="px-3 py-2 font-medium">ID</th>
+                  <th class="px-3 py-2 font-medium">Time</th>
+                  <th class="px-3 py-2 font-medium">Type</th>
+                  <th class="px-3 py-2 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="battle in battleQueue"
+                  :key="battle.id"
+                  class="border-b border-neutral-800 last:border-0 hover:bg-neutral-800/50"
+                >
+                  <td class="px-3 py-3 text-neutral-400">#{{ battle.id }}</td>
+                  <td class="px-3 py-3">
+                    {{ new Date(battle.scheduled_time).toLocaleTimeString('en-GB') }}
+                  </td>
+                  <td class="px-3 py-3 text-neutral-300">
+                    {{ battle.is_recurring ? 'Recurring' : 'One-time' }}
+                  </td>
+                  <td class="px-3 py-3">
+                    <span :class="battle.executed ? 'text-green-400' : 'text-yellow-300'">
+                      {{ battle.executed ? 'Completed' : 'Pending' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p v-else class="py-8 text-center text-sm text-neutral-500">No battles scheduled.</p>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Cola de Batallas (Debug) -->
-      <div class="border-t border-[#1a1a1a] pt-4 mt-4">
-        <h3 class="text-[#666] text-[10px] tracking-[2px] uppercase mb-3">
-          📋 Cola de Batallas (Debug)
-        </h3>
+      <section class="rounded-lg border border-neutral-800 bg-neutral-900 p-5 sm:p-6">
+        <div class="mb-5 flex items-center justify-between gap-4">
+          <div>
+            <h1 class="text-xl font-semibold">Users</h1>
+            <p class="mt-1 text-sm text-neutral-400">Manage accounts and start admin chats.</p>
+          </div>
+          <button
+            type="button"
+            class="rounded-md border border-neutral-700 px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white"
+            @click="loadUsers"
+          >
+            Refresh
+          </button>
+        </div>
+
         <div class="overflow-x-auto">
-          <table class="w-full border-collapse text-[10px]" v-if="battleQueue.length > 0">
-            <thead>
-              <tr class="border-b border-[#1a1a1a]">
-                <th class="px-2 py-2 text-left text-[#444]">ID</th>
-                <th class="px-2 py-2 text-left text-[#444]">Hora</th>
-                <th class="px-2 py-2 text-left text-[#444]">Tipo</th>
-                <th class="px-2 py-2 text-left text-[#444]">Estado</th>
+          <table class="w-full min-w-[560px] text-left text-sm">
+            <thead class="border-b border-neutral-800 text-neutral-500">
+              <tr>
+                <th class="w-16 px-3 py-2 font-medium">#</th>
+                <th class="px-3 py-2 font-medium">Username</th>
+                <th class="px-3 py-2 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr
-                v-for="battle in battleQueue"
-                :key="battle.id"
-                class="border-b border-[#1a1a1a] hover:bg-[#9d6fe8]/[0.04]"
+                v-for="(user, index) in users"
+                :key="user.id || user.username"
+                class="border-b border-neutral-800 last:border-0 hover:bg-neutral-800/50"
               >
-                <td class="px-2 py-2 text-[#666]">#{{ battle.id }}</td>
-                <td class="px-2 py-2 text-[#9d6fe8] font-mono text-[9px]">
-                  {{ new Date(battle.scheduled_time).toLocaleTimeString('es-ES') }}
+                <td class="px-3 py-3 text-neutral-500">{{ index + 1 }}</td>
+                <td class="px-3 py-3 text-neutral-200">{{ user.username }}</td>
+                <td class="px-3 py-3">
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      class="rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-200 hover:bg-neutral-800"
+                      @click="selectedUser = user.username"
+                    >
+                      Chat
+                    </button>
+                    <button
+                      type="button"
+                      class="rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-200 hover:bg-neutral-800"
+                      @click="openEditUser(user)"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      class="rounded-md border border-red-900 px-3 py-1.5 text-sm text-red-300 hover:bg-red-950/40"
+                      @click="deleteUser(user.username)"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
-                <td class="px-2 py-2">
-                  <span v-if="battle.is_recurring" class="text-[#ffb700]">🔄 Recurrente</span>
-                  <span v-else class="text-[#ff6b6b]">⏱️ Única</span>
-                </td>
-                <td class="px-2 py-2">
-                  <span v-if="battle.executed" class="text-green-500">✓ Ejecutada</span>
-                  <span v-else class="text-yellow-500">⏳ Pendiente</span>
-                </td>
+              </tr>
+
+              <tr v-if="users.length === 0">
+                <td colspan="3" class="px-3 py-8 text-center text-neutral-500">No users found.</td>
               </tr>
             </tbody>
           </table>
-          <div v-else class="text-[#333] text-[10px] text-center py-4">
-            // sin batallas programadas
-          </div>
         </div>
-      </div>
 
-      <div class="mt-4 pt-4 border-t border-[#1a1a1a] flex items-center justify-between">
-        <span class="text-[10px] text-[#2a2a2a] tracking-[2px] uppercase">
-          batallas en cola: {{ battleQueue.length }}
-        </span>
-        <button
-          @click="fetchBattleInfo"
-          class="text-[10px] tracking-[2px] uppercase text-[#444] hover:text-[#ff6b6b] transition-colors duration-150 cursor-pointer"
-        >
-          ↺ Recargar
-        </button>
-      </div>
-    </div>
-
-    <!-- ===== PANEL DE USUARIOS ===== -->
-    <div
-      class="relative w-full bg-[#111] border-2 border-[#1a1a1a] outline outline-1 outline-[#2a2a2a] px-6 py-8 sm:px-8 font-mono"
-    >
-      <span
-        class="absolute top-[-2px] left-[-2px] w-3 h-3 border-t-2 border-l-2 border-[#9d6fe8]"
-      />
-      <span
-        class="absolute top-[-2px] right-[-2px] w-3 h-3 border-t-2 border-r-2 border-[#9d6fe8]"
-      />
-      <span
-        class="absolute bottom-[-2px] left-[-2px] w-3 h-3 border-b-2 border-l-2 border-[#9d6fe8]"
-      />
-      <span
-        class="absolute bottom-[-2px] right-[-2px] w-3 h-3 border-b-2 border-r-2 border-[#9d6fe8]"
-      />
-      <h2
-        class="text-[#9d6fe8] text-xs sm:text-sm tracking-[4px] uppercase font-normal mb-6 before:content-['[_'] after:content-['_]']"
-      >
-        Usuarios
-      </h2>
-      <div class="overflow-x-auto">
-        <table class="w-full border-collapse text-xs sm:text-sm">
-          <thead>
-            <tr class="border-b-2 border-[#9d6fe8]/30 text-left">
-              <th
-                class="px-4 py-3 text-[10px] tracking-[2px] uppercase text-[#444] font-normal w-12"
-              >
-                #
-              </th>
-              <th class="px-4 py-3 text-[10px] tracking-[2px] uppercase text-[#444] font-normal">
-                Username
-              </th>
-              <th
-                class="px-4 py-3 text-[10px] tracking-[2px] uppercase text-[#444] font-normal w-36"
-              >
-                Acción
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(usuario, index) in usuarios"
-              :key="usuario.id || usuario.username"
-              class="border-b border-[#1a1a1a] hover:bg-[#9d6fe8]/[0.04] transition-colors duration-100 group"
-            >
-              <td class="px-4 py-3 text-[#333]">{{ index + 1 }}</td>
-              <td
-                class="px-4 py-3 text-gray-400 group-hover:text-gray-200 transition-colors duration-100"
-              >
-                <span class="text-[#9d6fe8]/40 mr-2 text-[10px]">▶</span>
-                {{ usuario.username }}
-              </td>
-              <td class="px-4 py-3 flex gap-2">
-                <button
-                  class="bg-[#0a0a0a] border border-[#9d6fe8]/50 text-[#9d6fe8] text-[10px] tracking-[2px] uppercase px-3 py-1.5 hover:bg-[#9d6fe8]/[0.1] hover:border-[#9d6fe8] active:scale-95 transition-all duration-150 cursor-pointer"
-                  @click="selectedUser = usuario.username"
-                >
-                  ▶ Chat
-                </button>
-                <button
-                  class="bg-[#0a0a0a] border border-red-900/50 text-red-500/70 text-[10px] tracking-[2px] uppercase px-3 py-1.5 hover:bg-red-950/40 hover:border-red-500/70 hover:text-red-400 active:scale-95 transition-all duration-150 cursor-pointer"
-                  @click="deteleUser(usuario.username)"
-                >
-                  ✕ Del
-                </button>
-              </td>
-            </tr>
-            <tr v-if="usuarios.length === 0">
-              <td
-                colspan="3"
-                class="px-4 py-8 text-center text-[#333] tracking-[2px] uppercase text-[11px]"
-              >
-                // sin usuarios
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="mt-6 pt-4 border-t border-[#1a1a1a] flex items-center justify-between">
-        <span class="text-[10px] text-[#2a2a2a] tracking-[2px] uppercase">
-          total: {{ usuarios.length }}
-        </span>
-        <button
-          class="text-[10px] tracking-[2px] uppercase text-[#444] hover:text-[#9d6fe8] transition-colors duration-150 cursor-pointer"
-          @click="loadUsers"
-        >
-          ↺ Recargar
-        </button>
-      </div>
-    </div>
+        <p class="mt-4 border-t border-neutral-800 pt-4 text-sm text-neutral-500">
+          Total users: {{ users.length }}
+        </p>
+      </section>
+    </main>
   </div>
 </template>

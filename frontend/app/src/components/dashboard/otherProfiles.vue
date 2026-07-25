@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import Chat from '@/components/Chat.vue'
+import ChatIcon from '@/assets/chat-icon_white.svg'
 import api from '@/api/api'
 
 const emit = defineEmits(['close', 'chat'])
@@ -20,49 +21,28 @@ const props = defineProps({
 
 const selectedUser = ref(null)
 
-// 'idle' | 'loading' | 'added' | 'already' | 'error'
-const friendStatus = ref('idle')
+const friendStatus = ref('checking')
 
-const friendButtonLabel = {
-  idle: 'Add as Friend',
-  loading: 'Adding...',
-  added: 'Friend added ✓',
-  already: 'Already friends',
-  error: 'Retry',
-}
+const friendButtonLabel = computed(() => {
+  const labels = {
+    checking: 'Checking friendship...',
+    notFriend: 'Add as friend',
+    adding: 'Adding...',
+    friend: 'Delete friend',
+    deleting: 'Deleting...',
+    addError: 'Retry adding friend',
+    deleteError: 'Retry deleting friend',
+  }
+
+  return labels[friendStatus.value]
+})
+
+const friendButtonDisabled = computed(() => {
+  return ['checking', 'adding', 'deleting'].includes(friendStatus.value)
+})
 
 function onClose() {
   emit('close')
-}
-
-async function checkIfAlreadyFriend() {
-  try {
-    const { data } = await api.get('/friends')
-    if (data.includes(props.user.username)) {
-      friendStatus.value = 'already'
-    }
-  } catch (err) {
-    // Si falla la comprobación no bloqueamos el botón, simplemente se
-    // reintentará el estado real al pulsar "Add as Friend"
-    console.error('No se pudo comprobar la lista de amigos:', err)
-  }
-}
-
-async function addFriend() {
-  if (friendStatus.value === 'loading' || friendStatus.value === 'already') return
-
-  friendStatus.value = 'loading'
-  try {
-    await api.post(`/friends/${props.user.username}`)
-    friendStatus.value = 'added'
-  } catch (err) {
-    if (err.response?.status === 400 && err.response?.data?.detail === 'Ya sois amigos') {
-      friendStatus.value = 'already'
-    } else {
-      friendStatus.value = 'error'
-      console.error('Error al añadir amigo:', err)
-    }
-  }
 }
 
 function onChat() {
@@ -70,44 +50,130 @@ function onChat() {
   emit('chat', props.user)
 }
 
+function getEncodedUsername() {
+  return encodeURIComponent(props.user.username)
+}
+
+async function checkFriendship() {
+  if (!props.user?.username) {
+    friendStatus.value = 'notFriend'
+    return
+  }
+
+  friendStatus.value = 'checking'
+
+  try {
+    const { data } = await api.get('/friends')
+
+
+    const usernames = Array.isArray(data)
+      ? data.map((friend) =>
+        typeof friend === 'string' ? friend : friend.username,
+      )
+      : []
+
+    friendStatus.value = usernames.includes(props.user.username)
+      ? 'friend'
+      : 'notFriend'
+  } catch (err) {
+    console.error('No se pudo comprobar la lista de amigos:', err)
+
+    friendStatus.value = 'notFriend'
+  }
+}
+
+async function addFriend() {
+  friendStatus.value = 'adding'
+
+  try {
+    await api.post(`/friends/${getEncodedUsername()}`)
+    friendStatus.value = 'friend'
+  } catch (err) {
+    const detail = err.response?.data?.detail
+
+    if (err.response?.status === 400 && detail === 'Ya sois amigos') {
+      friendStatus.value = 'friend'
+      return
+    }
+
+    friendStatus.value = 'addError'
+    console.error('Error al añadir amigo:', err)
+  }
+}
+
+async function deleteFriend() {
+  friendStatus.value = 'deleting'
+
+  try {
+    await api.delete(`/friends/${getEncodedUsername()}`)
+
+    friendStatus.value = 'notFriend'
+  } catch (err) {
+    const detail = err.response?.data?.detail
+
+    if (err.response?.status === 404 && detail === 'No sois amigos') {
+      friendStatus.value = 'notFriend'
+      return
+    }
+
+    friendStatus.value = 'deleteError'
+    console.error('Error al eliminar amigo:', err)
+  }
+}
+
+async function toggleFriend() {
+  if (friendButtonDisabled.value) return
+
+  if (
+    friendStatus.value === 'friend' ||
+    friendStatus.value === 'deleteError'
+  ) {
+    await deleteFriend()
+    return
+  }
+
+  await addFriend()
+}
+
 onMounted(() => {
-  checkIfAlreadyFriend()
+  checkFriendship()
 })
+
+watch(
+  () => props.user.username,
+  () => {
+    selectedUser.value = null
+    checkFriendship()
+  },
+)
 </script>
 
 <template>
   <Chat v-if="selectedUser" :to_user="selectedUser" @close="selectedUser = null" />
 
   <div
-    class="font-inter flex max-h-[90vh] w-full flex-col overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
-  >
+    class="font-inter flex max-h-[90vh] w-full flex-col overflow-hidden rounded-xl border-b border-[color:var(--border)] bg-(--kots-blocks-color) shadow-md shadow-black/20">
     <div class="px-5 pb-3 pt-4 sm:px-6">
       <div class="flex items-start justify-end gap-4">
-        <button
-          @click="onClose"
-          class="rounded-full px-2 text-lg leading-none text-neutral-400 transition hover:text-white"
-        >
+        <button type="button"
+          class="rounded-full px-2 text-lg leading-none text-neutral-400 transition hover:text-white" aria-label="Close"
+          @click="onClose">
           ×
         </button>
       </div>
     </div>
 
-    <div class="flex-1 min-h-0 overflow-y-auto px-5 pb-5 sm:px-6">
+    <div class="min-h-0 flex-1 overflow-y-auto px-5 pb-5 sm:px-6">
       <div class="rounded-lg p-5">
-        <div class="flex flex-col items-center text-center">
+        <div class="flex items-center gap-4">
           <div
-            class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[var(--kots-background-color)] shadow-md shadow-black/30 sm:h-28 sm:w-28"
-          >
-            <img
-              v-if="user.profilePicture"
-              :src="user.profilePicture"
-              alt="User profile picture"
-              class="h-full w-full object-cover"
-            />
+            class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[var(--kots-background-color)] sm:h-28 sm:w-28">
+            <img v-if="user.profilePicture" :src="user.profilePicture" alt="User profile picture"
+              class="h-full w-full object-cover" />
 
-            <span v-else class="text-3xl font-semibold uppercase text-cyan-200">
+            <div v-else class="text-3xl font-semibold uppercase text-cyan-200">
               {{ user.username?.charAt(0) || '?' }}
-            </span>
+            </div>
           </div>
 
           <h3 class="mt-4 text-xl font-semibold leading-tight text-white">
@@ -115,51 +181,65 @@ onMounted(() => {
           </h3>
         </div>
 
-        <div class="my-5 border-t border-white/10"></div>
+        <div class="my-5"></div>
 
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div class="rounded-lg bg-[var(--kots-background-color)] px-4 py-3 text-center">
-            <p class="text-xs font-medium text-body text-neutral-400">Rank</p>
-            <p class="mt-1 text-xl font-light text-white">#{{ user.rank }}</p>
+            <p class="text-xs font-medium text-neutral-400">
+              Rank
+            </p>
+
+            <p class="mt-1 text-xl font-light text-white">
+              #{{ user.rank }}
+            </p>
           </div>
 
           <div class="rounded-lg bg-[var(--kots-background-color)] px-4 py-3 text-center">
-            <p class="text-xs font-medium text-body text-neutral-400">Level</p>
+            <p class="text-xs font-medium text-neutral-400">
+              Level
+            </p>
+
             <p class="mt-1 text-xl font-light text-white">
               {{ user.level }}
             </p>
           </div>
 
           <div class="rounded-lg bg-[var(--kots-background-color)] px-4 py-3 text-center">
-            <p class="text-xs font-medium text-body text-neutral-400">Points</p>
+            <p class="text-xs font-medium text-neutral-400">
+              Points
+            </p>
+
             <p class="mt-1 text-xl font-light text-white">
               {{ user.points }}
             </p>
           </div>
         </div>
 
-        <button
-          @click="addFriend"
-          :disabled="friendStatus === 'loading' || friendStatus === 'already'"
-          :class="[
-            'mt-5 w-full rounded-md px-4 py-2.5 text-xs font-semibold transition',
-            friendStatus === 'added'
-              ? 'bg-emerald-200 text-[#171715]'
-              : friendStatus === 'already'
-                ? 'bg-white/10 text-neutral-400 cursor-not-allowed'
-                : friendStatus === 'error'
-                  ? 'bg-red-300 text-[#171715] hover:bg-red-200'
-                  : 'bg-cyan-200 text-[#171715] hover:bg-cyan-50 disabled:opacity-60',
-          ]"
-        >
-          {{ friendButtonLabel[friendStatus] }}
-        </button>
+        <div class="mt-5 flex items-center justify-end">
+          <button type="button"
+            class="flex items-center justify-center gap-2 rounded-full bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
+            @click="onChat">
+            <ChatIcon class="h-5 w-5 shrink-0" />
 
-        <button
-          @click="onChat"
-          class="mt-5 w-full rounded-md bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
-        >
-          Chat with {{ user.username }}
+            <span>
+              Chat with {{ user.username }}
+            </span>
+          </button>
+        </div>
+
+        <button type="button" :disabled="friendButtonDisabled" :class="[
+          'mt-5 w-full rounded-md px-4 py-2.5 text-xs font-semibold transition',
+          friendStatus === 'friend' || friendStatus === 'deleting'
+            ? 'bg-red-300 text-[#171715] hover:bg-red-200'
+            : friendStatus === 'deleteError' ||
+              friendStatus === 'addError'
+              ? 'bg-amber-200 text-[#171715] hover:bg-amber-100'
+              : 'bg-cyan-200 text-[#171715] hover:bg-cyan-50',
+          friendButtonDisabled
+            ? 'cursor-not-allowed opacity-60'
+            : 'cursor-pointer',
+        ]" @click="toggleFriend">
+          {{ friendButtonLabel }}
         </button>
       </div>
     </div>
