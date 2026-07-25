@@ -21,7 +21,9 @@ from models import (
     UserPublic,
     UserProfile,
     UserUpdate,
-    Friend
+    Friend,
+    CombatHistory,
+    UserProtocol,
 )
 from security import (
     authenticate_user,
@@ -100,7 +102,57 @@ def add_friend(
  
     return {"message": f"{username} añadido como amigo"}
 
+@router.delete("/friends/{username}", status_code=status.HTTP_200_OK)
+def delete_friend(
+    username: str,
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session),
+):
+    if username == current_user.username:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No puedes eliminarte a ti mismo",
+        )
 
+    friend_user = get_user_by_username(session, username)
+
+    if friend_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado",
+        )
+
+    # Relación: usuario actual -> amigo
+    friendship = session.exec(
+        select(Friend).where(
+            Friend.user_id == current_user.id,
+            Friend.friend_id == friend_user.id,
+        )
+    ).first()
+
+    # Relación inversa: amigo -> usuario actual
+    reverse_friendship = session.exec(
+        select(Friend).where(
+            Friend.user_id == friend_user.id,
+            Friend.friend_id == current_user.id,
+        )
+    ).first()
+
+    if friendship is None and reverse_friendship is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No sois amigos",
+        )
+
+    if friendship is not None:
+        session.delete(friendship)
+
+    if reverse_friendship is not None:
+        session.delete(reverse_friendship)
+
+    session.commit()
+
+    return {"message": f"{username} eliminado de tus amigos"}
 
 @router.post("/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
 def register(user_data: UserCreate, session=Depends(get_session)):
@@ -159,8 +211,51 @@ def delete_user(username: str, current_user=Depends(get_current_active_user), se
     user = get_user_by_username(session, username)
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    # Borramos primero todo lo que depende del usuario, si no la FK constraint
+    # hace que el delete del User falle (por eso no funcionaba antes).
+    profile = session.exec(select(UserProfile).where(UserProfile.user_id == user.id)).first()
+    if profile is not None:
+        session.delete(profile)
+
+    friend_rows = session.exec(
+        select(Friend).where(
+            (Friend.user_id == user.id) | (Friend.friend_id == user.id)
+        )
+    ).all()
+    for row in friend_rows:
+        session.delete(row)
+
+    sleep_rows = session.exec(select(SleepData).where(SleepData.user_id == user.id)).all()
+    for row in sleep_rows:
+        session.delete(row)
+
+    score_rows = session.exec(select(ScoreHistory).where(ScoreHistory.user_id == user.id)).all()
+    for row in score_rows:
+        session.delete(row)
+
+    protocol_rows = session.exec(select(UserProtocol).where(UserProtocol.user_id == user.id)).all()
+    for row in protocol_rows:
+        session.delete(row)
+
+    combat_rows = session.exec(
+        select(CombatHistory).where(
+            (CombatHistory.winner_user_id == user.id) | (CombatHistory.loser_user_id == user.id)
+        )
+    ).all()
+    for row in combat_rows:
+        session.delete(row)
+
     session.delete(user)
-    session.commit()
+
+    try:
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="No se pudo eliminar el usuario",
+        )
 
 
 @router.post("/profile/avatar")
@@ -239,12 +334,62 @@ def get_me(
         "id": current_user.id,
         "username": current_user.username,
         "email": current_user.email,
+        "role": current_user.role,
         "avatar_path": (
             f"/api{profile.user_avatar_path}"
             if profile
             else None
         ),
     }
+
+
+class AdminUserUpdate(BaseModel):
+    username: str | None = None
+    email: str | None = None
+    password: str | None = None
+    role: str | None = None
+    active: bool | None = None
+
+
+@router.patch("/admin/users/{username}", response_model=UserPublic)
+def admin_update_user(
+    username: str,
+    payload: AdminUserUpdate,
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session),
+):
+    _require_admin(current_user)
+
+    user = get_user_by_username(session, username)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
+
+    if payload.username and payload.username != user.username:
+        existing_username = session.exec(select(User).where(User.username == payload.username)).first()
+        if existing_username:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already exists")
+        user.username = payload.username
+
+    if payload.email and payload.email != user.email:
+        existing_email = session.exec(select(User).where(User.email == payload.email)).first()
+        if existing_email and existing_email.id != user.id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+        user.email = payload.email
+
+    if payload.password:
+        user.password = hash_password(payload.password)
+
+    if payload.role is not None:
+        user.role = payload.role
+
+    if payload.active is not None:
+        user.active = payload.active
+
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    return user
 
 @router.get("/dashboard/refresh")
 async def trigger_dashboard_refresh():

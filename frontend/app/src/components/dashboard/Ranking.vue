@@ -33,8 +33,8 @@ function buttonClass(ranking) {
   >
     <div class="px-6 pb-4 pt-4">
       <div class="flex items-center justify-between">
-        <div class="border border-cyan-200 rounded-md px-2 py-0.5 text-gray-800 leading-none">
-          <h2 class="text-cyan-200 text-sm font-medium text-heading">Rankings</h2>
+        <div class="border border-cyan-200 rounded-md px-1.5 py-0.5 text-gray-800 leading-none">
+          <h2 class="text-cyan-200 text-xs font-medium text-heading">Rankings</h2>
         </div>
         <div class="flex rounded-full bg-(--kots-background-color) px-1.25 py-0.75">
           <button :class="buttonClass('today')" @click="updateButtonColor('today')">today</button>
@@ -48,7 +48,7 @@ function buttonClass(ranking) {
       </div>
     </div>
 
-    <div class="grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body">
+    <div class="grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body text-zinc-400">
       <div>#</div>
       <div>player</div>
       <div class="text-right">points</div>
