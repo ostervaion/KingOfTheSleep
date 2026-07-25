@@ -4,7 +4,7 @@ const ws = ref(null)
 const isConnected = ref(false)
 const isAuthenticated = ref(false)
 const onlineUsers = ref(new Set())
-const lobbyPlayers = ref([])
+const lobbyPlayers = ref({})
 
 const chatMessages = ref([])
 const myUsername = ref('')
@@ -75,6 +75,7 @@ export function useWebSocket() {
             onlineUsers.value = new Set(onlineUsers.value)
             break
           case 'sheep_move':
+            lobbyPlayers.value[response.username] = [response.x, response.y]
             break
           case 'lobby_list':
             lobbyPlayers.value = payload.lobby_players

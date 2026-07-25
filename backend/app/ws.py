@@ -24,6 +24,8 @@ def unregister_connection(websocket: WebSocket):
     username = connections.pop(websocket, None)
     if username:
         users.pop(username, None)
+        game_positions.pop(username, None)
+        
     return username
 
 async def broadcast_except(sender_ws: WebSocket, payload: dict):
@@ -131,8 +133,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 
                 await websocket.send_text(json.dumps(payload))
             if msg_type == 'lobby_move':
-                print("LOBBY MOVE")
-                game_positions[connections[websocket]] = (data["x"], data["y"])
+                game_positions[sender] = (data["x"], data["y"])
                 await broadcast_except(websocket, {"type": "sheep_move", "username": sender, "x": data["x"], "y": data["y"]})
                 continue
 
