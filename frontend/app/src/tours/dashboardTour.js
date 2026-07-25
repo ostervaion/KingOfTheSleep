@@ -81,19 +81,20 @@ const desktopSteps = (showSleepForm) => [
         'Follow the evolution of your overall sleep quality over the last seven days and see whether your sleep is improving.',
     },
   },
-  {
-    element: '#protocol-impact',
+{
+  element: '#protocol-impact',
 
-    onHighlightStarted: () => {
-      showSleepForm()
-    },
+  popover: {
+    title: 'Protocol impact',
+    description:
+      'Discover which protocols were associated with your best and worst sleep. Use these results to decide which habits to keep, change or remove.',
 
-    popover: {
-      title: 'Protocol impact',
-      description:
-        'Discover which protocols were associated with your best and worst sleep. Use these results to decide which habits to keep, change or remove.',
+    onNextClick: async (_element, _step, { driver }) => {
+      await showSleepForm()
+        driver.moveNext()
     },
   },
+},
   {
     element: '#sleep-form',
     popover: {
@@ -183,19 +184,20 @@ const mobileSteps = (showSleepForm) => [
         'Follow the evolution of your overall sleep quality over the last seven days and see whether your sleep is improving.',
     },
   },
-  {
-    element: '#protocol-impact-mobile',
+{
+  element: '#protocol-impact-mobile',
 
-    onHighlightStarted: () => {
-      showSleepForm()
-    },
+  popover: {
+    title: 'Protocol impact',
+    description:
+      'Discover which protocols were associated with your best and worst sleep. Use these results to decide which habits to keep, change or remove.',
 
-    popover: {
-      title: 'Protocol impact',
-      description:
-        'Discover which protocols were associated with your best and worst sleep. Use these results to decide which habits to keep, change or remove.',
+    onNextClick: async (_element, _step, { driver }) => {
+      await showSleepForm()
+        driver.moveNext()
     },
   },
+},
   {
     element: '#sleep-form-mobile',
     popover: {
@@ -206,18 +208,25 @@ const mobileSteps = (showSleepForm) => [
   },
 ]
 
-export function startDashboardTour(showSleepForm) {
+export function startDashboardTour(showSleepForm, onCompleted) {
   const isMobile = window.innerWidth < 1024
 
   const driverObj = driver({
     popoverClass: 'kots-driver-popover',
     animate: true,
+    disableActiveInteraction: true,
     smoothScroll: true,
     showProgress: true,
-    allowClose: true,
+    allowClose: false,
+
     steps: isMobile
       ? mobileSteps(showSleepForm)
       : desktopSteps(showSleepForm),
+
+    onDoneClick: () => {
+      onCompleted?.()
+      driverObj.destroy()
+    },
   })
 
   driverObj.drive()

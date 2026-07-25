@@ -223,7 +223,7 @@ const resetForm = () => {
 
 <template>
   <div
-    class="font-inter flex h-full min-h-0 w-full min-w-0 flex-6 flex-col overflow-auto rounded-xl border-b border-(--border) shadow-md shadow-black/20 bg-(--kots-blocks-color) p-4 text-sm text-(--text) sm:p-6"
+    class="font-inter flex h-full min-h-0 w-full min-w-0 flex-6 flex-col overflow-auto rounded-xl border-b border-(--border) bg-(--kots-blocks-color) p-4 text-sm text-(--text) shadow-md shadow-black/20 sm:p-6"
   >
     <form
       v-if="step === 1"
@@ -257,28 +257,34 @@ const resetForm = () => {
       <!-- Sleep Duration Section -->
       <!-- Sleep Quality Section -->
       <!-- Performance Section -->
-      <div class="flex min-h-0 flex-1 py-4">
-        <div class="grid h-full w-full grid-cols-3 items-stretch gap-3 sm:grid-cols-5">
+      <div class="min-h-0 flex-1 overflow-x-auto overflow-y-hidden py-4">
+        <div
+          class="grid min-h-[300px] w-max min-w-full grid-flow-col auto-cols-[minmax(76px,1fr)] items-stretch gap-2 sm:h-full sm:min-h-0 sm:w-full sm:grid-flow-row sm:auto-cols-auto sm:grid-cols-5 sm:gap-3"
+        >
           <label
             v-for="field in visibleFields"
             :key="field.key"
-            class="flex min-h-0 min-w-0 flex-col p-3"
+            class="flex min-h-0 min-w-0 flex-col px-1 py-3 sm:p-3"
           >
             <!-- Label at the top -->
-            <span class="min-h-8 shrink-0 text-center text-xs font-medium leading-4 text-zinc-400">
+            <span
+              class="min-h-8 shrink-0 text-center text-[10px] font-medium leading-4 text-zinc-400 sm:text-xs"
+            >
               {{ field.label }}
             </span>
 
             <div class="mt-2 shrink-0 text-center">
-              <span class="text-base font-semibold text-yellow-400">
+              <span class="text-sm font-semibold text-yellow-400 sm:text-base">
                 {{ formData[field.key] }}{{ field.unit }}
               </span>
             </div>
 
             <!-- Slider fills the available vertical space -->
-            <div class="mt-3 grid min-h-40 flex-1 grid-cols-[1fr_auto_1fr] items-stretch">
+            <div
+              class="mt-3 grid min-h-[190px] flex-1 grid-cols-[1fr_auto_1fr] items-stretch sm:min-h-40"
+            >
               <div
-                class="flex h-full flex-col justify-between justify-self-end pr-2 text-[10px] text-(--muted)"
+                class="flex h-full flex-col justify-between justify-self-end pr-1 text-[9px] text-(--muted) sm:pr-2 sm:text-[10px]"
               >
                 <span>{{ field.max }}{{ field.unit }}</span>
                 <span>{{ field.min }}{{ field.unit }}</span>
@@ -399,10 +405,11 @@ const resetForm = () => {
   appearance: none;
   writing-mode: vertical-lr;
   direction: rtl;
-  width: 5px;
+  width: 28px;
   height: 100%;
   min-height: 160px;
   padding: 0;
+  border: none;
   border-radius: 999px;
   outline: none;
   background: linear-gradient(
@@ -414,7 +421,7 @@ const resetForm = () => {
     )
     center / 5px 100% no-repeat;
   cursor: pointer;
-  touch-action: none;
+  touch-action: pan-x;
 }
 
 .kots-range:focus-visible {
@@ -425,7 +432,6 @@ const resetForm = () => {
 .kots-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  margin-left: -3%;
   width: 24px;
   height: 12px;
   border: 2px solid var(--kots-blocks-color);

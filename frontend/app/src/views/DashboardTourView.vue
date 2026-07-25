@@ -9,66 +9,46 @@ import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Battle from '@/components/dashboard/Battle.vue'
 import ChatButton from '@/components/dashboard/ChatButton.vue'
 import SleepDataForm from '@/components/SleepDataForm.vue'
-
-import { useWebSocket } from '@/composables/useWebSocket'
-import { ref, nextTick, watch, onMounted, onUnmounted } from 'vue'
+import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 import { startDashboardTour } from '@/tours/dashboardTour'
-import api from '@/api/api'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import WelcomePopup from '@/components/dashboard/welcomePopup.vue'
 
+const router = useRouter()
+const auth = useAuthStore()
 const dashboard = ref(null)
+const dialog = ref(null)
 
 const showSleepFormTour = ref(false)
 
-const { connect, disconnect, updateDashboard } = useWebSocket()
-
-watch(updateDashboard, (newValue) => {
-  if (newValue === true) {
-    fetchDashboard()
-  }
-
-  updateDashboard.value = false
-})
-
-async function fetchDashboard() {
-  try {
-    const response = await api.get('/dashboard')
-
-    dashboard.value = {
-      ...response.data,
-      ranking: Array.isArray(response.data?.ranking)
-        ? response.data.ranking
-        : [],
-    }
-
-    console.log('Updating')
-  } catch (error) {
-    console.error('Error cargando dashboard:', error)
-  }
-}
-
-function showSleepForm() {
+async function showSleepForm() {
   showSleepFormTour.value = true
+  await nextTick()
 }
 
-let intervalId = null
+function openDialog() {
+  dialog.value?.showModal()
+}
+
+async function closeDialog() {
+  dialog.value?.close()
+
+  await auth.removeTutorial()
+
+  await router.replace({
+    name: 'dashboard',
+  })
+}
 
 onMounted(async () => {
-  await fetchDashboard()
-
-  intervalId = setInterval(fetchDashboard, 30000)
-
-  connect()
-
   await nextTick()
 
-  startDashboardTour(showSleepForm)
+  startDashboardTour(showSleepForm, async () => {
+    await nextTick()
+    openDialog()
+  })
 })
-
-onUnmounted(() => {
-  clearInterval(intervalId)
-  disconnect()
-})
-
 const mobileScroller = ref(null)
 const activeMobilePage = ref(0)
 
@@ -255,6 +235,13 @@ function updateActiveMobilePage() {
       </section>
     </div>
   </div>
-
   <ChatButton />
+    <Teleport to="body">
+    <dialog
+      ref="dialog"
+      class="m-auto lg:w-[50vw] max-w-5xl overflow-y-auto rounded-xl border-none bg-transparent p-0 backdrop:bg-black/60 sm:w-[90vw]"
+    >
+      <WelcomePopup @close="closeDialog" />
+    </dialog>
+  </Teleport>
 </template>
