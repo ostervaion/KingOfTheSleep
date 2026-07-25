@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import api from '@/api/api'
+import { useAuthStore } from '@/stores/auth'
+
+const auth = useAuthStore()
 
 const props = defineProps({
   email: {
@@ -39,6 +42,7 @@ async function register() {
     })
 
     mensaje.value = '// usuario registrado'
+    auth.setTutorial()
     emit('login')
   } catch (error) {
     mensaje.value = `// ${error.response?.data?.detail || 'error al registrar'}`
