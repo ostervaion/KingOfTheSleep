@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta, timezone
 from random import choice, randint, random, sample, seed
 
-from utils.security import hash_password
-from sqlmodel import Session, select
-
 from core.database import engine
 from models import CombatHistory, Protocol, ScoreHistory, SleepData, User, UserProtocol
+from services import recalculate_protocol_stats
+from sqlmodel import Session, select
+from utils.security import hash_password
 
 # Fijamos la semilla para que los nombres aleatorios sigan un patrón predecible
 seed(42)
@@ -298,6 +298,7 @@ def seed_score_history(backfill_existing: bool = True):
 
         print(f"Generando un mínimo de {MINIMO_BATALLAS_HOY} batallas para hoy...")
         _seed_combat_history(session, battles_per_user=MINIMO_BATALLAS_HOY)
+        recalculate_protocol_stats(session)
 
 
 if __name__ == "__main__":

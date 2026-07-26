@@ -215,3 +215,8 @@ open-https: guard-.env ## Opens the browser into the vite main page through cadd
 open-http: guard-.env ## Opens the browser into the vite main page through caddy http
 	@echo -e "$(YELLOW)Starting vite in browser$(RESET)"
 	xdg-open http://localhost:$${HTTP_PORT}/
+
+.PHONY: populate
+populate: ## Creates fake data for testing purposes
+	@echo -e "$(YELLOW)Populating database with users$(RESET)"
+	docker compose exec backend python3 -m utils.seed_score_history
