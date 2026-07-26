@@ -1,38 +1,19 @@
 <script setup>
-import example from '@/assets/example.jpg'
-import { ref, onMounted } from 'vue'
+import { ref, computed, watch, toRef } from 'vue'
 import RankingUser from '@/components/dashboard/rankingUsers.vue'
 
-const selectedRanking = ref('today')
-var usersRanking = ref([])
-
-onMounted(() => {
-  loadUsers()
+const props = defineProps({
+  rankingData: {
+    type: Array,
+    default: () => [],
+  },
 })
 
-function loadUsers() {
-  usersRanking.value = [
-    {
-      ranking: '1',
-      name: 'Martin',
-      points: '2500',
-      posChange: '3',
-    },
-    {
-      ranking: '1',
-      name: 'Martin',
-      points: '2500',
-      posChange: '3',
-    },
-    {
-      ranking: '1',
-      name: 'Martin',
-      points: '2500',
-      posChange: '4',
-    },
-  ]
-  ///llamar a funcion back para tener todos los usaurios y sus datos en descendiente por punto
-}
+const selectedRanking = ref('today')
+
+const usersRanking = computed(() => {
+  return props.rankingData || []
+})
 
 function updateButtonColor(ranking) {
   selectedRanking.value = ranking
@@ -52,8 +33,8 @@ function buttonClass(ranking) {
   >
     <div class="px-6 pb-4 pt-4">
       <div class="flex items-center justify-between">
-        <div class="border border-cyan-100 rounded-md px-2 py-0.5 text-gray-800 leading-none">
-          <h2 class="text-cyan-100 text-sm font-medium text-heading">Rankings</h2>
+        <div class="border border-cyan-200 rounded-md px-1.5 py-0.5 text-gray-800 leading-none">
+          <h2 class="text-cyan-200 text-xs font-medium text-heading">Rankings</h2>
         </div>
         <div class="flex rounded-full bg-(--kots-background-color) px-1.25 py-0.75">
           <button :class="buttonClass('today')" @click="updateButtonColor('today')">today</button>
@@ -67,7 +48,7 @@ function buttonClass(ranking) {
       </div>
     </div>
 
-    <div class="grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body">
+    <div class="grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body text-zinc-400">
       <div>#</div>
       <div>player</div>
       <div class="text-right">points</div>
@@ -83,6 +64,8 @@ function buttonClass(ranking) {
           :name="user.name"
           :points="user.points"
           :pos-change="user.posChange"
+          :trend="user.trend"
+          :profilePicture="user.avatar_path"
         />
       </ul>
     </div>

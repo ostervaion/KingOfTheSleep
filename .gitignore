@@ -1,6 +1,9 @@
 # Environment
 .env
 
+# VS Code
+.vscode
+.devcontainer/
 # Python
 __pycache__/
 *.py[cod]
@@ -18,3 +21,4 @@ frontend/app/.pnpm-store/
 # OS
 .DS_Store
 Thumbs.db
+.vscode
