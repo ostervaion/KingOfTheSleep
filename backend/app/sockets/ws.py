@@ -1,9 +1,10 @@
 import json
+
 from fastapi import WebSocket, WebSocketDisconnect
+from utils.security import verify_token
 from sqlmodel import Session
 
-from database import engine
-from security import verify_token
+from core.database import engine
 
 # Diccionarios globales para rastrear las conexiones
 connections: dict[WebSocket, str] = {}  # websocket -> username
@@ -86,7 +87,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         "type": "presence:list",
                         "payload": {"online": list(users.keys())}
                     }))
-                except Exception as e:
+                except Exception:
                     # Si el token es inválido o expiró
                     await websocket.send_text(json.dumps({
                         "type": "auth:fail", 

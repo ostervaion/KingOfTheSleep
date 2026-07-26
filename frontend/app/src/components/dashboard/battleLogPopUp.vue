@@ -204,7 +204,7 @@ function onClose() {
         </div>
       </div>
 
-<!--    <ul class="mt-4">
+      <!--    <ul class="mt-4">
         <BattleLogsCard
           v-for="log in battleLogs.battles"
           :key="log.combat_id"

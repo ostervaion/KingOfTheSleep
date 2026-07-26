@@ -1,4 +1,3 @@
-# app/schemas/protocol_impact.py
 from pydantic import BaseModel
 
 
@@ -13,11 +12,7 @@ class ProtocolImpactRead(BaseModel):
     percentage: float  # % impact vs baseline, computed server-side
     daysUsed: int      # count of days this protocol was used
 
-class ResumedBattleRead(BaseModel):
 
-    id: int
-    winner_name: str
-    loser_name: str
     
 class RankedProtocolData(BaseModel):
 
@@ -30,24 +25,3 @@ class RankedProtocolsRead(BaseModel):
 
     winner_protocols: list[RankedProtocolData]
     loser_protocols: list[RankedProtocolData]
-
-class TodayStatsRead(BaseModel):
-
-    wins: int
-    losses: int
-
-class userSleepStatsRead(BaseModel):
-
-    time_in_bed: float
-    awake_time: float
-    light_sleep: float
-    slow_wave: float
-    rem: float
-    disturbance: int
-    baseline: float
-    debt: float
-    strain: int
-    respiratory_rate: int
-    performance: int
-    consistency: int
-    efficiency: int

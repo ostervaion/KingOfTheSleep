@@ -1,34 +1,20 @@
 from collections import defaultdict
-from database import get_session
-from sqlalchemy import func, case, and_, or_
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends
+from sqlalchemy import and_, case, func, or_
 from sqlalchemy.orm import aliased
 from sqlmodel import select
-from datetime import date, datetime, timedelta, timezone
-from data_transfer_objects import ProtocolImpactRead, TodayStatsRead, ResumedBattleRead
-from models import (
-    User,
-    CombatHistory,
-    SleepData,
-    UserProfile,
-    UserProtocol,
-    Protocol
+
+from core.database import get_session
+from models import CombatHistory, Protocol, SleepData, User, UserProfile, UserProtocol
+from utils.security import (
+    get_current_active_user,
 )
-def _today_stats(session, actual_user_id: int, now: datetime) -> TodayStatsRead:
 
-    today = now.date()
-    winsLoses = session.exec(
-        select(
-            func.count(case((and_(CombatHistory.winner_user_id == actual_user_id, func.date(CombatHistory.created_at) == today,), 1,))).label("wins"),
-            func.count(case((and_(CombatHistory.loser_user_id == actual_user_id, func.date(CombatHistory.created_at) == today,), 1,))).label("losses"),
-        )
-    ).one()
+router = APIRouter()
 
 
-    stats = TodayStatsRead(
-        wins = winsLoses.wins,
-        losses = winsLoses.losses,
-    )
-    return stats
 
 def _today_battles(session, actual_user_id: int, now: datetime):
 
@@ -44,7 +30,7 @@ def _today_battles(session, actual_user_id: int, now: datetime):
     enemy_user = aliased(User, name="enemy_user_name")
     enemy_profile = aliased(UserProfile, name="enemy_avatar")
     enemy_sleep = aliased(SleepData, name="enemy_sleep")
-    enemy_Protocols = aliased(UserProtocol, name="enemy_Protocols")
+    #enemy_Protocols = aliased(UserProtocol, name="enemy_Protocols")
 
     enemy_id = case(
         (CombatHistory.winner_user_id == actual_user_id, CombatHistory.loser_user_id),
@@ -115,3 +101,11 @@ def _today_battles(session, actual_user_id: int, now: datetime):
         ],
     }
     return result
+
+@router.get("/battleData")
+async def getBattleData(
+    current_user: User = Depends(get_current_active_user),
+    session=Depends(get_session)
+):
+    now = datetime.now(timezone.utc)
+    return _today_battles(session, current_user.id, now)

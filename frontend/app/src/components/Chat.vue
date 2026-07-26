@@ -159,9 +159,7 @@ onUnmounted(() => {
           type="text"
           :disabled="!isConnected || !isAuthenticated"
           class="flex-1 bg-[#25252e] border border-[#333] rounded-lg px-3 py-2 text-sm text-[#e0e0e0] placeholder-[#555] outline-none focus:border-[#5555aa] disabled:opacity-50 transition-colors"
-          :placeholder="
-            isConnected && isAuthenticated ? 'Write a message...' : 'Conecting...'
-          "
+          :placeholder="isConnected && isAuthenticated ? 'Write a message...' : 'Conecting...'"
           @keyup.enter="handleSend"
         />
         <button

@@ -60,23 +60,22 @@ onUnmounted(() => {
       </span>
 
       <div class="hidden min-w-0 text-xs leading-tight sm:block lg:text-sm">
-        <span class="hidden:xs align-baseline ">current ranking</span>
+        <span class="hidden:xs align-baseline">current ranking</span>
       </div>
       <div>
         <div class="ml-1 hidden lg:inline">
-        <span class="ml-2 text-xs text-green-400 lg:text-xl">
-            ▲ {{ props.nextBattle.deltaRanking }} 
-          <span class="text-zinc-400 text-sm">since last battle</span>
-        </span>
+          <span class="ml-2 text-xs text-green-400 lg:text-xl">
+            ▲ {{ props.nextBattle.deltaRanking }}
+            <span class="text-zinc-400 text-sm">since last battle</span>
+          </span>
         </div>
       </div>
     </div>
 
     <!-- Next battle -->
-      <div
-        class="flex min-w-0 flex-1 items-center justify-center gap-1.5 sm:gap-2
-              lg:absolute lg:left-1/2 lg:top-1/2 lg:flex-none
-             lg:-translate-x-1/2 lg:-translate-y-1/2">
+    <div
+      class="flex min-w-0 flex-1 items-center justify-center gap-1.5 sm:gap-2 lg:absolute lg:left-1/2 lg:top-1/2 lg:flex-none lg:-translate-x-1/2 lg:-translate-y-1/2"
+    >
       <span
         class="hidden relative shrink-0 items-center rounded-md bg-yellow-400 px-2 py-1.5 text-[10px] font-bold leading-none text-gray-800 sm:inline-flex lg:text-sm"
       >

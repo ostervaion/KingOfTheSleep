@@ -1,7 +1,6 @@
-from sqlalchemy import inspect, text
 from sqlmodel import Session, SQLModel, create_engine
-from config import DATABASE_URL
-import models  # ensures all table classes are registered before create_all runs
+
+from core.config import DATABASE_URL
 
 engine = create_engine(DATABASE_URL, echo=True)
 

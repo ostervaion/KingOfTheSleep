@@ -2,9 +2,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from apikeys import get_api_key_user
-from database import get_session
-from models import SleepData, SleepDataCreate, SleepDataPublic, User
+from core.database import get_session
+from models import SleepData, User
+from schemas import SleepDataCreate, SleepDataPublic
+from services import get_api_key_user
 
 router = APIRouter(prefix="/publicAPI", tags=["Public API"])
 

@@ -1,17 +1,13 @@
-from database import get_session
-from sqlalchemy import func, case, and_, or_
-from sqlalchemy.orm import aliased
-from sqlmodel import Session, select, func, case
 from collections import defaultdict
-from datetime import date, datetime, timedelta, timezone
-from data_transfer_objects import RankedProtocolsRead, RankedProtocolData
-from models import (
-    UserProtocol,
-    Protocol,
-    CombatHistory
-)
 
-def _protocol_stats(session) -> RankedProtocolsRead:
+from sqlalchemy import func
+from sqlmodel import Session, select
+
+from models import CombatHistory, Protocol, UserProtocol
+from schemas import RankedProtocolData, RankedProtocolsRead
+
+
+def protocol_stats(session) -> RankedProtocolsRead:
     top = session.exec(
         select(Protocol)
         .order_by(Protocol.global_win_rate.desc())
@@ -50,7 +46,7 @@ def _protocol_stats(session) -> RankedProtocolsRead:
         loser_protocols=loser_protocols
     )
 
-def	_recalculate_protocol_stats(session: Session) -> None:
+def	recalculate_protocol_stats(session: Session) -> None:
 
 # Usos y victorias por protocolo, para los ganadores
     winner_stats = session.exec(

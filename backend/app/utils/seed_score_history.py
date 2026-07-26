@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta, timezone
-from random import choice, randint, sample, seed
-from random import choice, random, randint
+from random import choice, randint, random, sample, seed
 
+from utils.security import hash_password
 from sqlmodel import Session, select
 
-from database import engine
-from models import Protocol, ScoreHistory, User, UserProtocol, CombatHistory, ScoreHistory, User, SleepData
-from security import hash_password
+from core.database import engine
+from models import CombatHistory, Protocol, ScoreHistory, SleepData, User, UserProtocol
 
 # Fijamos la semilla para que los nombres aleatorios sigan un patrón predecible
 seed(42)

@@ -183,70 +183,68 @@ onMounted(() => {
         </button>
       </div>
 
-<div v-else class="max-h-[70vh] overflow-y-auto">
-  <p v-if="friendsLoading" class="py-8 text-center text-sm text-[#555]">
-    Loading friends...
-  </p>
+      <div v-else class="max-h-[70vh] overflow-y-auto">
+        <p v-if="friendsLoading" class="py-8 text-center text-sm text-[#555]">Loading friends...</p>
 
-  <p v-else-if="friendsError" class="py-8 text-center text-sm text-[#e8455a]">
-    Failed to load friends.
-  </p>
+        <p v-else-if="friendsError" class="py-8 text-center text-sm text-[#e8455a]">
+          Failed to load friends.
+        </p>
 
-  <p v-else-if="friends.length === 0" class="py-8 text-center text-sm text-[#555]">
-    No friends
-  </p>
+        <p v-else-if="friends.length === 0" class="py-8 text-center text-sm text-[#555]">
+          No friends
+        </p>
 
-  <button
-    v-for="username in sortedFriends"
-    :key="username"
-    @click="openPrivate(username)"
-    class="flex w-full items-center gap-3 border-b border-[#232329] px-5 py-3 transition-colors hover:bg-[#20202a]"
-  >
-    <div class="relative shrink-0">
-      <div
-        class="flex h-9 w-9 items-center justify-center rounded-full bg-[#2a2a3a] text-sm font-semibold text-[#8888cc]"
-      >
-        {{ username[0].toUpperCase() }}
+        <button
+          v-for="username in sortedFriends"
+          :key="username"
+          @click="openPrivate(username)"
+          class="flex w-full items-center gap-3 border-b border-[#232329] px-5 py-3 transition-colors hover:bg-[#20202a]"
+        >
+          <div class="relative shrink-0">
+            <div
+              class="flex h-9 w-9 items-center justify-center rounded-full bg-[#2a2a3a] text-sm font-semibold text-[#8888cc]"
+            >
+              {{ username[0].toUpperCase() }}
+            </div>
+
+            <span
+              :class="[
+                'absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#1a1a1f]',
+                onlineUsers.has(username) ? 'bg-[#4caf50]' : 'bg-[#f44336]',
+              ]"
+            />
+          </div>
+
+          <div class="min-w-0 flex-1 text-left">
+            <p class="text-sm font-medium leading-none text-[#e8e8f0]">
+              {{ username }}
+            </p>
+
+            <p
+              class="mt-1 text-xs"
+              :class="onlineUsers.has(username) ? 'text-[#4caf50]' : 'text-[#666]'"
+            >
+              {{ onlineUsers.has(username) ? 'Connected' : 'Disconnected' }}
+            </p>
+          </div>
+        </button>
+
+        <!-- Botón actualizar -->
+        <div class="sticky bottom-0 border-t border-[#2a2a2f] bg-[#16161a] p-3">
+          <button
+            type="button"
+            :disabled="friendsLoading"
+            @click="loadFriends"
+            class="flex w-full items-center justify-center gap-2 rounded-lg bg-[#2a2a3a] px-4 py-2.5 text-xs font-semibold text-[#e8e8f0] transition-colors hover:bg-[#35354a] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <span :class="{ 'animate-spin': friendsLoading }">↻</span>
+
+            {{ friendsLoading ? 'Actualizando...' : 'Actualizar amigos' }}
+          </button>
+        </div>
       </div>
-
-      <span
-        :class="[
-          'absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#1a1a1f]',
-          onlineUsers.has(username) ? 'bg-[#4caf50]' : 'bg-[#f44336]',
-        ]"
-      />
     </div>
-
-    <div class="min-w-0 flex-1 text-left">
-      <p class="text-sm font-medium leading-none text-[#e8e8f0]">
-        {{ username }}
-      </p>
-
-      <p
-        class="mt-1 text-xs"
-        :class="onlineUsers.has(username) ? 'text-[#4caf50]' : 'text-[#666]'"
-      >
-        {{ onlineUsers.has(username) ? 'Connected' : 'Disconnected' }}
-      </p>
-    </div>
-  </button>
-
-  <!-- Botón actualizar -->
-  <div class="sticky bottom-0 border-t border-[#2a2a2f] bg-[#16161a] p-3">
-    <button
-      type="button"
-      :disabled="friendsLoading"
-      @click="loadFriends"
-      class="flex w-full items-center justify-center gap-2 rounded-lg bg-[#2a2a3a] px-4 py-2.5 text-xs font-semibold text-[#e8e8f0] transition-colors hover:bg-[#35354a] disabled:cursor-not-allowed disabled:opacity-50"
-    >
-      <span :class="{ 'animate-spin': friendsLoading }">↻</span>
-
-      {{ friendsLoading ? 'Actualizando...' : 'Actualizar amigos' }}
-    </button>
   </div>
-</div>
- </div>
-</div>
 
   <Chat
     v-else

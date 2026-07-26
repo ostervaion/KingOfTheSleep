@@ -73,7 +73,7 @@ const winRateColor = computed(() => {
       <div class="pt-2 px-5 flex items-center justify-between">
         <div class="pt-3 items-center">
           <BoxingGlove class="text-center -mt-0.5 w-6.5 h-6.5 mb-1" />
-<!--          <p class="text-center text-xs font-medium text-body">battles</p>
+          <!--          <p class="text-center text-xs font-medium text-body">battles</p>
           <p class="text-center mb-2 text-xl font-light text-white">{{ summary.battles }}</p>
         </div>
         <div class="pt-3 items-center">
