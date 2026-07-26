@@ -5,6 +5,7 @@ const isConnected = ref(false)
 const isAuthenticated = ref(false)
 const onlineUsers = ref(new Set())
 const updateDashboard = ref(false)
+const lobbyPlayers = ref({})
 
 const chatMessages = ref([])
 const globalMessages = ref([])
@@ -123,6 +124,12 @@ export function useWebSocket() {
             }
             onlineUsers.value = new Set(onlineUsers.value)
             break
+          case 'sheep_move':
+            lobbyPlayers.value[response.username] = [response.x, response.y]
+            break
+          case 'lobby_list':
+            lobbyPlayers.value = payload.lobby_players
+            break
           default:
             console.log('Mensaje no controlado:', response)
         }
@@ -190,11 +197,15 @@ export function useWebSocket() {
     globalMessages,
     myUsername,
     onlineUsers,
+<<<<<<< HEAD
     updateDashboard,
     conversations,
     unreadPrivate,
     unreadGlobal,
     totalUnread,
     setActiveChat,
+=======
+    lobbyPlayers,
+>>>>>>> origin/lobby
   }
 }

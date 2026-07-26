@@ -12,13 +12,17 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-appdb}
     volumes:
       - db_data:/var/lib/postgresql
-      - ./backend/app:/app                # Mount the full frontend directory
+      - ./backend/app:/app # Mount the full frontend directory
 
     command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
     networks:
       - db_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-appuser} -d ${POSTGRES_DB:-appdb}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-appuser} -d ${POSTGRES_DB:-appdb}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -53,8 +57,8 @@ services:
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
     volumes:
-      - ./frontend/app:/app:Z                # Mount the full frontend directory
-      - /app/node_modules              # Protect container node_modules from being overwritten
+      - ./frontend/app:/app:Z # Mount the full frontend directory
+      - /app/node_modules # Protect container node_modules from being overwritten
     #ports:
     #  - "5173:5173"                    # Expose Vite's port if you want direct access from the host browser
     depends_on:
@@ -62,10 +66,14 @@ services:
     networks:
       - web_network
     healthcheck:
-          test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5173/ || exit 1"]
-          interval: 10s
-          timeout: 5s
-          retries: 5
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:5173/ || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   server:
     build:
       context: ./server
@@ -80,9 +88,9 @@ services:
       - caddy_config:/config
     depends_on:
       frontend:
-          condition: service_healthy
+        condition: service_healthy
       backend:
-          condition: service_healthy
+        condition: service_healthy
     networks:
       - web_network
 

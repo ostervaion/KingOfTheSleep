@@ -2,6 +2,8 @@ import Phaser, { LEFT } from 'phaser'
 import Character from '../Character.js'
 import BaseScene from './BaseScene.js'
 
+let scene = null
+
 export default class GameScene extends BaseScene {
   constructor() {
     super({ key: 'GameScene' })
@@ -92,6 +94,7 @@ export default class GameScene extends BaseScene {
   }
   create() {
     this.isGameOver = false
+    scene = this
     this.input.mouse.disableContextMenu()
     this.attackSfx = this.sound.add('attackSfx')
     this.lastHitSfx = this.sound.add('lastHitSfx')

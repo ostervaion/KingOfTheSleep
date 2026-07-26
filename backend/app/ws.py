@@ -8,6 +8,7 @@ from security import verify_token
 # Diccionarios globales para rastrear las conexiones
 connections: dict[WebSocket, str] = {}  # websocket -> username
 users: dict[str, WebSocket] = {}        # username -> websocket
+game_positions: dict[str, tuple[int, int]] = {}
 async def broadcast_presence(username: str, online: bool):
     payload = json.dumps({
         "type": "presence:update",
@@ -42,7 +43,29 @@ def unregister_connection(websocket: WebSocket):
     username = connections.pop(websocket, None)
     if username:
         users.pop(username, None)
+        game_positions.pop(username, None)
+        
     return username
+
+async def broadcast_except(sender_ws: WebSocket, payload: dict):
+    """Send a message to all connected users except the sender."""
+    message = json.dumps(payload)
+    for ws in list(connections.keys()):
+        if ws is not sender_ws:
+            try:
+                await ws.send_text(message)
+            except Exception:
+                pass
+
+
+async def broadcast_all(payload: dict):
+    """Send a message to all connected users including sender."""
+    message = json.dumps(payload)
+    for ws in list(connections.keys()):
+        try:
+            await ws.send_text(message)
+        except Exception:
+            pass
 
 
 
@@ -96,6 +119,12 @@ async def websocket_endpoint(websocket: WebSocket):
                     unregister_connection(websocket)
                     return
                 continue
+            if msg_type == "get_lobby_players":
+                await websocket.send_text(json.dumps({
+                        "type": "lobby_list",
+                        "payload": {"lobby_players": game_positions}
+                }))
+                continue
 
             sender = connections.get(websocket)
             if not sender:
@@ -122,6 +151,10 @@ async def websocket_endpoint(websocket: WebSocket):
                     await users[target].send_text(json.dumps(payload))
                 
                 await websocket.send_text(json.dumps(payload))
+            if msg_type == 'lobby_move':
+                game_positions[sender] = (data["x"], data["y"])
+                await broadcast_except(websocket, {"type": "sheep_move", "username": sender, "x": data["x"], "y": data["y"]})
+                continue
 
             elif msg_type == "chat:global":
                 text = data.get("text")

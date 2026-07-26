@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useWebSocket } from '@/composables/useWebSocket'
 import * as Phaser from 'phaser'
 
 import LobbyScene from '@/scenes/LobbyScene'
@@ -8,6 +9,21 @@ import GameScene from '@/scenes/BattleScene'
 const gameContainer = ref(null)
 
 let game = null
+
+const { isConnected, sendPayload } = useWebSocket()
+
+watch(
+  isConnected,
+  (connected) => {
+    if (!connected) return
+
+    sendPayload('lobby_move', {
+      x: 2000,
+      y: 2000,
+    })
+  },
+  { immediate: true },
+)
 
 onMounted(() => {
   const el = gameContainer.value
@@ -33,6 +49,7 @@ onMounted(() => {
 onUnmounted(() => {
   game?.destroy(true)
   game = null
+  scene = null
 })
 </script>
 
