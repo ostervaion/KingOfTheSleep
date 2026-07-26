@@ -32,11 +32,11 @@ function buttonClass(ranking) {
     class="font-inter flex flex-col flex-1 min-h-0 overflow-hidden rounded-xl bg-(--kots-blocks-color) border-b border-[color:var(--border)] shadow-md shadow-black/20"
   >
     <div class="px-6 pb-4 pt-4">
-      <div class="flex items-center justify-between">
+      <div class="flex py-0.75 items-center justify-between">
         <div class="border border-cyan-200 rounded-md px-1.5 py-0.5 text-gray-800 leading-none">
           <h2 class="text-cyan-200 text-xs font-medium text-heading">Rankings</h2>
         </div>
-        <div class="flex rounded-full bg-(--kots-background-color) px-1.25 py-0.75">
+        <div class="hidden flex rounded-full bg-(--kots-background-color) px-1.25 py-0.75">
           <button :class="buttonClass('today')" @click="updateButtonColor('today')">today</button>
 
           <button :class="buttonClass('week')" @click="updateButtonColor('week')">week</button>

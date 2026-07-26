@@ -38,27 +38,61 @@ function closeDialog() {
           </div>
         </div>
       </div>
-      <div class="pt-2 px-5 flex items-center justify-between">
-        <div class="pt-3 items-center">
-          <BoxingGlove class="text-center -mt-0.5 w-6.5 h-6.5 mb-1" />
-          <p class="text-center text-xs font-medium text-body text-zinc-400">battles</p>
-          <p class="text-center mb-2 text-xl font-light text-white">18</p>
+        <div
+          class="grid grid-cols-4 justify-between gap-1 rounded-lg py-3  sm:py-6"
+        >
+          <div class="justify-center">
+            <p class="text-body text-center text-xs font-medium text-zinc-400 pb-1">Battles</p>
+          <div class="flex min-w-0 items-center justify-center gap-2.5">
+            <BoxingGlove class="h-7 w-7  shrink-0" />
+            <div class="min-w-0">
+              <p class="mt-1 text-xl font-normal leading-none text-white">
+               18
+              </p>
+            </div>
+          </div>
+          </div>
+
+          <div class="justify-center">
+            <p class="text-body text-center text-xs font-medium text-zinc-400 pb-1">Wins</p>
+          <div class="flex min-w-0 items-center justify-center gap-2.5">
+            <TriangleUp class="h-7 w-7  shrink-0" />
+            <div class="min-w-0">
+              <p class="mt-1 text-xl font-normal leading-none text-white">
+               10
+              </p>
+            </div>
+          </div>
+          </div>
+
+          <div class="justify-center">
+            <p class="text-body text-center text-xs font-medium text-zinc-400 pb-1">Losses</p>
+          <div class="flex min-w-0 items-center justify-center gap-2.5">
+            <TriangleDown class="h-7 w-7  shrink-0" />
+            <div class="min-w-0">
+              <p class="mt-1 text-xl font-normal leading-none text-white">
+               8
+              </p>
+            </div>
+          </div>
+          </div>
+
+                    <div class="justify-center">
+            <p class="text-body text-center text-xs font-medium text-zinc-400 pb-1">Win rate</p>
+          <div class="flex min-w-0 items-center justify-center gap-2.5">
+            <div
+              class="grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 border-green-400 text-l font-semibold text-green-400"
+            >
+              %
+            </div>
+              <div class="min-w-0">
+              <p class="mt-1 text-xl font-medium leading-none text-green-400">
+               70
+              </p>
+            </div>
+          </div>
+          </div>
         </div>
-        <div class="pt-3 items-center">
-          <TriangleUp class="text-center -mt-0.5 w-6.5 h-6.5 mb-0.5" />
-          <p class="text-center text-xs font-medium text-body text-zinc-400">wins</p>
-          <p class="text-center mb-2 text-xl font-light text-white">14</p>
-        </div>
-        <div class="pt-3 items-center">
-          <TriangleDown class="text-center -mt-0.5 w-6.5 h-6.5 mb-0.5" />
-          <p class="text-center text-xs font-medium text-body text-zinc-400">looses</p>
-          <p class="text-center mb-2 text-xl font-light text-white">4</p>
-        </div>
-        <div class="pt-3 items-center">
-          <p class="text-center text-xs font-medium text-body mb-0.5 text-zinc-400">win rate</p>
-          <p class="text-center mb-2 text-xl font-light text-green-400">% 70</p>
-        </div>
-      </div>
     </div>
   </div>
   <Teleport to="body">

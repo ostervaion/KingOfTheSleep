@@ -278,7 +278,7 @@ async function onSaveChanges() {
 
 <template>
   <div
-    class="font-inter flex max-h-[90vh] w-full flex-col overflow-hidden rounded-xl border-b border-[color:var(--border)] bg-(--kots-blocks-color) shadow-md shadow-black/20"
+    class="font-inter flex max-h-[98vh] w-full flex-col overflow-hidden rounded-xl border-b border-[color:var(--border)] bg-(--kots-blocks-color) shadow-md shadow-black/20"
   >
     <!-- Cabecera -->
     <div class="px-4 pb-1 pt-4 sm:px-6 md:px-8 md:pb-2 md:pt-5">
@@ -492,7 +492,7 @@ async function onSaveChanges() {
     <!-- Botones inferiores -->
     <div
       v-if="!showDeleteConfirm"
-      class="flex flex-col-reverse gap-2 border-t border-white/10 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 md:px-8"
+      class="flex flex-col-reverse gap-2  px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 md:px-8"
     >
       <button
         type="button"

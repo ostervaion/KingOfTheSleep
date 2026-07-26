@@ -215,20 +215,9 @@ watch(
           </div>
         </div>
 
-        <div class="mt-5 flex items-center justify-end">
-          <button type="button"
-            class="flex items-center justify-center gap-2 rounded-full bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
-            @click="onChat">
-            <ChatIcon class="h-5 w-5 shrink-0" />
-
-            <span>
-              Chat with {{ user.username }}
-            </span>
-          </button>
-        </div>
-
+        <div class="mt-5 flex items-center justify-end gap-2 ">
         <button type="button" :disabled="friendButtonDisabled" :class="[
-          'mt-5 w-full rounded-md px-4 py-2.5 text-xs font-semibold transition',
+          'flex h-full w-full items-center justify-center  rounded-md px-4 py-2.5 text-xs font-semibold transition',
           friendStatus === 'friend' || friendStatus === 'deleting'
             ? 'bg-red-300 text-[#171715] hover:bg-red-200'
             : friendStatus === 'deleteError' ||
@@ -241,6 +230,16 @@ watch(
         ]" @click="toggleFriend">
           {{ friendButtonLabel }}
         </button>
+                  <button type="button"
+            class="flex items-center justify-center gap-2 rounded-md bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
+            @click="onChat">
+            <ChatIcon class="h-4 w-4 shrink-0" />
+
+            <span>
+              Chat 
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   </div>

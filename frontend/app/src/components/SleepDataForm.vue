@@ -254,9 +254,7 @@ const resetForm = () => {
         </div>
       </div>
 
-      <!-- Sleep Duration Section -->
-      <!-- Sleep Quality Section -->
-      <!-- Performance Section -->
+      <!-- Sleep Form Sections -->
       <div class="min-h-0 flex-1 overflow-x-auto overflow-y-hidden py-4">
         <div
           class="grid min-h-[300px] w-max min-w-full grid-flow-col auto-cols-[minmax(76px,1fr)] items-stretch gap-2 sm:h-full sm:min-h-0 sm:w-full sm:grid-flow-row sm:auto-cols-auto sm:grid-cols-5 sm:gap-3"
@@ -284,7 +282,7 @@ const resetForm = () => {
               class="mt-3 grid min-h-[190px] flex-1 grid-cols-[1fr_auto_1fr] items-stretch sm:min-h-40"
             >
               <div
-                class="flex h-full flex-col justify-between justify-self-end pr-1 text-[9px] text-(--muted) sm:pr-2 sm:text-[10px]"
+                class="flex h-full flex-col justify-between justify-self-end pr-1 text-[9px] text-zinc-400 sm:pr-2 sm:text-[10px]"
               >
                 <span>{{ field.max }}{{ field.unit }}</span>
                 <span>{{ field.min }}{{ field.unit }}</span>
@@ -324,14 +322,14 @@ const resetForm = () => {
           v-if="currentSection > 0"
           type="button"
           @click="previousSection"
-          class="min-w-24 flex-1 rounded-lg border border-[color:var(--border)] bg-(--kots-blocks-color) px-4 py-2.5 text-xs font-medium text-(--muted) transition-colors duration-150 hover:bg-(--surface-strong)"
+          class="min-w-24 flex-1 rounded-lg  px-4 py-2.5 text-xs font-medium text-zinc-400 transition-colors duration-150 hover:bg-white/[0.015] "
         >
           Back
         </button>
 
         <button
           type="submit"
-          class="min-w-24 flex-1 rounded-lg border border-yellow-400 bg-yellow-400 px-4 py-2.5 text-xs font-semibold text-neutral-950 transition-colors duration-150 hover:bg-yellow-300"
+          class="min-w-24 flex-1 rounded-lg bg-white/5 px-4 py-2.5 text-xs font-normal text-white border border-transparent hover:border-yellow-400"
         >
           Next
         </button>
@@ -345,23 +343,35 @@ const resetForm = () => {
       class="flex min-h-0 w-full min-w-0 flex-1 flex-col"
     >
       <div class="shrink-0 space-y-3">
-        <h3 class="text-xs font-medium uppercase tracking-wide text-(--muted)">Protocols</h3>
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="text-[10px] font-medium uppercase tracking-[0.16em] text-yellow-400">
+              LAST STEP
+            </p>
 
-        <p class="text-xs text-(--muted)">Select the protocols you followed today</p>
+            <h3 class="mt-1 text-xl font-semibold">Protocols</h3>
+          </div>
+
+          <div class="flex items-center justify-center gap-1.5" aria-hidden="true">
+            <span class="h-1.5 w-20 rounded-full bg-yellow-400"></span>
+          </div>
+        </div>
+
+        <p class="text-xs text-zinc-400">Select the protocols you followed today</p>
       </div>
 
-      <div class="flex min-h-0 flex-1 items-center py-6">
-        <div class="grid w-full grid-cols-2 gap-2">
+      <div class="min-h-0 flex-1 overflow-y-auto py-4">
+        <div class="grid w-full grid-cols-2 gap-2 sm:gap-3">
           <button
             v-for="protocol in protocolOptions"
             :key="protocol.id"
             type="button"
             @click="toggleProtocol(protocol.id)"
-            class="rounded-lg border px-3 py-2.5 text-left text-xs font-medium transition-colors duration-150"
+            class="flex min-h-14 items-center rounded-lg px-3 py-2.5 text-left border border-transparent text-xs font-medium"
             :class="
               selectedProtocols.includes(protocol.id)
-                ? 'border-yellow-400 bg-(--surface-strong) text-(--text)'
-                : 'border-[color:var(--border)] bg-(--kots-blocks-color) text-(--muted) hover:bg-(--surface-strong)'
+                ? 'bg-yellow-400  text-(--kots-blocks-color)'
+                : ' text-zinc-400 hover:bg-white/5'
             "
           >
             {{ protocol.label }}
@@ -370,7 +380,7 @@ const resetForm = () => {
       </div>
 
       <transition>
-        <p v-if="showMessage" class="shrink-0 pb-3 text-center text-xs text-(--muted)">
+        <p v-if="showMessage" class="shrink-0 pb-3 text-center text-xs text-zinc-400">
           {{ mensaje }}
         </p>
       </transition>
@@ -379,7 +389,7 @@ const resetForm = () => {
         <button
           type="button"
           @click="backToSleepStep"
-          class="flex-1 rounded-lg border border-[color:var(--border)] bg-(--kots-blocks-color) px-4 py-2.5 text-xs font-medium text-(--muted) transition-colors duration-150 hover:bg-(--surface-strong)"
+          class="min-w-24 flex-1 rounded-lg  px-4 py-2.5 text-xs font-medium text-zinc-400 transition-colors duration-150 hover:bg-white/[0.015] "
         >
           Back
         </button>
@@ -388,7 +398,7 @@ const resetForm = () => {
           type="submit"
           :disabled="loading"
           @click="$emit('saved')"
-          class="flex-1 rounded-lg border border-yellow-400 bg-yellow-400 px-4 py-2.5 text-xs font-semibold text-neutral-950 transition-colors duration-150 hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-50"
+          class="min-w-24 flex-1 rounded-lg bg-white/5 px-4 py-2.5 text-xs font-normal text-white border border-transparent hover:border-yellow-400"
         >
           {{ loading ? 'Sending...' : 'Save' }}
         </button>
@@ -436,6 +446,7 @@ const resetForm = () => {
   height: 12px;
   border: 2px solid var(--kots-blocks-color);
   border-radius: 4px;
+  margin-left: -10px;
   background: #facc15;
   cursor: grab;
   transition:
@@ -456,6 +467,7 @@ const resetForm = () => {
   width: 24px;
   height: 14px;
   border: 2px solid var(--kots-blocks-color);
+  margin-left: 10px;
   border-radius: 4px;
   background: #facc15;
   cursor: grab;

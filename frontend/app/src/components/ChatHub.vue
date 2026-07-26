@@ -77,76 +77,76 @@ onMounted(() => {
   <!-- Listado: chat global + conversaciones -->
   <div
     v-if="view.type === 'list'"
-    class="fixed inset-0 flex items-center justify-center bg-black/60 z-50"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
   >
     <div
-      class="w-full max-w-md bg-[#1a1a1f] border border-[#2a2a2f] rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+      class="font-inter flex max-h-[90vh] min-h-0 w-full max-w-md flex-col overflow-hidden rounded-xl border-b border-[color:var(--border)] bg-(--kots-blocks-color) shadow-md shadow-black/20"
     >
       <div
-        class="flex items-center justify-between px-5 py-3 bg-[#16161a] border-b border-[#2a2a2f]"
+        class="flex items-center justify-between  px-4 py-4 sm:px-6"
       >
-        <p class="text-sm font-medium text-[#e8e8f0]">Messages</p>
+        <p class="text-sm font-medium text-white">Messages</p>
         <button
           @click="emit('close')"
-          class="text-[#555] hover:text-[#aaa] transition-colors text-lg"
+          class="rounded-full px-2 text-lg leading-none text-neutral-400 transition hover:text-white"
         >
           ✕
         </button>
       </div>
 
       <!-- Pestañas -->
-      <div class="flex border-b border-[#2a2a2f] bg-[#16161a]">
+      <div class="flex border-b border-white/10 px-4 sm:px-6">
         <button
           @click="selectTab('chat')"
           :class="[
-            'flex-1 py-2.5 text-xs font-semibold transition-colors relative',
-            activeTab === 'chat' ? 'text-[#e8e8f0]' : 'text-[#666] hover:text-[#999]',
+            'relative flex-1 py-2.5 text-xs font-medium transition',
+            activeTab === 'chat' ? 'text-cyan-200' : 'text-neutral-500 hover:text-white',
           ]"
         >
           Chat
           <span
             v-if="activeTab === 'chat'"
-            class="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-10 bg-[#5555dd] rounded-full"
+            class="absolute bottom-0 left-1/2 h-0.5 w-10 -translate-x-1/2 rounded-full bg-cyan-200"
           ></span>
         </button>
         <button
           @click="selectTab('friends')"
           :class="[
-            'flex-1 py-2.5 text-xs font-semibold transition-colors relative',
-            activeTab === 'friends' ? 'text-[#e8e8f0]' : 'text-[#666] hover:text-[#999]',
+            'relative flex-1 py-2.5 text-xs font-medium transition',
+            activeTab === 'friends' ? 'text-cyan-200' : 'text-neutral-500 hover:text-white',
           ]"
         >
           Friends
           <span
             v-if="activeTab === 'friends'"
-            class="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-10 bg-[#5555dd] rounded-full"
+            class="absolute bottom-0 left-1/2 h-0.5 w-10 -translate-x-1/2 rounded-full bg-cyan-200"
           ></span>
         </button>
       </div>
 
-      <div v-if="activeTab === 'chat'" class="max-h-[70vh] overflow-y-auto">
+      <div v-if="activeTab === 'chat'" class="min-h-0 max-h-[70vh] overflow-y-auto">
         <!-- Entrada al chat global -->
         <button
           @click="openGlobal"
-          class="w-full flex items-center gap-3 px-5 py-3 hover:bg-[#20202a] transition-colors border-b border-[#2a2a2f]"
+          class="flex w-full items-center gap-3 border-b border-white/5 px-4 py-3 text-left transition hover:bg-white/[0.03] sm:px-6"
         >
-          <div class="w-9 h-9 rounded-full bg-[#2a2a3a] flex items-center justify-center text-lg">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-(--kots-background-color) text-lg">
             🌐
           </div>
-          <div class="flex-1 text-left">
-            <p class="text-sm text-[#e8e8f0] font-medium leading-none">Chat global</p>
-            <p class="text-xs text-[#555] mt-1">All users</p>
+          <div class="min-w-0 flex-1 text-left">
+            <p class="text-sm font-medium leading-none text-white">Chat global</p>
+            <p class="mt-1 text-xs text-neutral-400">All users</p>
           </div>
           <span
             v-if="unreadGlobal > 0"
-            class="min-w-[20px] h-5 px-1.5 rounded-full bg-[#5555dd] text-[10px] text-white flex items-center justify-center font-semibold"
+            class="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-cyan-200 px-1.5 text-[10px] font-semibold text-[#171715]"
           >
             {{ unreadGlobal }}
           </span>
         </button>
 
         <!-- Conversaciones privadas -->
-        <p v-if="conversations.length === 0" class="text-sm text-[#555] text-center py-8">
+        <p v-if="conversations.length === 0" class="py-8 text-center text-sm text-neutral-500">
           No conversations...
         </p>
 
@@ -154,46 +154,46 @@ onMounted(() => {
           v-for="conv in conversations"
           :key="conv.username"
           @click="openPrivate(conv.username)"
-          class="w-full flex items-center gap-3 px-5 py-3 hover:bg-[#20202a] transition-colors border-b border-[#232329]"
+          class="flex w-full items-center gap-3 border-b border-white/5 px-4 py-3 transition hover:bg-white/[0.03] sm:px-6"
         >
           <div class="relative shrink-0">
             <div
-              class="w-9 h-9 rounded-full bg-[#2a2a3a] flex items-center justify-center text-[#8888cc] text-sm font-semibold"
+              class="flex h-9 w-9 items-center justify-center rounded-full bg-(--kots-background-color) text-sm font-semibold text-cyan-200"
             >
               {{ conv.username[0].toUpperCase() }}
             </div>
             <span
               :class="[
-                'absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#1a1a1f]',
-                onlineUsers.has(conv.username) ? 'bg-[#4caf50]' : 'bg-[#f44336]',
+                'absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--kots-blocks-color)]',
+                onlineUsers.has(conv.username) ? 'bg-green-500' : 'bg-red-400',
               ]"
             ></span>
           </div>
-          <div class="flex-1 text-left min-w-0">
-            <p class="text-sm text-[#e8e8f0] font-medium leading-none">{{ conv.username }}</p>
-            <p class="text-xs text-[#666] mt-1 truncate">
+          <div class="min-w-0 flex-1 text-left">
+            <p class="text-sm font-medium leading-none text-white">{{ conv.username }}</p>
+            <p class="mt-1 truncate text-xs text-neutral-500">
               {{ conv.lastMessage.from === myUsername ? 'Tú: ' : '' }}{{ conv.lastMessage.text }}
             </p>
           </div>
           <span
             v-if="conv.unread > 0"
-            class="min-w-[20px] h-5 px-1.5 rounded-full bg-[#5555dd] text-[10px] text-white flex items-center justify-center font-semibold"
+            class="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-cyan-200 px-1.5 text-[10px] font-semibold text-[#171715]"
           >
             {{ conv.unread }}
           </span>
         </button>
       </div>
 
-<div v-else class="max-h-[70vh] overflow-y-auto">
-  <p v-if="friendsLoading" class="py-8 text-center text-sm text-[#555]">
+<div v-else class="min-h-0 max-h-[70vh] overflow-y-auto">
+  <p v-if="friendsLoading" class="py-8 text-center text-sm text-neutral-500">
     Loading friends...
   </p>
 
-  <p v-else-if="friendsError" class="py-8 text-center text-sm text-[#e8455a]">
+  <p v-else-if="friendsError" class="py-8 text-center text-sm text-red-400">
     Failed to load friends.
   </p>
 
-  <p v-else-if="friends.length === 0" class="py-8 text-center text-sm text-[#555]">
+  <p v-else-if="friends.length === 0" class="py-8 text-center text-sm text-neutral-500">
     No friends
   </p>
 
@@ -201,31 +201,31 @@ onMounted(() => {
     v-for="username in sortedFriends"
     :key="username"
     @click="openPrivate(username)"
-    class="flex w-full items-center gap-3 border-b border-[#232329] px-5 py-3 transition-colors hover:bg-[#20202a]"
+    class="flex w-full items-center gap-3 border-b border-white/5 px-4 py-3 transition hover:bg-white/[0.03] sm:px-6"
   >
     <div class="relative shrink-0">
       <div
-        class="flex h-9 w-9 items-center justify-center rounded-full bg-[#2a2a3a] text-sm font-semibold text-[#8888cc]"
+        class="flex h-9 w-9 items-center justify-center rounded-full bg-(--kots-background-color) text-sm font-semibold text-cyan-200"
       >
         {{ username[0].toUpperCase() }}
       </div>
 
       <span
         :class="[
-          'absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#1a1a1f]',
-          onlineUsers.has(username) ? 'bg-[#4caf50]' : 'bg-[#f44336]',
+          'absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--kots-blocks-color)]',
+          onlineUsers.has(username) ? 'bg-green-500' : 'bg-red-400',
         ]"
       />
     </div>
 
     <div class="min-w-0 flex-1 text-left">
-      <p class="text-sm font-medium leading-none text-[#e8e8f0]">
+      <p class="text-sm font-medium leading-none text-white">
         {{ username }}
       </p>
 
       <p
         class="mt-1 text-xs"
-        :class="onlineUsers.has(username) ? 'text-[#4caf50]' : 'text-[#666]'"
+        :class="onlineUsers.has(username) ? 'text-green-500' : 'text-neutral-500'"
       >
         {{ onlineUsers.has(username) ? 'Connected' : 'Disconnected' }}
       </p>
@@ -233,12 +233,12 @@ onMounted(() => {
   </button>
 
   <!-- Botón actualizar -->
-  <div class="sticky bottom-0 border-t border-[#2a2a2f] bg-[#16161a] p-3">
+  <div class="sticky bottom-0 border-t border-white/10 bg-(--kots-blocks-color) p-3 sm:px-6">
     <button
       type="button"
       :disabled="friendsLoading"
       @click="loadFriends"
-      class="flex w-full items-center justify-center gap-2 rounded-lg bg-[#2a2a3a] px-4 py-2.5 text-xs font-semibold text-[#e8e8f0] transition-colors hover:bg-[#35354a] disabled:cursor-not-allowed disabled:opacity-50"
+      class="flex w-full items-center justify-center gap-2 rounded-md bg-(--kots-background-color) px-4 py-2.5 text-xs font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
     >
       <span :class="{ 'animate-spin': friendsLoading }">↻</span>
 
