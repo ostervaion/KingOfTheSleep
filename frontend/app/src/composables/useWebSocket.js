@@ -5,6 +5,9 @@ const isConnected = ref(false)
 const isAuthenticated = ref(false)
 const onlineUsers = ref(new Set())
 const lobbyPlayers = ref({})
+const gameError = ref(false)
+const gameEnemy = ref('')
+const gameAccepted = ref(false)
 
 const chatMessages = ref([])
 const myUsername = ref('')
@@ -71,6 +74,7 @@ export function useWebSocket() {
               onlineUsers.value.add(payload.username)
             } else {
               onlineUsers.value.delete(payload.username)
+              delete lobbyPlayers.value[payload.username]
             }
             onlineUsers.value = new Set(onlineUsers.value)
             break
@@ -79,6 +83,23 @@ export function useWebSocket() {
             break
           case 'lobby_list':
             lobbyPlayers.value = payload.lobby_players
+            break
+          case 'game:error':
+            gameError.value = true
+            break
+          case 'game:game_petition':
+            gameEnemy.value = payload.enemy
+            break
+          case 'game:answer':
+            console.log('game:answer', payload)
+            if (response.response) {
+              gameAccepted.value = true
+            } else {
+              gameError.value = true
+            }
+            break
+          case 'game:disconnect':
+            delete lobbyPlayers.value[response.user]
             break
           default:
             console.log('Mensaje no controlado:', response)
@@ -131,5 +152,8 @@ export function useWebSocket() {
     myUsername,
     onlineUsers,
     lobbyPlayers,
+    gameError,
+    gameEnemy,
+	gameAccepted
   }
 }

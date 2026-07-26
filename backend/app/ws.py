@@ -132,14 +132,31 @@ async def websocket_endpoint(websocket: WebSocket):
                     await users[target].send_text(json.dumps(payload))
                 
                 await websocket.send_text(json.dumps(payload))
-            if msg_type == 'lobby_move':
+            if msg_type == 'lobby:move':
                 game_positions[sender] = (data["x"], data["y"])
                 await broadcast_except(websocket, {"type": "sheep_move", "username": sender, "x": data["x"], "y": data["y"]})
                 continue
 
-            elif msg_type.startswith("game:"):
-                # Aquí procesarías la lógica del juego usando 'sender'
-                pass
+            if msg_type == 'game:attack':
+                target = data.get("user")
+                if not target or target not in users:
+                    await websocket.send_text(json.dumps({"type": "game:error"}))
+                    continue
+                try:
+                    await users[target].send_text(json.dumps({
+                        "type": "game:game_petition",
+                        "payload": {"enemy": sender}
+                    }))
+                except Exception:
+                    await websocket.send_text(json.dumps({"type": "game:error"}))
+                continue
+            if msg_type == 'game:response':
+                await users[data.get("target")].send_text(json.dumps({"type": "game:answer", "response": data.get("accepted")}))
+                continue
+            if msg_type == 'game:disconnect':
+                game_positions.pop(sender, None)
+                await broadcast_except(websocket, {"type": "game:disconnect", "user": sender})
+                continue
 
     except WebSocketDisconnect:
         username = unregister_connection(websocket)

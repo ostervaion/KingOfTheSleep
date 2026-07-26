@@ -17,7 +17,7 @@ watch(
   (connected) => {
     if (!connected) return
 
-    sendPayload('lobby_move', {
+    sendPayload('lobby:move', {
       x: 2000,
       y: 2000,
     })
