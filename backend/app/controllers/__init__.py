@@ -11,6 +11,7 @@ from .public import router as public_router
 from .sleep_data_controller import router as sleep_data_router
 from .today_stats_controller import router as today_stats_router
 from .user_controller import router as user_router
+from .protocol_controller import router as protocol_router
 
 router = APIRouter()
 
@@ -25,3 +26,4 @@ router.include_router(today_stats_router)
 router.include_router(user_router)
 router.include_router(public_router)
 router.include_router(api_key_router)
+router.include_router(protocol_router)
