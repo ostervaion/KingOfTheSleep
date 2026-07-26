@@ -64,12 +64,6 @@ const score = computed(() => ({
 </script>
 
 <template>
-  <!--
-    This li occupies the complete width of the popup.
-
-    The background is applied here, while the padding is applied
-    to the internal content.
-  -->
   <li
     class="relative w-full odd:bg-white/[0.015] even:bg-transparent"
     :class="props.victory ? 'battle-win' : 'battle-loss'"
