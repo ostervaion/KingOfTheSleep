@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import asyncio
+from apikeys import router as apikeys_router
+from public import router as public_api_router
 from pathlib import Path
 from config import ORIGINS
 from database import create_db_and_tables
@@ -28,6 +30,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(public_api_router)
+app.include_router(apikeys_router)
 app.include_router(router)
 app.websocket("/ws")(websocket_endpoint)
 
