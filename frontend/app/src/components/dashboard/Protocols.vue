@@ -1,41 +1,47 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { computed, ref } from 'vue'
 import ThumbsUpIcon from '@/assets/thumbs-up-svgrepo-com.svg'
 import ThumbsDownIcon from '@/assets/thumbs-down-svgrepo-com.svg'
 import ProtocolCard from '@/components/dashboard/protocolCard.vue'
 
-const selectedRanking = ref('today')
-var protocolsUp = ref([])
-var protocolsDown = ref([])
-
-onMounted(() => {
-  loadProtocols()
+const props = defineProps({
+  protocolsData: {
+    type: Object,
+    default: () => ({
+      winner_protocols: [],
+      loser_protocols: [],
+    }),
+  },
 })
 
-function loadProtocols() {
-  protocolsUp.value = [
-    { ranking: '1', protocol: 'Martin', usage: '%30', winrate: '%3' },
-    { ranking: '2', protocol: 'Martin', usage: '%30', winrate: '%3' },
-    { ranking: '3', protocol: 'Martin', usage: '%30', winrate: '%3' },
-    { ranking: '4', protocol: 'Other', usage: '%20', winrate: '%5' },
-    { ranking: '5', protocol: 'Another', usage: '%15', winrate: '%8' },
-    { ranking: '6', protocol: 'Other', usage: '%20', winrate: '%5' },
-    { ranking: '7', protocol: 'Another', usage: '%15', winrate: '%8' },
-  ]
-  ///llamar a funcion back para tener todos los protocolos y sus datos en descendiente por punto
+const selectedRanking = ref('today')
 
-  protocolsDown.value = [
-    { ranking: '1', protocol: 'Other', usage: '%20', winrate: '%5' },
-    { ranking: '2', protocol: 'Another', usage: '%15', winrate: '%8' },
-    { ranking: '3', protocol: 'Other', usage: '%20', winrate: '%5' },
-    { ranking: '4', protocol: 'Another', usage: '%15', winrate: '%8' },
-    { ranking: '5', protocol: 'Other', usage: '%20', winrate: '%5' },
-    { ranking: '6', protocol: 'Another', usage: '%15', winrate: '%8' },
-  ]
-  ///llamar a funcion back para tener todos los protocolos y sus datos en descendiente por punto
+function formatWinrate(value) {
+  const number = Number(value)
+
+  if (!Number.isFinite(number)) return '0%'
+
+  return `${(number * 100).toFixed(1).replace('.0', '')}%`
 }
+
+function normalizeProtocols(protocols) {
+  if (!Array.isArray(protocols)) return []
+
+  return protocols.map((protocol, index) => ({
+    ranking: protocol?.ranking ?? index + 1,
+    protocol: protocol?.protocol ?? 'Unknown protocol',
+    usage: protocol?.usage ?? 0,
+    winrate: formatWinrate(protocol?.winrate),
+  }))
+}
+
+const protocolsUp = computed(() =>
+  normalizeProtocols(props.protocolsData?.winner_protocols),
+)
+
+const protocolsDown = computed(() =>
+  normalizeProtocols(props.protocolsData?.loser_protocols),
+)
 
 function updateButtonColor(ranking) {
   selectedRanking.value = ranking
@@ -84,7 +90,7 @@ function buttonClass(ranking) {
         <!--poner en la key la id del protocolo, no el nombre -->
         <ProtocolCard
           v-for="protocolup in protocolsUp"
-          :key="protocolup.protocol"
+          :key="`winner-${protocolup.ranking}-${protocolup.protocol}`"
           :ranking="protocolup.ranking"
           :name="protocolup.protocol"
           :usage="protocolup.usage"
@@ -107,7 +113,7 @@ function buttonClass(ranking) {
       <ul>
         <ProtocolCard
           v-for="protocoldown in protocolsDown"
-          :key="protocoldown.protocol"
+          :key="`loser-${protocoldown.ranking}-${protocoldown.protocol}`"
           :ranking="protocoldown.ranking"
           :name="protocoldown.protocol"
           :usage="protocoldown.usage"
