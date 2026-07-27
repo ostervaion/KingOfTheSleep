@@ -28,8 +28,16 @@ async function register() {
 
   message.value = ''
 
-  if (username.value.trim().length < 5) {
+  const cleanUsername = username.value.trim()
+  const cleanEmail = email.value.trim()
+
+  if (cleanUsername.length < 5) {
     message.value = '// username must be at least 5 characters long'
+    return
+  }
+
+  if (!cleanEmail) {
+    message.value = '// email is required'
     return
   }
 
@@ -47,16 +55,24 @@ async function register() {
 
   try {
     await api.post('/register', {
-      username: username.value.trim(),
-      email: email.value.trim(),
+      username: cleanUsername,
+      email: cleanEmail,
       password: password.value,
     })
 
     message.value = '// user registered successfully'
-    auth.setTutorial()
+
+    auth.setTutorial?.()
+
     emit('login')
   } catch (error) {
-    message.value = `// ${error.response?.data?.detail || 'registration failed'}`
+    console.error('Registration error:', error)
+
+    const detail = error.response?.data?.detail
+
+    message.value = Array.isArray(detail)
+      ? `// ${detail.map((item) => item.msg).join(', ')}`
+      : `// ${detail || 'registration failed'}`
   } finally {
     loading.value = false
   }
@@ -66,21 +82,23 @@ async function register() {
 <template>
   <form class="font-inter space-y-5" @submit.prevent="register">
     <div>
-      <span class="mb-4 block text-xs font-semibold uppercase tracking-[0.18em] text-yellow-400">
+      <span
+        class="mb-4 block text-xs font-semibold uppercase tracking-[0.18em] text-yellow-400"
+      >
         Register
       </span>
 
       <div class="space-y-4">
         <label class="block text-xs font-medium tracking-wide text-[#A2A1A6]">
-          Usuario
+          Username
 
           <input
-            v-model.trim="username"
+            v-model="username"
             type="text"
             required
             minlength="5"
             autocomplete="username"
-            placeholder="usuario_"
+            placeholder="username_"
             class="mt-2 w-full rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-4 py-3 text-sm text-white outline-none transition-colors duration-150 placeholder:text-[#6f6e73] focus:border-cyan-200 focus:ring-1 focus:ring-cyan-200"
           />
 
@@ -93,17 +111,17 @@ async function register() {
           Email
 
           <input
-            v-model.trim="email"
+            v-model="email"
             type="email"
             required
             autocomplete="email"
-            placeholder="correo@dominio.com"
+            placeholder="email@example.com"
             class="mt-2 w-full rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-4 py-3 text-sm text-white outline-none transition-colors duration-150 placeholder:text-[#6f6e73] focus:border-cyan-200 focus:ring-1 focus:ring-cyan-200"
           />
         </label>
 
         <label class="block text-xs font-medium tracking-wide text-[#A2A1A6]">
-          Contraseña
+          Password
 
           <input
             v-model="password"
@@ -122,7 +140,9 @@ async function register() {
       </div>
     </div>
 
-    <div class="rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) p-4">
+    <div
+      class="rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) p-4"
+    >
       <div class="flex items-start gap-3">
         <input
           id="accept-legal"
@@ -132,7 +152,10 @@ async function register() {
           class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-[color:var(--border)] accent-cyan-200"
         />
 
-        <label for="accept-legal" class="cursor-pointer text-xs leading-5 text-[#A2A1A6]">
+        <label
+          for="accept-legal"
+          class="cursor-pointer text-xs leading-5 text-[#A2A1A6]"
+        >
           I have read and accept the
 
           <RouterLink
@@ -172,8 +195,12 @@ async function register() {
       }}
     </button>
 
-    <p v-if="mensaje" role="status" class="rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-3 py-2 text-xs tracking-wide text-[#A2A1A6]">
-      {{ mensaje }}
+    <p
+      v-if="message"
+      role="status"
+      class="rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-3 py-2 text-xs tracking-wide text-[#A2A1A6]"
+    >
+      {{ message }}
     </p>
 
     <button
