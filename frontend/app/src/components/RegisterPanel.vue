@@ -28,8 +28,16 @@ async function register() {
 
   message.value = ''
 
-  if (username.value.trim().length < 5) {
+  const cleanUsername = username.value.trim()
+  const cleanEmail = email.value.trim()
+
+  if (cleanUsername.length < 5) {
     message.value = '// username must be at least 5 characters long'
+    return
+  }
+
+  if (!cleanEmail) {
+    message.value = '// email is required'
     return
   }
 
@@ -47,16 +55,24 @@ async function register() {
 
   try {
     await api.post('/register', {
-      username: username.value.trim(),
-      email: email.value.trim(),
+      username: cleanUsername,
+      email: cleanEmail,
       password: password.value,
     })
 
     message.value = '// user registered successfully'
-    auth.setTutorial()
+
+    auth.setTutorial?.()
+
     emit('login')
   } catch (error) {
-    message.value = `// ${error.response?.data?.detail || 'registration failed'}`
+    console.error('Registration error:', error)
+
+    const detail = error.response?.data?.detail
+
+    message.value = Array.isArray(detail)
+      ? `// ${detail.map((item) => item.msg).join(', ')}`
+      : `// ${detail || 'registration failed'}`
   } finally {
     loading.value = false
   }
@@ -64,24 +80,26 @@ async function register() {
 </script>
 
 <template>
-  <form class="space-y-5" @submit.prevent="register">
+  <form class="font-inter space-y-5" @submit.prevent="register">
     <div>
-      <span class="mb-3 block text-[10px] uppercase tracking-[4px] text-(--accent)">
+      <span
+        class="mb-4 block text-xs font-semibold uppercase tracking-[0.18em] text-yellow-400"
+      >
         Register
       </span>
 
       <div class="space-y-4">
-        <label class="block text-[10px] uppercase tracking-[2px] text-(--muted)">
+        <label class="block text-xs font-medium tracking-wide text-[#A2A1A6]">
           Username
 
           <input
-            v-model.trim="username"
+            v-model="username"
             type="text"
             required
             minlength="5"
             autocomplete="username"
             placeholder="username_"
-            class="mt-2 w-full rounded-2xl border border-(--border) bg-(--surface-soft) px-4 py-3 text-sm text-(--text) outline-none placeholder:text-(--muted) transition-colors duration-150 focus:border-(--accent)"
+            class="mt-2 w-full rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-4 py-3 text-sm text-white outline-none transition-colors duration-150 placeholder:text-[#6f6e73] focus:border-cyan-200 focus:ring-1 focus:ring-cyan-200"
           />
 
           <span class="mt-1 block text-[10px] normal-case tracking-normal text-(--muted)">
@@ -89,20 +107,20 @@ async function register() {
           </span>
         </label>
 
-        <label class="block text-[10px] uppercase tracking-[2px] text-(--muted)">
+        <label class="block text-xs font-medium tracking-wide text-[#A2A1A6]">
           Email
 
           <input
-            v-model.trim="email"
+            v-model="email"
             type="email"
             required
             autocomplete="email"
             placeholder="email@example.com"
-            class="mt-2 w-full rounded-2xl border border-(--border) bg-(--surface-soft) px-4 py-3 text-sm text-(--text) outline-none placeholder:text-(--muted) transition-colors duration-150 focus:border-(--accent)"
+            class="mt-2 w-full rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-4 py-3 text-sm text-white outline-none transition-colors duration-150 placeholder:text-[#6f6e73] focus:border-cyan-200 focus:ring-1 focus:ring-cyan-200"
           />
         </label>
 
-        <label class="block text-[10px] uppercase tracking-[2px] text-(--muted)">
+        <label class="block text-xs font-medium tracking-wide text-[#A2A1A6]">
           Password
 
           <input
@@ -112,7 +130,7 @@ async function register() {
             minlength="8"
             autocomplete="new-password"
             placeholder="••••••••"
-            class="mt-2 w-full rounded-2xl border border-(--border) bg-(--surface-soft) px-4 py-3 text-sm text-(--text) outline-none placeholder:text-(--muted) transition-colors duration-150 focus:border-(--accent)"
+            class="mt-2 w-full rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-4 py-3 text-sm text-white outline-none transition-colors duration-150 placeholder:text-[#6f6e73] focus:border-cyan-200 focus:ring-1 focus:ring-cyan-200"
           />
 
           <span class="mt-1 block text-[10px] normal-case tracking-normal text-(--muted)">
@@ -122,23 +140,28 @@ async function register() {
       </div>
     </div>
 
-    <div class="rounded-2xl border border-(--border) bg-(--surface-soft) p-4">
+    <div
+      class="rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) p-4"
+    >
       <div class="flex items-start gap-3">
         <input
           id="accept-legal"
           v-model="acceptedTerms"
           type="checkbox"
           required
-          class="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-(--accent)"
+          class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-[color:var(--border)] accent-cyan-200"
         />
 
-        <label for="accept-legal" class="cursor-pointer text-xs leading-5 text-(--muted)">
+        <label
+          for="accept-legal"
+          class="cursor-pointer text-xs leading-5 text-[#A2A1A6]"
+        >
           I have read and accept the
 
           <RouterLink
             to="/terms"
             target="_blank"
-            class="font-semibold text-(--accent) underline hover:text-(--button-hover)"
+            class="font-semibold text-cyan-200 underline decoration-cyan-200/50 underline-offset-2 transition-colors hover:text-cyan-100"
             @click.stop
           >
             Terms of Service
@@ -149,7 +172,7 @@ async function register() {
           <RouterLink
             to="/privacy"
             target="_blank"
-            class="font-semibold text-(--accent) underline hover:text-(--button-hover)"
+            class="font-semibold text-cyan-200 underline decoration-cyan-200/50 underline-offset-2 transition-colors hover:text-cyan-100"
             @click.stop
           >
             Privacy Policy
@@ -161,7 +184,7 @@ async function register() {
     <button
       type="submit"
       :disabled="loading || !acceptedTerms"
-      class="w-full rounded-2xl border border-(--accent) bg-(--surface-soft) px-4 py-3 text-sm font-semibold uppercase tracking-[2px] text-(--accent) transition-colors duration-150 hover:bg-(--surface) disabled:cursor-not-allowed disabled:opacity-40"
+      class="w-full rounded-lg border-none bg-cyan-200 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-[#171715] transition-colors duration-150 hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-40"
     >
       {{
         loading
@@ -175,14 +198,14 @@ async function register() {
     <p
       v-if="message"
       role="status"
-      class="text-sm tracking-[1px] text-(--muted)"
+      class="rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-3 py-2 text-xs tracking-wide text-[#A2A1A6]"
     >
       {{ message }}
     </p>
 
     <button
       type="button"
-      class="text-(--accent) underline hover:text-(--button-hover)"
+      class="text-xs font-semibold text-cyan-200 underline decoration-cyan-200/50 underline-offset-4 transition-colors hover:text-cyan-100"
       @click="emit('back')"
     >
       Back

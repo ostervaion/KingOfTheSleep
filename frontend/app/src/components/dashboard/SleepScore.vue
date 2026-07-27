@@ -98,7 +98,7 @@ const chartOptions = {
     },
     y: {
       display: false,
-      min: 50,
+      min: 0,
       max: 100,
       grid: {
         display: false,

@@ -8,18 +8,18 @@ const authStore = useAuthStore()
 
 <template>
   <!-- Navbar horizontal -->
-  <header class="bg-[var(--web-bg)] border-b border-[color:var(--border)]">
+  <header class="font-inter bg-(--kots-blocks-color)">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
+      <div class="relative flex items-center justify-center h-16">
         <!-- Logo izquierda -->
-        <div class="flex-shrink-0">
-          <img src="/KOTS_logo.png" alt="King of the Sleep" class="h-10 w-auto" />
+        <div class="flex-shrink-0 justify-center">
+          <img src="/KOTS_LOGO_2.png" alt="King of the Sleep" class="pt-4 h-16 w-auto" />
         </div>
 
-        <nav class="hidden md:flex items-center gap-8">
+        <nav class="hidden absolute right-0 md:flex items-center gap-8 justify-end">
           <button
             type="button"
-            class="flex h-8 cursor-pointer w-full items-center justify-center gap-3 rounded-lg bg-[#FACC15] px-5 text-base font-semibold text-[#171715] transition hover:brightness-105"
+            class="flex h-5 mt-4 cursor-pointer w-15 items-center justify-center gap-3 rounded-lg  hover:bg-yellow-400 hover:text-(--kots-background-color) px-4 text-xs font-semibold text-zinc-400 "
             @click="authStore.setAuthMode('login')"
           >
             Login
@@ -27,7 +27,7 @@ const authStore = useAuthStore()
         </nav>
 
         <button
-          class="md:hidden text-[color:var(--accent)] text-2xl leading-none hover:text-[color:var(--accent)]/80 transition-colors"
+          class="absolute right-0 md:hidden pt-4 text-yellow-400 text-2xl leading-none"
           @click="mobileMenuOpen = !mobileMenuOpen"
           aria-label="Toggle menu"
         >
@@ -38,32 +38,16 @@ const authStore = useAuthStore()
 
     <div
       v-if="mobileMenuOpen"
-      class="md:hidden bg-[color:var(--surface-soft)] border-t border-[color:var(--border)]"
+      class="md:hidden bg-(--kots-background-color) border-t border-(--border) z-10"
     >
-      <nav class="hidden md:flex items-center gap-8">
-        <button
-          type="button"
-          class="text-xs tracking-[2px] uppercase text-[color:var(--muted)] hover:text-[color:var(--accent)] transition-colors duration-150 pb-0.5 border-b-2 border-transparent hover:border-[color:var(--accent)]"
-          :class="{
-            '!text-[color:var(--accent)] !border-[color:var(--accent)]':
-              authStore.authMode === 'login',
-          }"
-          @click="authStore.setAuthMode('login')"
-        >
-          Login
-        </button>
-
-        <button
-          type="button"
-          class="text-xs tracking-[2px] uppercase text-[color:var(--muted)] hover:text-[color:var(--accent)] transition-colors duration-150 pb-0.5 border-b-2 border-transparent hover:border-[color:var(--accent)]"
-          :class="{
-            '!text-[color:var(--accent)] !border-[color:var(--accent)]':
-              authStore.authMode === 'register',
-          }"
-          @click="authStore.setAuthMode('register')"
-        >
-          Register
-        </button>
+      <nav class="flex flex-col gap-2 px-4 py-4">
+          <button
+            type="button"
+            class="flex h-5 cursor-pointer w-15 items-center justify-center gap-3 rounded-lg  hover:bg-yellow-400 hover:text-(--kots-background-color) px-4 text-xs font-semibold text-yellow-400 "
+            @click="authStore.setAuthMode('login')"
+          >
+            Login
+          </button>
       </nav>
     </div>
   </header>

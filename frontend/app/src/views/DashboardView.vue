@@ -8,14 +8,16 @@ import Profile from '@/components/dashboard/Profile.vue'
 import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Battle from '@/components/dashboard/Battle.vue'
 import ChatButton from '@/components/dashboard/ChatButton.vue'
-import { useWebSocket } from '@/composables/useWebSocket'
-import { ref, nextTick, watch, computed, onMounted, onUnmounted } from 'vue'
-import api from '@/api/api'
 import SleepDataForm from '@/components/SleepDataForm.vue'
-import { startDashboardTour } from '@/tours/dashboardTour'
+import { useWebSocket } from '@/composables/useWebSocket'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import api from '@/api/api'
 
+const router = useRouter()
 const auth = useAuthStore()
+
 
 const dashboard = ref(null)
 const { connect, disconnect, updateDashboard } = useWebSocket()
@@ -43,16 +45,18 @@ async function fetchDashboard() {
 let intervalId = null
 
 onMounted(async () => {
+  if (auth.tutorial) 
+  {
+    await router.replace({
+      name: 'dashboard-tour',
+    })
+
+    return
+  }
+
   fetchDashboard()
   intervalId = setInterval(fetchDashboard, 30000)
   connect()
-
-  await nextTick()
-
-  if (auth.tutorial) {
-    startDashboardTour()
-    auth.removeTutorial()
-  }
 })
 
 onUnmounted(() => {
@@ -147,9 +151,7 @@ function updateActiveMobilePage() {
   </div>
 
   <!-- PARA ORDENADOR -->
-  <div
-    class="hidden h-[calc(100dvh-64px)] flex-col gap-3 overflow-hidden px-8 py-4 mt-5 text-(--text) lg:flex"
-  >
+  <div class="hidden h-[calc(100dvh-64px)] flex-col gap-3 overflow-hidden px-8 py-4 mt-5 text-(--text) lg:flex ">
     <NextBattle id="next-battle" :next-battle="dashboard?.nextBattle" />
 
     <div
