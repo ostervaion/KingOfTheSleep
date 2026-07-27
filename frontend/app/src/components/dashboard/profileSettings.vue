@@ -359,8 +359,14 @@ async function onSaveChanges() {
           </div>
         </div>
 
-        <div class="mb-5"></div>
-
+        <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          <button
+            @click="onChangePicture"
+            class="rounded-md bg-(--kots-background-color) px-3 py-2 text-xs font-medium text-white transition hover:bg-white/10"
+          >
+            Change Picture
+          </button>
+        </div>
         <!-- Formulario -->
         <form class="space-y-4" @submit.prevent="onSaveChanges">
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">

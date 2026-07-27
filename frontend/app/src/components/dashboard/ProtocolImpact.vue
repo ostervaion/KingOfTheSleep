@@ -1,19 +1,10 @@
 <script setup>
-import { ref } from 'vue'
-
-const protocolImpacts = ref([
-  { id: 1, name: 'Temperature Cycling', percentage: 145, daysUsed: 120 }, // Over 100% test
-  { id: 2, name: 'Light Management', percentage: -25, daysUsed: 85 },
-  { id: 3, name: 'Stimulant Control', percentage: 75, daysUsed: 210 },
-  { id: 4, name: 'Magnesium Intake', percentage: -180, daysUsed: 45 }, // Under -100% test
-  { id: 5, name: 'Melatonin Intake', percentage: 12, daysUsed: 300 },
-  { id: 6, name: 'Sex Intake', percentage: -1250, daysUsed: 2 },
-  { id: 7, name: 'Sunlight maxing', percentage: 20, daysUsed: 120 },
-  { id: 8, name: 'Caffeine minimum', percentage: -10, daysUsed: 340 },
-  { id: 9, name: 'Caffeine minimum', percentage: -10, daysUsed: 340 },
-  { id: 10, name: 'Caffeine minimum', percentage: -10, daysUsed: 340 },
-  { id: 11, name: 'Caffeine minimum', percentage: -10, daysUsed: 340 },
-])
+defineProps({
+  protocolImpacts: {
+    type: Array,
+    default: () => [],
+  },
+})
 </script>
 
 <template>

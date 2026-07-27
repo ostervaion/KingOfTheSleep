@@ -19,7 +19,6 @@ const sortedFriends = computed(() => {
   return [...friends.value].sort((a, b) => {
     const aOnline = onlineUsers.value.has(a) ? 1 : 0
     const bOnline = onlineUsers.value.has(b) ? 1 : 0
-
     return bOnline - aOnline
   })
 })
@@ -245,8 +244,8 @@ onMounted(() => {
       {{ friendsLoading ? 'Actualizando...' : 'Actualizar amigos' }}
     </button>
   </div>
-</div>
- </div>
+  </div>
+  </div>
 </div>
 
   <Chat

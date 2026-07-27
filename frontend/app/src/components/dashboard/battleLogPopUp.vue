@@ -4,14 +4,27 @@ import BattleLogsCard from '@/components/dashboard/battleLogsCard.vue'
 import BoxingGlove from '@/assets/boxing-glove.svg'
 import TriangleUp from '@/assets/triangle-up.svg'
 import TriangleDown from '@/assets/triangle-down.svg'
-
+import api from '@/api/api'
 const emit = defineEmits(['close'])
 
 const battleLogs = ref([])
+const isLoading = ref(false)
 
-onMounted(loadLogs)
+//onMounted(loadLogs)
 
-function loadLogs() {
+async function loadLogs() {
+  isLoading.value = true
+  try {
+    const response = await api.get('/battleData')
+    console.log(response.data)
+    battleLogs.value = response.data // adjust to your real response shape
+  } catch (error) {
+    console.error('Error cargando battle logs:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
   battleLogs.value = [
     {
       victory: true,
@@ -77,8 +90,22 @@ function loadLogs() {
       enemy_protocol: ['kaka', 'culo', 'pedo', 'pis'],
     },
   ]
-}
 
+defineExpose({ loadLogs })
+
+/*
+const props = defineProps({
+  summary: {
+    type: Object,
+    default: () => ({ battles: 0, wins: 0, losses: 0, winRate: 0 }),
+  },
+})
+
+const winRateColor = computed(() => {
+  if (props.summary.winRate >= 60) return 'text-green-400'
+  if (props.summary.winRate <= 40) return 'text-red-400'
+  return 'text-orange-400'
+  */
 const summary = computed(() => {
   const battles = 18
   const wins = 14
@@ -177,6 +204,14 @@ function onClose() {
         </div>
       </div>
 
+      <!--    <ul class="mt-4">
+        <BattleLogsCard
+          v-for="log in battleLogs.battles"
+          :key="log.combat_id"
+          v-bind="log"
+          :me="battleLogs.me"
+        />
+-->
       <ul class="mt-4 w-full">
         <BattleLogsCard v-for="log in battleLogs" :key="log.enemy_user_name" v-bind="log" />
       </ul>

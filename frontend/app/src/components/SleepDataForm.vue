@@ -2,6 +2,8 @@
 import { computed, ref } from 'vue'
 import api from '@/api/api'
 
+const emit = defineEmits(['saved'])
+
 import PerformanceIcon from '@/assets/performance.svg'
 import ConsistencyIcon from '@/assets/consistency.svg'
 import EfficiencyIcon from '@/assets/efficiency.svg'
@@ -124,16 +126,15 @@ function previousSection() {
   }
 }
 
-// Lista fija de protocolos (genérica, ajustable después)
+// Lista fija de protocolos, con los ids reales de la tabla `protocols`
 const protocolOptions = [
-  { id: 'no_caffeine', label: 'No caffeine after 2pm' },
-  { id: 'no_screens', label: 'No screens before bed' },
-  { id: 'consistent_schedule', label: 'Consistent sleep schedule' },
-  { id: 'meditation', label: 'Meditation' },
-  { id: 'reading', label: 'Reading before bed' },
-  { id: 'cold_room', label: 'Cold room temperature' },
-  { id: 'exercise', label: 'Exercise during the day' },
-  { id: 'blue_light', label: 'Blue light blocking glasses' },
+  { id: 1, label: 'Temperature Cycling' },
+  { id: 2, label: 'Light Management' },
+  { id: 3, label: 'Stimulant Control' },
+  { id: 4, label: 'Magnesium Intake' },
+  { id: 5, label: 'Melatonin Intake' },
+  { id: 6, label: 'Sunlight Maxing' },
+  { id: 7, label: 'Caffeine Minimum' },
 ]
 
 const selectedProtocols = ref([])
@@ -181,17 +182,19 @@ async function submitAll() {
     })
 
     await api.post('/protocol', {
-      protocols: selectedProtocols.value,
+      protocol_ids: selectedProtocols.value,
     })
 
     mensaje.value = 'Data saved'
     showMessage.value = true
-    step.value = 1
-    resetForm()
-    selectedProtocols.value = []
+    emit('saved')
+
     setTimeout(() => {
       showMessage.value = false
-    }, 3000)
+      step.value = 1
+      resetForm()
+      selectedProtocols.value = []
+    }, 1200)
   } catch (error) {
     mensaje.value = 'Error saving data'
     showMessage.value = true
@@ -397,8 +400,7 @@ const resetForm = () => {
         <button
           type="submit"
           :disabled="loading"
-          @click="$emit('saved')"
-          class="min-w-24 flex-1 rounded-lg bg-white/5 px-4 py-2.5 text-xs font-normal text-white border border-transparent hover:border-yellow-400"
+          class="flex-1 rounded-lg border border-yellow-400 bg-yellow-400 px-4 py-2.5 text-xs font-semibold text-neutral-950 transition-colors duration-150 hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {{ loading ? 'Sending...' : 'Save' }}
         </button>

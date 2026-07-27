@@ -20,32 +20,43 @@ const email = ref(props.email)
 const password = ref('')
 const acceptedTerms = ref(false)
 
-const mensaje = ref('')
+const message = ref('')
 const loading = ref(false)
 
 async function register() {
   if (loading.value) return
 
+  message.value = ''
+
+  if (username.value.trim().length < 5) {
+    message.value = '// username must be at least 5 characters long'
+    return
+  }
+
+  if (password.value.length < 8) {
+    message.value = '// password must be at least 8 characters long'
+    return
+  }
+
   if (!acceptedTerms.value) {
-    mensaje.value = '// debes aceptar los términos y la política de privacidad'
+    message.value = '// you must accept the Terms of Service and Privacy Policy'
     return
   }
 
   loading.value = true
-  mensaje.value = ''
 
   try {
     await api.post('/register', {
-      username: username.value,
-      email: email.value,
+      username: username.value.trim(),
+      email: email.value.trim(),
       password: password.value,
     })
 
-    mensaje.value = '// usuario registrado'
+    message.value = '// user registered successfully'
     auth.setTutorial()
     emit('login')
   } catch (error) {
-    mensaje.value = `// ${error.response?.data?.detail || 'error al registrar'}`
+    message.value = `// ${error.response?.data?.detail || 'registration failed'}`
   } finally {
     loading.value = false
   }
@@ -67,10 +78,15 @@ async function register() {
             v-model.trim="username"
             type="text"
             required
+            minlength="5"
             autocomplete="username"
             placeholder="usuario_"
             class="mt-2 w-full rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-4 py-3 text-sm text-white outline-none transition-colors duration-150 placeholder:text-[#6f6e73] focus:border-cyan-200 focus:ring-1 focus:ring-cyan-200"
           />
+
+          <span class="mt-1 block text-[10px] normal-case tracking-normal text-(--muted)">
+            At least 5 characters
+          </span>
         </label>
 
         <label class="block text-xs font-medium tracking-wide text-[#A2A1A6]">
@@ -93,10 +109,15 @@ async function register() {
             v-model="password"
             type="password"
             required
+            minlength="8"
             autocomplete="new-password"
             placeholder="••••••••"
             class="mt-2 w-full rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-4 py-3 text-sm text-white outline-none transition-colors duration-150 placeholder:text-[#6f6e73] focus:border-cyan-200 focus:ring-1 focus:ring-cyan-200"
           />
+
+          <span class="mt-1 block text-[10px] normal-case tracking-normal text-(--muted)">
+            At least 8 characters
+          </span>
         </label>
       </div>
     </div>
@@ -131,8 +152,8 @@ async function register() {
             class="font-semibold text-cyan-200 underline decoration-cyan-200/50 underline-offset-2 transition-colors hover:text-cyan-100"
             @click.stop
           >
-            Privacy Policy </RouterLink
-          >.
+            Privacy Policy
+          </RouterLink>.
         </label>
       </div>
     </div>
@@ -143,7 +164,11 @@ async function register() {
       class="w-full rounded-lg border-none bg-cyan-200 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-[#171715] transition-colors duration-150 hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-40"
     >
       {{
-        loading ? '// registrando...' : acceptedTerms ? '▶ Registrarse' : 'Accept terms to register'
+        loading
+          ? '// registering...'
+          : acceptedTerms
+            ? '▶ Register'
+            : 'Accept terms to register'
       }}
     </button>
 

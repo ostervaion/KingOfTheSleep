@@ -1,25 +1,25 @@
 <script setup>
-import { computed, reactive, ref } from "vue";
-import { useAuthStore } from "@/stores/auth";
-import api from "@/api/api";
+import { computed, reactive, ref } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import api from '@/api/api'
 
-const auth = useAuthStore();
+const auth = useAuthStore()
 
 const response = reactive({
-  method: "",
-  url: "",
+  method: '',
+  url: '',
   status: null,
   ok: false,
   body: null,
   loading: false,
-});
+})
 
 async function request(method, path, body = null, headers = {}) {
-  response.method = method;
-  response.url = path;
-  response.status = null;
-  response.body = null;
-  response.loading = true;
+  response.method = method
+  response.url = path
+  response.status = null
+  response.body = null
+  response.loading = true
 
   try {
     const res = await api.request({
@@ -27,174 +27,132 @@ async function request(method, path, body = null, headers = {}) {
       url: path,
       data: body,
       headers,
-    });
+    })
 
-    response.status = res.status;
-    response.ok = true;
-    response.body = res.data;
+    response.status = res.status
+    response.ok = true
+    response.body = res.data
 
     return {
       ok: true,
       body: res.data,
-    };
+    }
   } catch (error) {
-    response.ok = false;
-    response.status = error.response?.status ?? "network error";
-    response.body = error.response?.data ?? String(error);
+    response.ok = false
+    response.status = error.response?.status ?? 'network error'
+    response.body = error.response?.data ?? String(error)
 
     return {
       ok: false,
       body: null,
-    };
+    }
   } finally {
-    response.loading = false;
+    response.loading = false
   }
 }
 
-const apiKeys = ref([]);
-const newKeyName = ref("");
-const createdKey = ref(null);
-const testApiKey = ref("");
+const apiKeys = ref([])
+const newKeyName = ref('')
+const createdKey = ref(null)
+const testApiKey = ref('')
 
 const authHeaders = computed(() => ({
   Authorization: `Bearer ${auth.token}`,
-}));
+}))
 
 async function loadApiKeys() {
-  const result = await request(
-    "GET",
-    "/admin/apikeys",
-    null,
-    authHeaders.value
-  );
+  const result = await request('GET', '/admin/apikeys', null, authHeaders.value)
 
   if (result.ok) {
-    apiKeys.value = result.body;
+    apiKeys.value = result.body
   }
 }
 
 async function createApiKey() {
-  const name = newKeyName.value.trim();
-  if (!name) return;
+  const name = newKeyName.value.trim()
+  if (!name) return
 
-  const result = await request(
-    "POST",
-    "/admin/apikeys",
-    { name },
-    authHeaders.value
-  );
+  const result = await request('POST', '/admin/apikeys', { name }, authHeaders.value)
 
-  if (!result.ok) return;
+  if (!result.ok) return
 
-  createdKey.value = result.body;
-  testApiKey.value = result.body.api_key;
-  newKeyName.value = "";
+  createdKey.value = result.body
+  testApiKey.value = result.body.api_key
+  newKeyName.value = ''
 
-  await loadApiKeys();
+  await loadApiKeys()
 }
 
 async function revokeApiKey(id) {
-  const result = await request(
-    "DELETE",
-    `/admin/apikeys/${id}`,
-    null,
-    authHeaders.value
-  );
+  const result = await request('DELETE', `/admin/apikeys/${id}`, null, authHeaders.value)
 
   if (result.ok) {
-    await loadApiKeys();
+    await loadApiKeys()
   }
 }
 
 function copyKey(key) {
-  navigator.clipboard?.writeText(key);
+  navigator.clipboard?.writeText(key)
 }
 
 const fields = [
-  "time_in_bed",
-  "awake_time",
-  "light_sleep",
-  "slow_wave",
-  "rem",
-  "disturbance",
-  "baseline",
-  "debt",
-  "strain",
-  "nap",
-  "respiratory_rate",
-  "performance",
-  "consistency",
-  "efficiency",
-];
+  'time_in_bed',
+  'awake_time',
+  'light_sleep',
+  'slow_wave',
+  'rem',
+  'disturbance',
+  'baseline',
+  'debt',
+  'strain',
+  'nap',
+  'respiratory_rate',
+  'performance',
+  'consistency',
+  'efficiency',
+]
 
-const sleepForm = reactive(
-  Object.fromEntries(fields.map((field) => [field, 0]))
-);
+const sleepForm = reactive(Object.fromEntries(fields.map((field) => [field, 0])))
 
-const targetId = ref("");
-const listLimit = ref(20);
+const targetId = ref('')
+const listLimit = ref(20)
 
 const apiKeyHeaders = computed(() => ({
-  "X-API-Key": testApiKey.value.trim(),
-}));
+  'X-API-Key': testApiKey.value.trim(),
+}))
 
 function hasApiKey() {
-  return Boolean(testApiKey.value.trim());
+  return Boolean(testApiKey.value.trim())
 }
 
 function listSleepData() {
-  if (!hasApiKey()) return;
+  if (!hasApiKey()) return
 
-  request(
-    "GET",
-    `/publicAPI/sleep-data?limit=${listLimit.value}`,
-    null,
-    apiKeyHeaders.value
-  );
+  request('GET', `/publicAPI/sleep-data?limit=${listLimit.value}`, null, apiKeyHeaders.value)
 }
 
 function getSleepData() {
-  if (!hasApiKey() || !targetId.value) return;
+  if (!hasApiKey() || !targetId.value) return
 
-  request(
-    "GET",
-    `/publicAPI/sleep-data/${targetId.value}`,
-    null,
-    apiKeyHeaders.value
-  );
+  request('GET', `/publicAPI/sleep-data/${targetId.value}`, null, apiKeyHeaders.value)
 }
 
 function createSleepData() {
-  if (!hasApiKey()) return;
+  if (!hasApiKey()) return
 
-  request(
-    "POST",
-    "/publicAPI/sleep-data",
-    { ...sleepForm },
-    apiKeyHeaders.value
-  );
+  request('POST', '/publicAPI/sleep-data', { ...sleepForm }, apiKeyHeaders.value)
 }
 
 function updateSleepData() {
-  if (!hasApiKey() || !targetId.value) return;
+  if (!hasApiKey() || !targetId.value) return
 
-  request(
-    "PUT",
-    `/publicAPI/sleep-data/${targetId.value}`,
-    { ...sleepForm },
-    apiKeyHeaders.value
-  );
+  request('PUT', `/publicAPI/sleep-data/${targetId.value}`, { ...sleepForm }, apiKeyHeaders.value)
 }
 
 function deleteSleepData() {
-  if (!hasApiKey() || !targetId.value) return;
+  if (!hasApiKey() || !targetId.value) return
 
-  request(
-    "DELETE",
-    `/publicAPI/sleep-data/${targetId.value}`,
-    null,
-    apiKeyHeaders.value
-  );
+  request('DELETE', `/publicAPI/sleep-data/${targetId.value}`, null, apiKeyHeaders.value)
 }
 </script>
 
@@ -208,19 +166,11 @@ function deleteSleepData() {
       <h2>API keys</h2>
 
       <div class="row">
-        <input
-          v-model="newKeyName"
-          placeholder="API key name"
-          @keyup.enter="createApiKey"
-        />
+        <input v-model="newKeyName" placeholder="API key name" @keyup.enter="createApiKey" />
 
-        <button class="accent" @click="createApiKey">
-          Generate
-        </button>
+        <button class="accent" @click="createApiKey">Generate</button>
 
-        <button @click="loadApiKeys">
-          Refresh
-        </button>
+        <button @click="loadApiKeys">Refresh</button>
       </div>
 
       <div v-if="createdKey" class="message">
@@ -228,9 +178,7 @@ function deleteSleepData() {
 
         <div class="row">
           <code>{{ createdKey.api_key }}</code>
-          <button @click="copyKey(createdKey.api_key)">
-            Copy
-          </button>
+          <button @click="copyKey(createdKey.api_key)">Copy</button>
         </div>
       </div>
 
@@ -250,64 +198,42 @@ function deleteSleepData() {
             <tr v-for="key in apiKeys" :key="key.id">
               <td>{{ key.name }}</td>
               <td>{{ key.key_prefix }}…</td>
-              <td>{{ key.active ? "Yes" : "No" }}</td>
+              <td>{{ key.active ? 'Yes' : 'No' }}</td>
               <td>{{ new Date(key.created_at).toLocaleString() }}</td>
               <td>
-                <button class="danger" @click="revokeApiKey(key.id)">
-                  Revoke
-                </button>
+                <button class="danger" @click="revokeApiKey(key.id)">Revoke</button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <p v-else class="muted">
-        No API keys loaded.
-      </p>
+      <p v-else class="muted">No API keys loaded.</p>
     </section>
 
     <section>
       <h2>Test sleep-data</h2>
 
-      <input
-        v-model="testApiKey"
-        class="full-width"
-        placeholder="X-API-Key"
-      />
+      <input v-model="testApiKey" class="full-width" placeholder="X-API-Key" />
 
       <div class="two-columns">
         <article>
           <h3>List data</h3>
 
-          <input
-            v-model.number="listLimit"
-            type="number"
-            min="1"
-            placeholder="Limit"
-          />
+          <input v-model.number="listLimit" type="number" min="1" placeholder="Limit" />
 
-          <button @click="listSleepData">
-            GET
-          </button>
+          <button @click="listSleepData">GET</button>
         </article>
 
         <article>
           <h3>Find or delete by ID</h3>
 
-          <input
-            v-model="targetId"
-            placeholder="Sleep data ID"
-          />
+          <input v-model="targetId" placeholder="Sleep data ID" />
 
           <div class="row">
-            <button @click="getSleepData">
-              GET
-            </button>
+            <button @click="getSleepData">GET</button>
 
-            <button class="danger" @click="deleteSleepData">
-              DELETE
-            </button>
+            <button class="danger" @click="deleteSleepData">DELETE</button>
           </div>
         </article>
       </div>
@@ -319,22 +245,14 @@ function deleteSleepData() {
           <label v-for="field in fields" :key="field">
             {{ field }}
 
-            <input
-              v-model.number="sleepForm[field]"
-              type="number"
-              step="any"
-            />
+            <input v-model.number="sleepForm[field]" type="number" step="any" />
           </label>
         </div>
 
         <div class="row">
-          <button class="accent" @click="createSleepData">
-            POST
-          </button>
+          <button class="accent" @click="createSleepData">POST</button>
 
-          <button class="accent" @click="updateSleepData">
-            PUT
-          </button>
+          <button class="accent" @click="updateSleepData">PUT</button>
         </div>
       </article>
     </section>
@@ -343,26 +261,17 @@ function deleteSleepData() {
       <h2>Response</h2>
 
       <div class="response-header">
-        <strong>{{ response.method || "—" }}</strong>
-        <span>{{ response.url || "No requests yet" }}</span>
+        <strong>{{ response.method || '—' }}</strong>
+        <span>{{ response.url || 'No requests yet' }}</span>
 
-        <span
-          v-if="response.status !== null"
-          :class="response.ok ? 'success' : 'error'"
-        >
+        <span v-if="response.status !== null" :class="response.ok ? 'success' : 'error'">
           {{ response.status }}
         </span>
 
-        <span v-if="response.loading">
-          Loading...
-        </span>
+        <span v-if="response.loading"> Loading... </span>
       </div>
 
-      <pre>{{
-        response.body !== null
-          ? JSON.stringify(response.body, null, 2)
-          : ""
-      }}</pre>
+      <pre>{{ response.body !== null ? JSON.stringify(response.body, null, 2) : '' }}</pre>
     </section>
   </main>
 </template>

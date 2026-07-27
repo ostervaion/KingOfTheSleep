@@ -1,22 +1,26 @@
 <script setup>
-import { reactive } from "vue";
+import { reactive } from 'vue'
 
 const fields = [
-  { name: "time_in_bed", type: "number", desc: "Total time spent in bed." },
-  { name: "awake_time", type: "number", desc: "Time spent awake during the recorded period." },
-  { name: "light_sleep", type: "number", desc: "Duration of light sleep." },
-  { name: "slow_wave", type: "number", desc: "Duration of deep or slow-wave sleep." },
-  { name: "rem", type: "number", desc: "Duration of REM sleep." },
-  { name: "disturbance", type: "number", desc: "Value associated with disturbances or interruptions." },
-  { name: "baseline", type: "number", desc: "User's baseline reference value." },
-  { name: "debt", type: "number", desc: "Estimated sleep debt." },
-  { name: "strain", type: "number", desc: "Strain or load level." },
-  { name: "nap", type: "number", desc: "Nap duration or value." },
-  { name: "respiratory_rate", type: "number", desc: "Respiratory rate." },
-  { name: "performance", type: "number", desc: "Performance score." },
-  { name: "consistency", type: "number", desc: "Consistency score." },
-  { name: "efficiency", type: "number", desc: "Sleep efficiency score." },
-];
+  { name: 'time_in_bed', type: 'number', desc: 'Total time spent in bed.' },
+  { name: 'awake_time', type: 'number', desc: 'Time spent awake during the recorded period.' },
+  { name: 'light_sleep', type: 'number', desc: 'Duration of light sleep.' },
+  { name: 'slow_wave', type: 'number', desc: 'Duration of deep or slow-wave sleep.' },
+  { name: 'rem', type: 'number', desc: 'Duration of REM sleep.' },
+  {
+    name: 'disturbance',
+    type: 'number',
+    desc: 'Value associated with disturbances or interruptions.',
+  },
+  { name: 'baseline', type: 'number', desc: "User's baseline reference value." },
+  { name: 'debt', type: 'number', desc: 'Estimated sleep debt.' },
+  { name: 'strain', type: 'number', desc: 'Strain or load level.' },
+  { name: 'nap', type: 'number', desc: 'Nap duration or value.' },
+  { name: 'respiratory_rate', type: 'number', desc: 'Respiratory rate.' },
+  { name: 'performance', type: 'number', desc: 'Performance score.' },
+  { name: 'consistency', type: 'number', desc: 'Consistency score.' },
+  { name: 'efficiency', type: 'number', desc: 'Sleep efficiency score.' },
+]
 
 const sleepPayload = `{
   "time_in_bed": 480,
@@ -33,7 +37,7 @@ const sleepPayload = `{
   "performance": 87,
   "consistency": 82,
   "efficiency": 91
-}`;
+}`
 
 const sleepPayloadUpdated = `{
   "time_in_bed": 500,
@@ -50,23 +54,21 @@ const sleepPayloadUpdated = `{
   "performance": 91,
   "consistency": 85,
   "efficiency": 94
-}`;
+}`
 
 const sections = [
   {
-    title: "API key management",
+    title: 'API key management',
     intro:
-      "These endpoints require a valid session and the Authorization: Bearer <JWT_TOKEN> header.",
+      'These endpoints require a valid session and the Authorization: Bearer <JWT_TOKEN> header.',
     endpoints: [
       {
-        id: "get-api-keys",
-        method: "GET",
-        path: "/admin/apikeys",
+        id: 'get-api-keys',
+        method: 'GET',
+        path: '/admin/apikeys',
         description:
-          "Returns the API keys associated with the authenticated user. The full key is not normally returned; only information such as name, prefix, status, and creation date is shown.",
-        headers: [
-          { name: "Authorization", value: "Bearer <JWT_TOKEN>", required: true },
-        ],
+          'Returns the API keys associated with the authenticated user. The full key is not normally returned; only information such as name, prefix, status, and creation date is shown.',
+        headers: [{ name: 'Authorization', value: 'Bearer <JWT_TOKEN>', required: true }],
         curl: `curl -X GET "http://localhost:8000/admin/apikeys" \\
   -H "Authorization: Bearer JWT_TOKEN"`,
         response: `[
@@ -79,17 +81,17 @@ const sections = [
   }
 ]`,
         statuses: [
-          { code: "200 OK", type: "success" },
-          { code: "401 Unauthorized", type: "error" },
+          { code: '200 OK', type: 'success' },
+          { code: '401 Unauthorized', type: 'error' },
         ],
       },
       {
-        id: "post-api-key",
-        method: "POST",
-        path: "/admin/apikeys",
+        id: 'post-api-key',
+        method: 'POST',
+        path: '/admin/apikeys',
         description:
-          "Creates a new API key. The response includes the full key so the user can save it.",
-        body: [{ name: "name", type: "string", required: true }],
+          'Creates a new API key. The response includes the full key so the user can save it.',
+        body: [{ name: 'name', type: 'string', required: true }],
         curl: `curl -X POST "http://localhost:8000/admin/apikeys" \\
   -H "Authorization: Bearer JWT_TOKEN" \\
   -H "Content-Type: application/json" \\
@@ -102,41 +104,41 @@ const sections = [
   "api_key": "kots_generated_full_key"
 }`,
         statuses: [
-          { code: "200 / 201", type: "success" },
-          { code: "400 Bad Request", type: "error" },
-          { code: "401 Unauthorized", type: "error" },
+          { code: '200 / 201', type: 'success' },
+          { code: '400 Bad Request', type: 'error' },
+          { code: '401 Unauthorized', type: 'error' },
         ],
       },
       {
-        id: "delete-api-key",
-        method: "DELETE",
-        path: "/admin/apikeys/{id}",
-        description: "Revokes or deletes an API key by its identifier.",
-        pathParams: [{ name: "id", type: "integer or string", required: true }],
+        id: 'delete-api-key',
+        method: 'DELETE',
+        path: '/admin/apikeys/{id}',
+        description: 'Revokes or deletes an API key by its identifier.',
+        pathParams: [{ name: 'id', type: 'integer or string', required: true }],
         curl: `curl -X DELETE "http://localhost:8000/admin/apikeys/12" \\
   -H "Authorization: Bearer JWT_TOKEN"`,
         statuses: [
-          { code: "200 / 204", type: "success" },
-          { code: "401 Unauthorized", type: "error" },
-          { code: "404 Not Found", type: "error" },
+          { code: '200 / 204', type: 'success' },
+          { code: '401 Unauthorized', type: 'error' },
+          { code: '404 Not Found', type: 'error' },
         ],
       },
     ],
   },
   {
-    title: "Sleep-data endpoints",
-    intro: "All of these endpoints require the X-API-Key header.",
+    title: 'Sleep-data endpoints',
+    intro: 'All of these endpoints require the X-API-Key header.',
     endpoints: [
       {
-        id: "get-sleep-data",
-        method: "GET",
-        path: "/publicAPI/sleep-data",
-        description: "Returns a list of sleep records.",
+        id: 'get-sleep-data',
+        method: 'GET',
+        path: '/publicAPI/sleep-data',
+        description: 'Returns a list of sleep records.',
         query: [
           {
-            name: "limit",
-            type: "integer",
-            desc: "Maximum number of records. The tester uses 20 by default.",
+            name: 'limit',
+            type: 'integer',
+            desc: 'Maximum number of records. The tester uses 20 by default.',
             optional: true,
           },
         ],
@@ -146,116 +148,116 @@ const sections = [
   {
     "id": 42,
 ${sleepPayload
-  .split("\n")
+  .split('\n')
   .slice(1, -1)
-  .map((line) => "    " + line.trim())
-  .join("\n")}
+  .map((line) => '    ' + line.trim())
+  .join('\n')}
   }
 ]`,
         statuses: [
-          { code: "200 OK", type: "success" },
-          { code: "401 Unauthorized", type: "error" },
-          { code: "429 Too Many Requests", type: "error" },
+          { code: '200 OK', type: 'success' },
+          { code: '401 Unauthorized', type: 'error' },
+          { code: '429 Too Many Requests', type: 'error' },
         ],
       },
       {
-        id: "get-sleep-data-id",
-        method: "GET",
-        path: "/publicAPI/sleep-data/{id}",
-        description: "Fetches a single sleep record by its ID.",
-        pathParams: [{ name: "id", type: "integer or string", required: true }],
+        id: 'get-sleep-data-id',
+        method: 'GET',
+        path: '/publicAPI/sleep-data/{id}',
+        description: 'Fetches a single sleep record by its ID.',
+        pathParams: [{ name: 'id', type: 'integer or string', required: true }],
         curl: `curl -X GET "http://localhost:8000/publicAPI/sleep-data/42" \\
   -H "X-API-Key: kots_your_api_key"`,
         statuses: [
-          { code: "200 OK", type: "success" },
-          { code: "401 Unauthorized", type: "error" },
-          { code: "404 Not Found", type: "error" },
-          { code: "429 Too Many Requests", type: "error" },
+          { code: '200 OK', type: 'success' },
+          { code: '401 Unauthorized', type: 'error' },
+          { code: '404 Not Found', type: 'error' },
+          { code: '429 Too Many Requests', type: 'error' },
         ],
       },
       {
-        id: "post-sleep-data",
-        method: "POST",
-        path: "/publicAPI/sleep-data",
-        description: "Creates a new sleep record.",
+        id: 'post-sleep-data',
+        method: 'POST',
+        path: '/publicAPI/sleep-data',
+        description: 'Creates a new sleep record.',
         curl: `curl -X POST "http://localhost:8000/publicAPI/sleep-data" \\
   -H "X-API-Key: kots_your_api_key" \\
   -H "Content-Type: application/json" \\
   -d '${sleepPayload}'`,
         statuses: [
-          { code: "200 / 201", type: "success" },
-          { code: "400 Bad Request", type: "error" },
-          { code: "401 Unauthorized", type: "error" },
-          { code: "422 Validation Error", type: "error" },
-          { code: "429 Too Many Requests", type: "error" },
+          { code: '200 / 201', type: 'success' },
+          { code: '400 Bad Request', type: 'error' },
+          { code: '401 Unauthorized', type: 'error' },
+          { code: '422 Validation Error', type: 'error' },
+          { code: '429 Too Many Requests', type: 'error' },
         ],
       },
       {
-        id: "put-sleep-data",
-        method: "PUT",
-        path: "/publicAPI/sleep-data/{id}",
+        id: 'put-sleep-data',
+        method: 'PUT',
+        path: '/publicAPI/sleep-data/{id}',
         description:
-          "Replaces the content of an existing record. Since this is a PUT request, the client should send the full object.",
+          'Replaces the content of an existing record. Since this is a PUT request, the client should send the full object.',
         curl: `curl -X PUT "http://localhost:8000/publicAPI/sleep-data/42" \\
   -H "X-API-Key: kots_your_api_key" \\
   -H "Content-Type: application/json" \\
   -d '${sleepPayloadUpdated}'`,
         statuses: [
-          { code: "200 OK", type: "success" },
-          { code: "400 Bad Request", type: "error" },
-          { code: "401 Unauthorized", type: "error" },
-          { code: "404 Not Found", type: "error" },
-          { code: "422 Validation Error", type: "error" },
-          { code: "429 Too Many Requests", type: "error" },
+          { code: '200 OK', type: 'success' },
+          { code: '400 Bad Request', type: 'error' },
+          { code: '401 Unauthorized', type: 'error' },
+          { code: '404 Not Found', type: 'error' },
+          { code: '422 Validation Error', type: 'error' },
+          { code: '429 Too Many Requests', type: 'error' },
         ],
       },
       {
-        id: "delete-sleep-data",
-        method: "DELETE",
-        path: "/publicAPI/sleep-data/{id}",
-        description: "Deletes a sleep record by its ID.",
+        id: 'delete-sleep-data',
+        method: 'DELETE',
+        path: '/publicAPI/sleep-data/{id}',
+        description: 'Deletes a sleep record by its ID.',
         curl: `curl -X DELETE "http://localhost:8000/publicAPI/sleep-data/42" \\
   -H "X-API-Key: kots_your_api_key"`,
         statuses: [
-          { code: "200 / 204", type: "success" },
-          { code: "401 Unauthorized", type: "error" },
-          { code: "404 Not Found", type: "error" },
-          { code: "429 Too Many Requests", type: "error" },
+          { code: '200 / 204', type: 'success' },
+          { code: '401 Unauthorized', type: 'error' },
+          { code: '404 Not Found', type: 'error' },
+          { code: '429 Too Many Requests', type: 'error' },
         ],
       },
     ],
   },
-];
+]
 
 const errorFormat = `{
   "detail": "Descriptive error message"
-}`;
+}`
 
-const copiedState = reactive({});
+const copiedState = reactive({})
 
 async function copy(key, text) {
   try {
-    await navigator.clipboard.writeText(text);
-    copiedState[key] = true;
+    await navigator.clipboard.writeText(text)
+    copiedState[key] = true
     setTimeout(() => {
-      copiedState[key] = false;
-    }, 1200);
+      copiedState[key] = false
+    }, 1200)
   } catch {
-    copiedState[key] = "error";
+    copiedState[key] = 'error'
     setTimeout(() => {
-      copiedState[key] = false;
-    }, 1200);
+      copiedState[key] = false
+    }, 1200)
   }
 }
 
 function copyLabel(key) {
-  if (copiedState[key] === true) return "Copied";
-  if (copiedState[key] === "error") return "Couldn't copy";
-  return "Copy";
+  if (copiedState[key] === true) return 'Copied'
+  if (copiedState[key] === 'error') return "Couldn't copy"
+  return 'Copy'
 }
 
 function methodClass(method) {
-  return method.toLowerCase();
+  return method.toLowerCase()
 }
 </script>
 
@@ -275,15 +277,11 @@ function methodClass(method) {
 
         <template v-for="section in sections" :key="section.title">
           <div class="nav-title">{{ section.title }}</div>
-          <a
-            v-for="endpoint in section.endpoints"
-            :key="endpoint.id"
-            :href="`#${endpoint.id}`"
-          >
+          <a v-for="endpoint in section.endpoints" :key="endpoint.id" :href="`#${endpoint.id}`">
             <span class="nav-method" :class="methodClass(endpoint.method)">
               {{ endpoint.method }}
             </span>
-            {{ endpoint.description.split(".")[0] }}
+            {{ endpoint.description.split('.')[0] }}
           </a>
         </template>
 
@@ -298,8 +296,8 @@ function methodClass(method) {
         <h1>Public API</h1>
 
         <p class="hero-description">
-          Reference for managing API keys and reading, creating, updating, or
-          deleting sleep records via HTTP requests.
+          Reference for managing API keys and reading, creating, updating, or deleting sleep records
+          via HTTP requests.
         </p>
 
         <div class="base-url">
@@ -312,9 +310,8 @@ function methodClass(method) {
         <h2>Authentication</h2>
 
         <p class="section-intro">
-          The API uses two separate authentication systems. Administrative
-          endpoints use the user's session JWT, while the public sleep-data
-          endpoints use an API key.
+          The API uses two separate authentication systems. Administrative endpoints use the user's
+          session JWT, while the public sleep-data endpoints use an API key.
         </p>
 
         <div class="auth-grid">
@@ -328,9 +325,7 @@ function methodClass(method) {
 
           <article class="info-card">
             <h3>API key for the Public API</h3>
-            <p>
-              Used on all <code>/publicAPI/sleep-data</code> endpoints.
-            </p>
+            <p>Used on all <code>/publicAPI/sleep-data</code> endpoints.</p>
             <div class="code-box">
               <pre>X-API-Key: kots_your_api_key</pre>
             </div>
@@ -339,9 +334,8 @@ function methodClass(method) {
 
         <div class="notice">
           <strong>Important:</strong>
-          the full API key should only be shown when it's created. Keep it
-          somewhere safe and never publish it in the frontend, repositories,
-          or screenshots.
+          the full API key should only be shown when it's created. Keep it somewhere safe and never
+          publish it in the frontend, repositories, or screenshots.
         </div>
       </section>
 
@@ -349,8 +343,7 @@ function methodClass(method) {
         <h2>Sleep-data model</h2>
 
         <p class="section-intro">
-          The POST and PUT endpoints receive a JSON object with the following
-          numeric fields.
+          The POST and PUT endpoints receive a JSON object with the following numeric fields.
         </p>
 
         <table class="fields-table">
@@ -363,7 +356,9 @@ function methodClass(method) {
           </thead>
           <tbody>
             <tr v-for="field in fields" :key="field.name">
-              <td><code>{{ field.name }}</code></td>
+              <td>
+                <code>{{ field.name }}</code>
+              </td>
               <td>{{ field.type }}</td>
               <td>{{ field.desc }}</td>
             </tr>
@@ -371,9 +366,8 @@ function methodClass(method) {
         </table>
 
         <div class="notice">
-          Units, allowed ranges, and required fields should match the schemas
-          defined in the backend. The descriptions above are indicative,
-          based on the field names.
+          Units, allowed ranges, and required fields should match the schemas defined in the
+          backend. The descriptions above are indicative, based on the field names.
         </div>
       </section>
 
@@ -401,12 +395,20 @@ function methodClass(method) {
               <div class="block-title">Headers</div>
               <table>
                 <thead>
-                  <tr><th>Name</th><th>Value</th><th>Required</th></tr>
+                  <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Required</th>
+                  </tr>
                 </thead>
                 <tbody>
                   <tr v-for="header in endpoint.headers" :key="header.name">
-                    <td><code>{{ header.name }}</code></td>
-                    <td><code>{{ header.value }}</code></td>
+                    <td>
+                      <code>{{ header.name }}</code>
+                    </td>
+                    <td>
+                      <code>{{ header.value }}</code>
+                    </td>
                     <td>
                       <span v-if="header.required" class="required">YES</span>
                     </td>
@@ -419,11 +421,17 @@ function methodClass(method) {
               <div class="block-title">Path parameters</div>
               <table>
                 <thead>
-                  <tr><th>Parameter</th><th>Type</th><th>Required</th></tr>
+                  <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Required</th>
+                  </tr>
                 </thead>
                 <tbody>
                   <tr v-for="param in endpoint.pathParams" :key="param.name">
-                    <td><code>{{ param.name }}</code></td>
+                    <td>
+                      <code>{{ param.name }}</code>
+                    </td>
                     <td>{{ param.type }}</td>
                     <td>
                       <span v-if="param.required" class="required">YES</span>
@@ -437,11 +445,17 @@ function methodClass(method) {
               <div class="block-title">Query parameters</div>
               <table>
                 <thead>
-                  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                  <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
                 </thead>
                 <tbody>
                   <tr v-for="param in endpoint.query" :key="param.name">
-                    <td><code>{{ param.name }}</code></td>
+                    <td>
+                      <code>{{ param.name }}</code>
+                    </td>
                     <td>{{ param.type }}</td>
                     <td>
                       {{ param.desc }}
@@ -456,11 +470,17 @@ function methodClass(method) {
               <div class="block-title">JSON body</div>
               <table>
                 <thead>
-                  <tr><th>Field</th><th>Type</th><th>Required</th></tr>
+                  <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Required</th>
+                  </tr>
                 </thead>
                 <tbody>
                   <tr v-for="field in endpoint.body" :key="field.name">
-                    <td><code>{{ field.name }}</code></td>
+                    <td>
+                      <code>{{ field.name }}</code>
+                    </td>
                     <td>{{ field.type }}</td>
                     <td>
                       <span v-if="field.required" class="required">YES</span>
@@ -473,10 +493,7 @@ function methodClass(method) {
             <div v-if="endpoint.curl" class="block">
               <div class="block-title">cURL example</div>
               <div class="code-box">
-                <button
-                  class="copy-button"
-                  @click="copy(`${endpoint.id}-curl`, endpoint.curl)"
-                >
+                <button class="copy-button" @click="copy(`${endpoint.id}-curl`, endpoint.curl)">
                   {{ copyLabel(`${endpoint.id}-curl`) }}
                 </button>
                 <pre>{{ endpoint.curl }}</pre>
@@ -514,8 +531,8 @@ function methodClass(method) {
         <h2>Status codes & errors</h2>
 
         <p class="section-intro">
-          The exact codes depend on the backend implementation. These are the
-          typical statuses an API like this returns.
+          The exact codes depend on the backend implementation. These are the typical statuses an
+          API like this returns.
         </p>
 
         <div class="status-grid">
@@ -523,7 +540,9 @@ function methodClass(method) {
             <h3>Success responses</h3>
             <p><span class="status success">200 OK</span> Request completed.</p>
             <p><span class="status success">201 Created</span> Resource created.</p>
-            <p><span class="status success">204 No Content</span> Successful operation with no body.</p>
+            <p>
+              <span class="status success">204 No Content</span> Successful operation with no body.
+            </p>
           </article>
 
           <article class="info-card">
@@ -540,7 +559,7 @@ function methodClass(method) {
           <div class="block-title">Sample error format</div>
           <div class="code-box">
             <button class="copy-button" @click="copy('error-format', errorFormat)">
-              {{ copyLabel("error-format") }}
+              {{ copyLabel('error-format') }}
             </button>
             <pre>{{ errorFormat }}</pre>
           </div>
@@ -548,9 +567,8 @@ function methodClass(method) {
       </section>
 
       <footer class="footer">
-        Documentation generated from the endpoints used by the Public API
-        Playground component. Check the backend schemas to fill in exact
-        types, ranges, units, and responses.
+        Documentation generated from the endpoints used by the Public API Playground component.
+        Check the backend schemas to fill in exact types, ranges, units, and responses.
       </footer>
     </main>
   </div>

@@ -214,7 +214,9 @@ onUnmounted(stopAutoRefresh)
     </div>
 
     <div v-else-if="!isAdmin" class="flex min-h-[60vh] items-center justify-center px-4">
-      <div class="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-900 p-8 text-center">
+      <div
+        class="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-900 p-8 text-center"
+      >
         <h1 class="mb-2 text-lg font-semibold">Access denied</h1>
         <p class="text-sm text-neutral-400">This page is only available to administrators.</p>
       </div>
@@ -228,7 +230,9 @@ onUnmounted(stopAutoRefresh)
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
         @click.self="closeEditUser"
       >
-        <div class="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-900 p-6 shadow-xl">
+        <div
+          class="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-900 p-6 shadow-xl"
+        >
           <h2 class="mb-5 text-lg font-semibold">Edit user</h2>
 
           <div
@@ -345,7 +349,9 @@ onUnmounted(stopAutoRefresh)
             <div class="mt-2 space-y-1 text-sm">
               <p>
                 Interval:
-                <span class="text-neutral-300">{{ battleInfo?.interval_minutes ?? '--' }} minutes</span>
+                <span class="text-neutral-300"
+                  >{{ battleInfo?.interval_minutes ?? '--' }} minutes</span
+                >
               </p>
               <p>
                 Check frequency:

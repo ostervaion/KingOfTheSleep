@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import BoxingGlove from '@/assets/boxing-glove.svg'
@@ -8,14 +8,46 @@ import TriangleDown from '@/assets/triangle-down.svg'
 import BattleLog from '@/components/dashboard/battleLogPopUp.vue'
 
 const dialog = ref(null)
+const battleLogRef = ref(null)
 
-function openDialog() {
+//function openDialog() {
+//  dialog.value.showModal()
+//}
+async function openDialog() {
   dialog.value.showModal()
+  battleLogRef.value?.loadLogs() // always refresh on open
 }
 
 function closeDialog() {
   dialog.value.close()
 }
+
+const props = defineProps({
+  todayStats: {
+    type: Object,
+    default: () => ({ wins: 0, losses: 0 }),
+  },
+})
+
+const summary = computed(() => {
+  // Replace these fallback totals with API values when the full battle history is loaded.
+  const battles = computed(() => props.todayStats.wins + props.todayStats.losses ?? 0)
+  const wins = computed(() => props.todayStats.wins ?? 0)
+  const losses = computed(() => props.todayStats.losses ?? 0)
+  const winRate = computed(() => {
+    const total = wins.value + losses.value
+    if (total === 0) return 0
+    return Math.round((wins.value / total) * 100)
+  })
+
+  return { battles, wins, losses, winRate }
+})
+
+const winRateColor = computed(() => {
+  if (summary.winRate >= 60) return 'text-green-400'
+  if (summary.winRate <= 40) return 'text-red-400'
+  return 'text-orange-400'
+})
 </script>
 
 <template>
@@ -100,7 +132,7 @@ function closeDialog() {
       ref="dialog"
       class="m-auto lg:w-[50vw] max-w-5xl overflow-y-auto rounded-xl border-none bg-transparent p-0 backdrop:bg-black/60 sm:w-[90vw]"
     >
-      <BattleLog @close="closeDialog" />
+      <BattleLog ref="battleLogRef" :summary="summary" @close="closeDialog" />
     </dialog>
   </Teleport>
 </template>

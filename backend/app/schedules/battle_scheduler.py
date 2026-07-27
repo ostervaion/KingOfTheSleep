@@ -1,19 +1,18 @@
 import asyncio
 from datetime import datetime, timedelta, timezone
-from typing import Optional, List
 
 # Variables globales para configuración del scheduler
 BATTLE_INTERVAL_MINUTES = 120  # Intervalo por defecto: 2 horas
 CHECK_INTERVAL_SECONDS = 60  # Cada cuánto segundos revisar si toca ejecutar una batalla
 
 # Variable para rastrear la próxima batalla programada
-_next_battle_time: Optional[datetime] = None
+_next_battle_time: datetime | None = None
 
 # Cola de batallas programadas (en memoria)
 class BattleSchedule:
     counter = 0
     
-    def __init__(self, scheduled_time: datetime, is_recurring: bool, interval_minutes: Optional[int] = None):
+    def __init__(self, scheduled_time: datetime, is_recurring: bool, interval_minutes: int | None = None):
         BattleSchedule.counter += 1
         self.id = BattleSchedule.counter
         self.scheduled_time = scheduled_time
@@ -25,7 +24,7 @@ class BattleSchedule:
     def __repr__(self):
         return f"Battle(id={self.id}, time={self.scheduled_time}, recurring={self.is_recurring})"
 
-_battle_queue: List[BattleSchedule] = []
+_battle_queue: list[BattleSchedule] = []
 
 
 async def start_battle():
@@ -36,7 +35,6 @@ async def start_battle():
     print(f"⚔️  ¡BATALLA INICIADA! - {datetime.now(timezone.utc)}")
     # Aquí irá la lógica real de batalla
     # await run_battle()
-    pass
 
 
 def _update_next_battle_time():
