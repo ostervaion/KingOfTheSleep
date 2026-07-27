@@ -30,28 +30,28 @@ async function login(event) {
 </script>
 
 <template>
-  <form class="space-y-5" @submit.prevent="login">
+  <form class="font-inter space-y-5" @submit.prevent="login">
     <div>
-      <span class="block text-[10px] tracking-[4px] uppercase text-(--accent) mb-3">Login</span>
+      <span class="mb-4 block text-xs font-semibold uppercase tracking-[0.18em] text-yellow-400">Login</span>
       <div class="space-y-4">
-        <label class="block text-[10px] tracking-[2px] uppercase text-(--muted)">
+        <label class="block text-xs font-medium tracking-wide text-[#A2A1A6]">
           Usuario
           <input
             v-model="user"
             type="text"
             autocomplete="off"
             placeholder="usuario_"
-            class="mt-2 w-full rounded-2xl border border-(--border) bg-(--surface-soft) px-4 py-3 text-sm text-(--text) outline-none placeholder:text-(--muted) focus:border-(--accent) transition-colors duration-150"
+            class="mt-2 w-full rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-4 py-3 text-sm text-white outline-none transition-colors duration-150 placeholder:text-[#6f6e73] focus:border-cyan-200 focus:ring-1 focus:ring-cyan-200"
           />
         </label>
 
-        <label class="block text-[10px] tracking-[2px] uppercase text-(--muted)">
+        <label class="block text-xs font-medium tracking-wide text-[#A2A1A6]">
           Contraseña
           <input
             v-model="password"
             type="password"
             placeholder="••••••••"
-            class="mt-2 w-full rounded-2xl border border-(--border) bg-(--surface-soft) px-4 py-3 text-sm text-(--text) outline-none placeholder:text-(--muted) focus:border-(--accent) transition-colors duration-150"
+            class="mt-2 w-full rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-4 py-3 text-sm text-white outline-none transition-colors duration-150 placeholder:text-[#6f6e73] focus:border-cyan-200 focus:ring-1 focus:ring-cyan-200"
           />
         </label>
       </div>
@@ -60,12 +60,12 @@ async function login(event) {
     <button
       type="submit"
       :disabled="loading"
-      class="w-full rounded-2xl border border-(--accent) bg-(--surface-soft) px-4 py-3 text-sm font-semibold uppercase tracking-[2px] text-(--accent) hover:bg-(--surface) transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+      class="w-full rounded-lg border-none bg-cyan-200 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-[#171715] transition-colors duration-150 hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {{ loading ? '// conectando...' : '▶ Entrar' }}
     </button>
 
-    <p v-if="mensaje" class="text-sm tracking-[1px] text-(--muted)">
+    <p v-if="mensaje" class="rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-3 py-2 text-xs tracking-wide text-[#A2A1A6]">
       {{ mensaje }}
     </p>
   </form>
