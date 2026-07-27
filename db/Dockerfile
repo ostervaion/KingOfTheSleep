@@ -1,6 +1,6 @@
 FROM postgres:18-alpine
 
-LABEL maintainer="your-team"
+LABEL maintainer="KOTS"
 
 # Copy any custom init scripts (run once on first boot)
 COPY init/ /docker-entrypoint-initdb.d/

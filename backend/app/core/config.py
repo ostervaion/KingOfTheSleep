@@ -1,9 +1,18 @@
+import os
 from pathlib import Path
 
+from dotenv import load_dotenv
 from pwdlib import PasswordHash
 
-DATABASE_URL = "postgresql+psycopg2://appuser:apppassword@db:5432/appdb"
-SECRET_KEY = "super-secret-key"
+# Load variables from .env into os.environ
+load_dotenv()
+
+POSTGRES_USER=os.getenv("POSTGRES_USER")
+POSTGRES_PASSWORD=os.getenv("POSTGRES_PASSWORD")
+POSTGRES_DB=os.getenv("POSTGRES_DB")
+LOG = os.getenv("LOG_VERBOSE")
+DATABASE_URL = f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@db:5432/{POSTGRES_DB}"
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 ORIGINS = [

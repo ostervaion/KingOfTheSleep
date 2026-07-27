@@ -15,6 +15,10 @@ export default defineConfig({
     tailwindcss(),
     svgLoader()
   ],
+  build: {
+    outDir: '/dist',
+    emptyOutDir: true
+  },
   server: {
   allowedHosts: true,
 },

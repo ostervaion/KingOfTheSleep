@@ -29,7 +29,18 @@
     # ── Frontend → Vue dev server (development) ───────────────
     #    Switch to `frontend:80` for the production nginx stage.
     handle {
-        reverse_proxy frontend:5173
+        coraza_waf {
+            load_owasp_crs
+            directives `
+                Include @coraza.conf-recommended
+                Include @crs-setup.conf.example
+                Include @owasp_crs/*.conf
+                SecRuleEngine On
+            `
+        }
+        root * /dist
+        try_files {path} /index.html
+        file_server
     }
 
     # ── Logging ───────────────────────────────────────────────
