@@ -220,3 +220,8 @@ open-http: guard-.env ## Opens the browser into the vite main page through caddy
 populate: ## Creates fake data for testing purposes
 	@echo -e "$(YELLOW)Populating database with users$(RESET)"
 	docker compose exec backend python3 -m utils.seed_score_history
+
+.PHONY: admin
+admin: ## Creates users admin role
+	@echo -e "$(YELLOW)Creating admin user$(RESET)"
+	docker compose exec backend python3 -m utils.create_admin
