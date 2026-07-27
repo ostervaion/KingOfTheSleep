@@ -10,6 +10,8 @@ connections: dict[WebSocket, str] = {}  # websocket -> username
 users: dict[str, WebSocket] = {}        # username -> websocket
 game_positions: dict[str, tuple[int, int]] = {}
 pending_challenges: dict[str, str] = {}  # attacker_username -> target_username (awaiting response)
+active_battles: dict[str, dict] = {}
+paused_battles: set[str] = set()
 
 async def broadcast_presence(username: str, online: bool):
     payload = json.dumps({
@@ -92,7 +94,32 @@ async def websocket_endpoint(websocket: WebSocket):
                     
                     connections[websocket] = user.username
                     users[user.username] = websocket
-                    
+                    battle = active_battles.get(user.username)
+
+                    if battle:
+                        opponent_name = next(
+                            p for p in battle["players"]
+                            if p != user.username
+                        )
+
+                        player = battle["players"][user.username]
+                        opponent = battle["players"][opponent_name]
+
+                        await websocket.send_text(json.dumps({
+                            "type": "battle:resume",
+                            "payload": {
+                                "player": player,
+                                "opponent": opponent,
+                            }
+                        }))
+                        if opponent_name in users:
+                            await users[opponent_name].send_text(json.dumps({
+                                "type": "battle:resume",
+                                "payload": {
+                                    "player": battle["players"][opponent_name],
+                                    "opponent": battle["players"][user.username],
+                                }
+                            }))
                     await websocket.send_text(json.dumps({
                         "type": "auth:success",
                         "payload": {"username": user.username}
@@ -166,9 +193,52 @@ async def websocket_endpoint(websocket: WebSocket):
                 continue
             if msg_type == 'game:response':
                 attacker = data.get("target")
+                accepted = data.get("accepted")
+
                 pending_challenges.pop(attacker, None)
-                if attacker in users:
-                    await users[data.get("target")].send_text(json.dumps({"type": "game:answer", "response": data.get("accepted")}))
+
+                if accepted:
+                    battle = {
+                        "players": {
+                            attacker: {
+                                "username": attacker,
+                                "hp": 10000,
+                                "score": 100,
+                                "attackProgress": 0,
+                            },
+                            sender: {
+                                "username": sender,
+                                "hp": 10000,
+                                "score": 1,
+                                "attackProgress": 0,
+                            },
+                        },
+                        "paused": False,
+                        "started": True,
+                    }
+
+                    active_battles[attacker] = battle
+                    active_battles[sender] = battle
+
+                    if attacker in users:
+                        await users[attacker].send_text(json.dumps({
+                            "type": "game:answer",
+                            "response": accepted
+                        }))
+
+                continue
+            if msg_type == 'battle:end':
+
+                battle = active_battles.get(sender)
+
+                if battle:
+                    for player in battle["players"]:
+                        active_battles.pop(player, None)
+
+                await websocket.send_text(json.dumps({
+                    "type":"battle:destroyed"
+                }))
+
                 continue
             if msg_type == 'game:disconnect':
                 game_positions.pop(sender, None)
@@ -177,9 +247,24 @@ async def websocket_endpoint(websocket: WebSocket):
 
     except WebSocketDisconnect:
         username = unregister_connection(websocket)
+
         if username:
             await broadcast_presence(username, False)
             await notify_pending_attackers(username)
+
+            battle = active_battles.get(username)
+            if battle:
+                battle["paused"] = True
+
+                opponent = next(
+                    player for player in battle["players"]
+                    if player != username
+                )
+
+                if opponent in users:
+                    await users[opponent].send_text(json.dumps({
+                        "type": "battle:paused"
+                    }))
     except Exception:
         username = unregister_connection(websocket)
         if username:
