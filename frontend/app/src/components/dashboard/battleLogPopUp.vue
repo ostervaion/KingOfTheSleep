@@ -5,112 +5,92 @@ import BoxingGlove from '@/assets/boxing-glove.svg'
 import TriangleUp from '@/assets/triangle-up.svg'
 import TriangleDown from '@/assets/triangle-down.svg'
 import api from '@/api/api'
+
 const emit = defineEmits(['close'])
 
 const battleLogs = ref([])
+const me = ref(null)
 const isLoading = ref(false)
-
-//onMounted(loadLogs)
+const loadError = ref('')
 
 async function loadLogs() {
   isLoading.value = true
+  loadError.value = ''
+
   try {
-    const response = await api.get('/battleData')
-    console.log(response.data)
-    battleLogs.value = response.data // adjust to your real response shape
+    const { data } = await api.get('/battleData')
+
+    console.log('Battle data:', data)
+
+    me.value = data.me ?? null
+
+    battleLogs.value = Array.isArray(data.battles)
+      ? data.battles.map((battle) => ({
+          combat_id: battle.combat_id,
+          victory: battle.victory,
+
+          enemy_id: battle.enemy_id,
+          enemy_username: battle.enemy_username,
+          enemy_avatar: battle.enemy_avatar,
+
+          // Se mantiene null cuando el enemigo no tiene estadísticas.
+          enemy_stats: battle.enemy_stats
+            ? {
+                username: battle.enemy_stats.username,
+                awake_time: battle.enemy_stats.awake_time,
+                slow_wave: battle.enemy_stats.slow_wave,
+                disturbance: battle.enemy_stats.disturbance,
+                debt: battle.enemy_stats.debt,
+                nap: battle.enemy_stats.nap,
+                performance: battle.enemy_stats.performance,
+                efficiency: battle.enemy_stats.efficiency,
+                time_in_bed: battle.enemy_stats.time_in_bed,
+                light_sleep: battle.enemy_stats.light_sleep,
+                rem: battle.enemy_stats.rem,
+                baseline: battle.enemy_stats.baseline,
+                strain: battle.enemy_stats.strain,
+                respiratory_rate: battle.enemy_stats.respiratory_rate,
+                consistency: battle.enemy_stats.consistency,
+              }
+            : null,
+
+          enemy_protocol: Array.isArray(battle.enemy_protocol)
+            ? battle.enemy_protocol
+            : [],
+        }))
+      : []
   } catch (error) {
-    console.error('Error cargando battle logs:', error)
+    console.error('Error loading battle logs:', error)
+
+    loadError.value =
+      error.response?.data?.detail ||
+      error.message ||
+      'Could not load battle logs'
+
+    battleLogs.value = []
+    me.value = null
   } finally {
     isLoading.value = false
   }
 }
-/*
-  battleLogs.value = [
-    {
-      victory: true,
-      enemy_user_name: 'Enemy 1',
-      enemy_avatar: '',
-      enemy_stats: {
-        timeInBed: 6,
-        awakeTime: 1,
-        lightSleep: 2,
-        slowWave: 1,
-        rem: 2,
-        disturbance: 0,
-        baseline: 0,
-        debt: 1,
-        strain: 2,
-        respiratoryRate: 16,
-        performance: 80,
-        consistency: 85,
-        efficiency: 90,
-      },
-      enemy_protocol: [],
-    },
-    {
-      victory: false,
-      enemy_user_name: 'Enemy 2',
-      enemy_avatar: '',
-      enemy_stats: {
-        timeInBed: 6,
-        awakeTime: 1,
-        lightSleep: 2,
-        slowWave: 1,
-        rem: 2,
-        disturbance: 0,
-        baseline: 0,
-        debt: 1,
-        strain: 2,
-        respiratoryRate: 16,
-        performance: 80,
-        consistency: 85,
-        efficiency: 90,
-      },
-      enemy_protocol: [],
-    },
-    {
-      victory: true,
-      enemy_user_name: 'Enemy 3',
-      enemy_avatar: '',
-      enemy_stats: {
-        timeInBed: 7,
-        awakeTime: 1,
-        lightSleep: 3,
-        slowWave: 2,
-        rem: 2,
-        disturbance: 1,
-        baseline: 1,
-        debt: 1,
-        strain: 3,
-        respiratoryRate: 17,
-        performance: 84,
-        consistency: 82,
-        efficiency: 88,
-      },
-      enemy_protocol: ['kaka', 'culo', 'pedo', 'pis'],
-    },
-  ]
-*/
+
+onMounted(loadLogs)
+
 defineExpose({ loadLogs })
 
-/*
-const props = defineProps({
-  summary: {
-    type: Object,
-    default: () => ({ battles: 0, wins: 0, losses: 0, winRate: 0 }),
-  },
-})
-
-const winRateColor = computed(() => {
-  if (props.summary.winRate >= 60) return 'text-green-400'
-  if (props.summary.winRate <= 40) return 'text-red-400'
-  return 'text-orange-400'
-  */
 const summary = computed(() => {
-  const battles = 18
-  const wins = 14
-  const losses = 4
-  const winRate = 70
+  const battles = battleLogs.value.length
+
+  const wins = battleLogs.value.filter(
+    (battle) => battle.victory === true,
+  ).length
+
+  const losses = battles - wins
+
+  const winRate =
+    battles > 0
+      ? Math.round((wins / battles) * 100)
+      : 0
 
   return {
     battles,
@@ -118,6 +98,13 @@ const summary = computed(() => {
     losses,
     winRate,
   }
+})
+
+const winRateClass = computed(() => {
+  if (summary.value.winRate >= 60) return 'text-green-400'
+  if (summary.value.winRate <= 40) return 'text-red-400'
+
+  return 'text-orange-400'
 })
 
 function onClose() {
@@ -154,7 +141,9 @@ function onClose() {
             <BoxingGlove class="h-5 w-5 shrink-0 text-zinc-400" />
 
             <div class="min-w-0">
-              <p class="text-body text-xs font-medium text-zinc-400">Battles</p>
+              <p class="text-body text-xs font-medium text-zinc-400">
+                Battles
+              </p>
 
               <p class="mt-1 text-sm font-medium leading-none text-white">
                 {{ summary.battles }}
@@ -166,7 +155,9 @@ function onClose() {
             <TriangleUp class="h-5 w-5 shrink-0" />
 
             <div class="min-w-0">
-              <p class="text-body text-xs font-medium text-zinc-400">Wins</p>
+              <p class="text-body text-xs font-medium text-zinc-400">
+                Wins
+              </p>
 
               <p class="mt-1 text-sm font-medium leading-none text-white">
                 {{ summary.wins }}
@@ -178,7 +169,9 @@ function onClose() {
             <TriangleDown class="h-5 w-5 shrink-0" />
 
             <div class="min-w-0">
-              <p class="text-body text-xs font-medium text-zinc-400">Losses</p>
+              <p class="text-body text-xs font-medium text-zinc-400">
+                Losses
+              </p>
 
               <p class="mt-1 text-sm font-medium leading-none text-white">
                 {{ summary.losses }}
@@ -188,15 +181,21 @@ function onClose() {
 
           <div class="flex min-w-0 items-center justify-center gap-2.5">
             <div
-              class="grid h-5 w-5 shrink-0 place-items-center rounded-full border border-green-500/60 text-[10px] font-medium text-green-400"
+              class="grid h-5 w-5 shrink-0 place-items-center rounded-full border border-current text-[10px] font-medium"
+              :class="winRateClass"
             >
               %
             </div>
 
             <div class="min-w-0">
-              <p class="text-body text-xs font-medium text-zinc-400">Win rate</p>
+              <p class="text-body text-xs font-medium text-zinc-400">
+                Win rate
+              </p>
 
-              <p class="mt-1 text-sm font-medium leading-none text-green-400">
+              <p
+                class="mt-1 text-sm font-medium leading-none"
+                :class="winRateClass"
+              >
                 {{ summary.winRate }}%
               </p>
             </div>
@@ -204,16 +203,50 @@ function onClose() {
         </div>
       </div>
 
-      <!--    <ul class="mt-4">
-        <BattleLogsCard
-          v-for="log in battleLogs.battles"
+      <div
+        v-if="isLoading"
+        class="p-8 text-center text-sm text-zinc-400"
+      >
+        Loading battle logs...
+      </div>
+
+      <div
+        v-else-if="loadError"
+        class="p-8 text-center"
+      >
+        <p class="text-sm text-red-400">
+          {{ loadError }}
+        </p>
+
+        <button
+          type="button"
+          class="mt-3 rounded-md border border-zinc-600 px-3 py-1.5 text-sm text-white hover:bg-white/5"
+          @click="loadLogs"
+        >
+          Try again
+        </button>
+      </div>
+
+      <div
+        v-else-if="battleLogs.length === 0"
+        class="p-8 text-center text-sm text-zinc-400"
+      >
+        No battle logs found.
+      </div>
+
+      <ul
+        v-else
+        class="mt-4 w-full"
+      >
+        <li
+          v-for="log in battleLogs"
           :key="log.combat_id"
-          v-bind="log"
-          :me="battleLogs.me"
-        />
--->
-      <ul class="mt-4 w-full">
-        <BattleLogsCard v-for="log in battleLogs" :key="log.enemy_user_name" v-bind="log" />
+        >
+          <BattleLogsCard
+            v-bind="log"
+            :me="me"
+          />
+        </li>
       </ul>
     </div>
   </div>

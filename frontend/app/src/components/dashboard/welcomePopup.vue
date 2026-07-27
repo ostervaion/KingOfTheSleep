@@ -51,134 +51,112 @@ const {
 function selectAvatar(index) {
   go(index)
 }
+
+/// Temporal, aqui falta guardar el valor
+function onContinue(){
+  emit('close') 
+}
 </script>
 
 <template>
   <div
-    class="font-inter flex max-h-[90vh] w-full min-w-0 flex-col overflow-hidden rounded-xl border-b border-[color:var(--border)] bg-(--kots-blocks-color) shadow-md shadow-black/20"
+    class="font-inter py-5 px-8 mx-auto flex max-h-[90dvh] w-full max-w-[420px] min-w-0 flex-col overflow-x-hidden overflow-y-auto rounded-lg bg-[#171715]  text-white shadow-[0_12px_30px_rgb(0_0_0_/_40%)]"
   >
-    <div
-      class="grid min-w-0 grid-cols-1 overflow-hidden rounded-xl bg-white/[0.015] lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]"
-    >
-      <!-- Welcome section -->
-      <section
-        class="relative flex min-w-0 flex-col justify-between overflow-hidden px-5 py-7 sm:px-7 sm:py-8 lg:min-h-[570px] lg:px-8 lg:py-10"
-      >
-        <div
-          aria-hidden="true"
-          class="pointer-events-none absolute -bottom-28 right-0 h-64 w-64 rounded-full bg-green-400/[0.025] blur-3xl"
-        ></div>
+    <!-- Welcome section -->
+    <section class="min-w-0">
+      <h1 class="pr-7 text-lg font-semibold text-white">
+        Choose your avatar
+      </h1>
 
-        <div class="relative z-10">
-          <!-- Visual placeholder -->
-          <h1
-            class="max-w-md text-3xl font-semibold leading-[1.1] tracking-[-0.035em] text-white sm:text-4xl"
+      <p class="mt-2 text-xs leading-4 tracking-wide text-white">
+        You now know how the arena works. Choose the avatar that will represent
+        you in battles, rankings and your player profile.
+      </p>
+    </section>
+
+    <!-- Avatar carousel -->
+    <section class="mt-5 min-w-0">
+      <div class="relative flex min-w-0 items-center justify-center gap-3">
+        <!-- Previous button -->
+        <button
+          type="button"
+          aria-label="Previous avatar"
+          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-none bg-[#2a2a27] text-2xl text-white transition hover:bg-[#353531]"
+          @click="prev()"
+        >
+          ‹
+        </button>
+
+        <!-- Active avatar -->
+        <div class="min-w-0 flex-1">
+          <div
+            class="relative mx-auto aspect-[4/5] w-full max-w-[180px] overflow-hidden rounded-lg bg-(--kots-background-color)"
           >
-            Welcome to NapVille!
-          </h1>
-
-          <p class="mt-5 max-w-md text-sm leading-6 text-neutral-400 sm:text-[15px]">
-            Select the avatar that will appear in your battles, rankings and player profile.
-          </p>
-        </div>
-
-        <div class="relative z-10 mt-10 lg:mt-12">
-          <p class="text-sm font-medium text-white">
-            Your performance still comes from your sleep.
-          </p>
-
-          <p class="mt-2 max-w-md text-xs leading-5 text-neutral-500">
-            The avatar represents you visually, while your sleep data determines how strongly you
-            perform in each battle.
-          </p>
-        </div>
-      </section>
-
-      <!-- Avatar selection -->
-      <section
-        class="relative min-w-0 px-5 py-7 before:absolute before:left-5 before:right-5 before:top-0 before:h-px before:bg-white/[0.06] sm:px-7 sm:py-8 lg:px-8 lg:py-10 lg:before:bottom-8 lg:before:left-0 lg:before:right-auto lg:before:top-8 lg:before:h-auto lg:before:w-px"
-      >
-        <div class="flex h-full min-w-0 flex-col">
-          <!-- Avatar carousel -->
-          <div class="mt-8 min-w-0">
-            <div class="relative flex min-w-0 items-center justify-center gap-2 sm:gap-4">
-              <!-- Previous button -->
-              <button
-                type="button"
-                aria-label="Previous avatar"
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/[0.05] text-lg text-neutral-300 transition hover:bg-white/[0.09] hover:text-white"
-                @click="prev()"
-              >
-                ‹
-              </button>
-
-              <!-- Active avatar -->
-              <div class="min-w-0 flex-1">
-                <div
-                  class="relative mx-auto aspect-[4/5] w-full max-w-[280px] overflow-hidden rounded-2xl bg-(--kots-background-color)"
-                >
-                  <Transition name="avatar" mode="out-in">
-                    <img
-                      :key="selectedAvatar.id"
-                      :src="selectedAvatar.image"
-                      :alt="`${selectedAvatar.name} avatar`"
-                      class="h-full w-full object-cover"
-                    />
-                  </Transition>
-
-                  <div
-                    class="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 from-black/80 to-transparent"
-                  ></div>
-
-                  <div class="absolute inset-x-0 bottom-0 p-5 text-center">
-                    <p class="text-lg font-semibold text-white">
-                      {{ selectedAvatar.name }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Next button -->
-              <button
-                type="button"
-                aria-label="Next avatar"
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/[0.05] text-lg text-neutral-300 transition hover:bg-white/[0.09] hover:text-white"
-                @click="next()"
-              >
-                ›
-              </button>
-            </div>
-
-            <!-- Pagination -->
-            <div class="mt-5 flex flex-wrap items-center justify-center gap-2">
-              <button
-                v-for="(avatar, index) in avatars"
-                :key="avatar.id"
-                type="button"
-                :aria-label="`Select ${avatar.name}`"
-                :aria-pressed="selectedAvatarIndex === index"
-                class="h-1.5 rounded-full transition-all"
-                :class="
-                  selectedAvatarIndex === index
-                    ? 'w-6 bg-cyan-100'
-                    : 'w-1.5 bg-white/20 hover:bg-white/40'
-                "
-                @click="selectAvatar(index)"
-              ></button>
-            </div>
-          </div>
-
-          <div class="mt-auto pt-8">
-            <button
-              type="button"
-              class="w-full rounded-lg bg-cyan-100 px-5 py-3 text-sm font-semibold text-[#171715] transition hover:bg-cyan-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100 focus-visible:ring-offset-2 focus-visible:ring-offset-[#171715]"
-              @click="onContinue"
+            <Transition
+              name="avatar"
+              mode="out-in"
             >
-              Select
-            </button>
+              <img
+                :key="selectedAvatar.id"
+                :src="selectedAvatar.image"
+                :alt="`${selectedAvatar.name} avatar`"
+                class="h-full w-full object-cover"
+              />
+            </Transition>
+
+            <div
+              class="absolute inset-x-0 bottom-0 bg-black/40 px-3 py-2 text-center"
+            >
+              <p class="text-sm font-semibold text-white">
+                {{ selectedAvatar.name }}
+              </p>
+            </div>
           </div>
         </div>
-      </section>
+
+        <!-- Next button -->
+        <button
+          type="button"
+          aria-label="Next avatar"
+          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-none bg-[#2a2a27] text-2xl text-white transition hover:bg-[#353531]"
+          @click="next()"
+        >
+          ›
+        </button>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+        <button
+          v-for="(avatar, index) in avatars"
+          :key="avatar.id"
+          type="button"
+          :aria-label="`Select ${avatar.name}`"
+          :aria-pressed="selectedAvatarIndex === index"
+          class="h-1.5 rounded-full transition-all"
+          :class="
+            selectedAvatarIndex === index
+              ? 'w-6 bg-cyan-200'
+              : 'w-1.5 bg-[#a2a1a6] hover:bg-white'
+          "
+          @click="selectAvatar(index)"
+        ></button>
+      </div>
+    </section>
+
+    <p class="mt-5 text-xs leading-4 tracking-wide text-[#a2a1a6]">
+      Every avatar competes under the same conditions. Your real sleep data
+      determines your performance in each automatic battle.
+    </p>
+
+    <div class="mt-5 px-5">
+      <button
+        type="button"
+        class="rounded-lg w-full border-none bg-cyan-200 px-[14px] py-2 text-xs text-[#171715] transition hover:bg-cyan-100 "
+        @click="onContinue"
+      >
+        Enter the arena
+      </button>
     </div>
   </div>
 </template>
@@ -191,7 +169,7 @@ function selectAvatar(index) {
 }
 
 .overflow-y-auto::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-track {
@@ -199,12 +177,12 @@ function selectAvatar(index) {
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.08);
+  background: #2a2a27;
+  border-radius: 8px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: #3a3a36;
 }
 
 .avatar-enter-active,

@@ -5,8 +5,10 @@ import DashboardView from '../views/DashboardView.vue'
 import AdminView from '../views/AdminView.vue'
 import PrivacyPolicy from '@/views/PrivacyPolicy.vue'
 import TermsUse from '@/views/TermsUse.vue'
+import DashboardTourView from '../views/DashboardTourView.vue'
 import ApiPlayground from '@/views/ApiPlayground.vue'
 import ApiDocs from '@/views/ApiDocs.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -35,6 +37,12 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: AdminView,
+      meta: { requiresAuth: true },
+    },
+      {
+      path: '/dashboard-tour',
+      name: 'dashboard-tour',
+      component: DashboardTourView,
       meta: { requiresAuth: true },
     },
     {

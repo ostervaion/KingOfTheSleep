@@ -245,3 +245,8 @@ prod-down: ## Stop and remove all containers for production (keeps volumes)
 prod-down-volumes: ## Stop containers AND remove volumes for production (destructive!)
 	@echo -e "$(YELLOW)Stopping services and removing volumes…$(RESET)"
 	$(COMPOSE) -f $(COMPOSE_FILE) -f $(COMPOSE_FILE_PRODUCTION) down -v
+
+.PHONY: admin
+admin: ## Creates users admin role
+	@echo -e "$(YELLOW)Creating admin user$(RESET)"
+	docker compose exec backend python3 -m utils.create_admin

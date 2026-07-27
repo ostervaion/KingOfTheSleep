@@ -14,7 +14,7 @@ LOG = os.getenv("LOG_VERBOSE")
 DATABASE_URL = f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@db:5432/{POSTGRES_DB}"
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 600
 ORIGINS = [
     "http://localhost:5173",
     "https://b5f7dz71-5173.uks1.devtunnels.ms",

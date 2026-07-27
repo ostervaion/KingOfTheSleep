@@ -14,11 +14,11 @@ const achievements = ref({
     icon: TutorialCompletedIcon,
   },
   firstSleepFight: {
-    unlocked: true,
+    unlocked: false,
     icon: FirstVictoryFightIcon,
   },
   first100Points: {
-    unlocked: true,
+    unlocked: false,
     icon: First100PointsIcon,
   },
 })
@@ -52,14 +52,22 @@ function closeDialogSettings() {
 
 onMounted(() => {
   loadUsersData()
+
+  if (usersData.value.currentxp !== 0) {
+    achievements.value.firstSleepFight.unlocked = true
+  }
+
+  if (usersData.value.currentxp >= 100) {
+    achievements.value.first100Points.unlocked = true
+  }
 })
 
 function loadUsersData() {
   usersData.value = {
     rank: '4,432',
     level: '42',
-    currentxp: '18,450',
-    nextxp: '25,000',
+    currentxp: 18450,
+    nextxp: 25000,
     todaysSleepScore: '2',
   }
 }

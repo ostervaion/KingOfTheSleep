@@ -4,22 +4,22 @@ from sqlmodel import select
 
 from core.config import DAY_NAMES
 from models import (
-    ScoreHistory,
+    SleepData,
 )
 
 
 def build_sleep_score(session, current_user_id: int, now: datetime):
     seven_days_ago = now - timedelta(days=7)
     records = session.exec(
-        select(ScoreHistory).where(
-            ScoreHistory.user_id == current_user_id,
-            ScoreHistory.created_at >= seven_days_ago,
-        ).order_by(ScoreHistory.created_at.asc())
+        select(SleepData).where(
+            SleepData.user_id == current_user_id,
+            SleepData.created_at >= seven_days_ago,
+        ).order_by(SleepData.created_at.asc())
     ).all()
 
     sleep_by_date = {}
     for record in records:
-        sleep_by_date.setdefault(record.created_at.date(), []).append(record.sleep_score)
+        sleep_by_date.setdefault(record.created_at.date(), []).append(record.performance)
 
     labels = []
     scores = []

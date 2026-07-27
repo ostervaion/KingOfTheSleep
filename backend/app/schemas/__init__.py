@@ -6,6 +6,6 @@ from .battle import (
     ScheduleExtraBattleRequest,
     SetBattleIntervalRequest,
 )
-from .protocol import ProtocolImpactRead, RankedProtocolData, RankedProtocolsRead
+from .protocol import ProtocolImpactRead, RankedProtocolData, RankedProtocolsRead, ProtocolSelection, UserProtocolPublic
 from .sleep import SleepDataCreate, SleepDataPublic, UserSleepStatsRead
 from .stats import TodayStatsRead

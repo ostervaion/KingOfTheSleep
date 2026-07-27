@@ -8,14 +8,16 @@ import Profile from '@/components/dashboard/Profile.vue'
 import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Battle from '@/components/dashboard/Battle.vue'
 import ChatButton from '@/components/dashboard/ChatButton.vue'
-import { useWebSocket } from '@/composables/useWebSocket'
-import { ref, nextTick, watch, computed, onMounted, onUnmounted } from 'vue'
-import api from '@/api/api'
 import SleepDataForm from '@/components/SleepDataForm.vue'
-import { startDashboardTour } from '@/tours/dashboardTour'
+import { useWebSocket } from '@/composables/useWebSocket'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import api from '@/api/api'
 
+const router = useRouter()
 const auth = useAuthStore()
+
 
 const dashboard = ref(null)
 const { connect, disconnect, updateDashboard } = useWebSocket()
@@ -33,6 +35,14 @@ async function fetchDashboard() {
     dashboard.value = {
       ...response.data,
       ranking: Array.isArray(response.data?.ranking) ? response.data.ranking : [],
+      protocols: {
+        winner_protocols: Array.isArray(response.data?.protocols?.winner_protocols)
+          ? response.data.protocols.winner_protocols
+          : [],
+        loser_protocols: Array.isArray(response.data?.protocols?.loser_protocols)
+          ? response.data.protocols.loser_protocols
+          : [],
+      },
     }
     console.log('Updating')
   } catch (error) {
@@ -43,16 +53,18 @@ async function fetchDashboard() {
 let intervalId = null
 
 onMounted(async () => {
+  if (auth.tutorial) 
+  {
+    await router.replace({
+      name: 'dashboard-tour',
+    })
+
+    return
+  }
+
   fetchDashboard()
   intervalId = setInterval(fetchDashboard, 30000)
   connect()
-
-  await nextTick()
-
-  if (auth.tutorial) {
-    startDashboardTour()
-    auth.removeTutorial()
-  }
 })
 
 onUnmounted(() => {
@@ -106,7 +118,11 @@ function updateActiveMobilePage() {
 
       <!-- Page 3: Protocols -->
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
-        <Protocols id="protocols-mobile" class="h-full min-h-0" />
+        <Protocols
+          id="protocols-mobile"
+          :protocols-data="dashboard?.protocols"
+          class="h-full min-h-0"
+        />
       </section>
 
       <!-- Page 4: Profile + SleepScore -->
@@ -147,9 +163,7 @@ function updateActiveMobilePage() {
   </div>
 
   <!-- PARA ORDENADOR -->
-  <div
-    class="hidden h-[calc(100dvh-64px)] flex-col gap-3 overflow-hidden px-8 py-4 mt-5 text-(--text) lg:flex"
-  >
+  <div class="hidden h-[calc(100dvh-64px)] flex-col gap-3 overflow-hidden px-8 py-4 mt-5 text-(--text) lg:flex ">
     <NextBattle id="next-battle" :next-battle="dashboard?.nextBattle" />
 
     <div
@@ -169,7 +183,7 @@ function updateActiveMobilePage() {
 
       <section class="flex flex-col gap-4 min-h-0">
         <Ranking id="ranking" :ranking-data="dashboard?.ranking || []" />
-        <Protocols id="protocols" />
+        <Protocols id="protocols" :protocols-data="dashboard?.protocols" />
       </section>
 
       <section class="flex flex-col gap-4 min-h-0 min-w-0">
