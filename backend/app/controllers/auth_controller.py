@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlmodel import select
+from sqlmodel import Session, select
 
 from core.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from core.database import get_session
@@ -22,28 +22,48 @@ from utils.security import (
 
 router = APIRouter()
 
-@router.post("/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
-def register(user_data: UserCreate, session=Depends(get_session)):
-    existing_username = session.exec(select(User).where(User.username == user_data.username)).first()
-    if existing_username:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already exists")
 
-    existing_email = session.exec(select(User).where(User.email == user_data.email)).first()
+@router.post("/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED,)
+def register(
+    user_data: UserCreate,
+    session: Session = Depends(get_session),
+):
+    username = user_data.username.strip()
+    email = str(user_data.email).strip().lower()
+
+    existing_username = session.exec(
+        select(User).where(User.username == username)
+    ).first()
+
+    if existing_username:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already exists",
+        )
+
+    existing_email = session.exec(
+        select(User).where(User.email == email)
+    ).first()
+
     if existing_email:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered",
+        )
 
     new_user = User(
-        username=user_data.username,
+        username=username,
+        email=email,
         password=hash_password(user_data.password),
-        email=user_data.email,
-        role="admin",
+        role="user",
         active=True,
     )
+
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
-    return new_user
 
+    return new_user
 
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), session=Depends(get_session)):

@@ -20,32 +20,43 @@ const email = ref(props.email)
 const password = ref('')
 const acceptedTerms = ref(false)
 
-const mensaje = ref('')
+const message = ref('')
 const loading = ref(false)
 
 async function register() {
   if (loading.value) return
 
+  message.value = ''
+
+  if (username.value.trim().length < 5) {
+    message.value = '// username must be at least 5 characters long'
+    return
+  }
+
+  if (password.value.length < 8) {
+    message.value = '// password must be at least 8 characters long'
+    return
+  }
+
   if (!acceptedTerms.value) {
-    mensaje.value = '// debes aceptar los términos y la política de privacidad'
+    message.value = '// you must accept the Terms of Service and Privacy Policy'
     return
   }
 
   loading.value = true
-  mensaje.value = ''
 
   try {
     await api.post('/register', {
-      username: username.value,
-      email: email.value,
+      username: username.value.trim(),
+      email: email.value.trim(),
       password: password.value,
     })
 
-    mensaje.value = '// usuario registrado'
+    message.value = '// user registered successfully'
     auth.setTutorial()
     emit('login')
   } catch (error) {
-    mensaje.value = `// ${error.response?.data?.detail || 'error al registrar'}`
+    message.value = `// ${error.response?.data?.detail || 'registration failed'}`
   } finally {
     loading.value = false
   }
@@ -61,16 +72,21 @@ async function register() {
 
       <div class="space-y-4">
         <label class="block text-[10px] uppercase tracking-[2px] text-(--muted)">
-          Usuario
+          Username
 
           <input
             v-model.trim="username"
             type="text"
             required
+            minlength="5"
             autocomplete="username"
-            placeholder="usuario_"
+            placeholder="username_"
             class="mt-2 w-full rounded-2xl border border-(--border) bg-(--surface-soft) px-4 py-3 text-sm text-(--text) outline-none placeholder:text-(--muted) transition-colors duration-150 focus:border-(--accent)"
           />
+
+          <span class="mt-1 block text-[10px] normal-case tracking-normal text-(--muted)">
+            At least 5 characters
+          </span>
         </label>
 
         <label class="block text-[10px] uppercase tracking-[2px] text-(--muted)">
@@ -81,22 +97,27 @@ async function register() {
             type="email"
             required
             autocomplete="email"
-            placeholder="correo@dominio.com"
+            placeholder="email@example.com"
             class="mt-2 w-full rounded-2xl border border-(--border) bg-(--surface-soft) px-4 py-3 text-sm text-(--text) outline-none placeholder:text-(--muted) transition-colors duration-150 focus:border-(--accent)"
           />
         </label>
 
         <label class="block text-[10px] uppercase tracking-[2px] text-(--muted)">
-          Contraseña
+          Password
 
           <input
             v-model="password"
             type="password"
             required
+            minlength="8"
             autocomplete="new-password"
             placeholder="••••••••"
             class="mt-2 w-full rounded-2xl border border-(--border) bg-(--surface-soft) px-4 py-3 text-sm text-(--text) outline-none placeholder:text-(--muted) transition-colors duration-150 focus:border-(--accent)"
           />
+
+          <span class="mt-1 block text-[10px] normal-case tracking-normal text-(--muted)">
+            At least 8 characters
+          </span>
         </label>
       </div>
     </div>
@@ -131,8 +152,8 @@ async function register() {
             class="font-semibold text-(--accent) underline hover:text-(--button-hover)"
             @click.stop
           >
-            Privacy Policy </RouterLink
-          >.
+            Privacy Policy
+          </RouterLink>.
         </label>
       </div>
     </div>
@@ -143,12 +164,20 @@ async function register() {
       class="w-full rounded-2xl border border-(--accent) bg-(--surface-soft) px-4 py-3 text-sm font-semibold uppercase tracking-[2px] text-(--accent) transition-colors duration-150 hover:bg-(--surface) disabled:cursor-not-allowed disabled:opacity-40"
     >
       {{
-        loading ? '// registrando...' : acceptedTerms ? '▶ Registrarse' : 'Accept terms to register'
+        loading
+          ? '// registering...'
+          : acceptedTerms
+            ? '▶ Register'
+            : 'Accept terms to register'
       }}
     </button>
 
-    <p v-if="mensaje" role="status" class="text-sm tracking-[1px] text-(--muted)">
-      {{ mensaje }}
+    <p
+      v-if="message"
+      role="status"
+      class="text-sm tracking-[1px] text-(--muted)"
+    >
+      {{ message }}
     </p>
 
     <button
