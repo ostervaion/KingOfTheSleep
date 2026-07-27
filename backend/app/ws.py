@@ -9,6 +9,8 @@ from security import verify_token
 connections: dict[WebSocket, str] = {}  # websocket -> username
 users: dict[str, WebSocket] = {}        # username -> websocket
 game_positions: dict[str, tuple[int, int]] = {}
+pending_challenges: dict[str, str] = {}  # attacker_username -> target_username (awaiting response)
+
 async def broadcast_presence(username: str, online: bool):
     payload = json.dumps({
         "type": "presence:update",
@@ -25,8 +27,19 @@ def unregister_connection(websocket: WebSocket):
     if username:
         users.pop(username, None)
         game_positions.pop(username, None)
-        
+        pending_challenges.pop(username, None)
     return username
+
+async def notify_pending_attackers(target_username: str):
+    """If someone challenged target_username and is still waiting, tell them it's off."""
+    attackers = [atk for atk, tgt in pending_challenges.items() if tgt == target_username]
+    for atk in attackers:
+        pending_challenges.pop(atk, None)
+        if atk in users:
+            try:
+                await users[atk].send_text(json.dumps({"type": "game:error"}))
+            except Exception:
+                pass
 
 async def broadcast_except(sender_ws: WebSocket, payload: dict):
     """Send a message to all connected users except the sender."""
@@ -147,11 +160,15 @@ async def websocket_endpoint(websocket: WebSocket):
                         "type": "game:game_petition",
                         "payload": {"enemy": sender}
                     }))
+                    pending_challenges[sender] = target
                 except Exception:
                     await websocket.send_text(json.dumps({"type": "game:error"}))
                 continue
             if msg_type == 'game:response':
-                await users[data.get("target")].send_text(json.dumps({"type": "game:answer", "response": data.get("accepted")}))
+                attacker = data.get("target")
+                pending_challenges.pop(attacker, None)
+                if attacker in users:
+                    await users[data.get("target")].send_text(json.dumps({"type": "game:answer", "response": data.get("accepted")}))
                 continue
             if msg_type == 'game:disconnect':
                 game_positions.pop(sender, None)
@@ -162,6 +179,9 @@ async def websocket_endpoint(websocket: WebSocket):
         username = unregister_connection(websocket)
         if username:
             await broadcast_presence(username, False)
+            await notify_pending_attackers(username)
     except Exception:
+        username = unregister_connection(websocket)
+        if username:
+            await notify_pending_attackers(username)
         await websocket.close(code=1008)
-        unregister_connection(websocket)

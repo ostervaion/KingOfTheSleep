@@ -73,6 +73,10 @@ export function useWebSocket() {
             if (payload.online) {
               onlineUsers.value.add(payload.username)
             } else {
+              if (gameEnemy.value == payload.username) {
+                sendPayload('game:response', { accepted: false, target: enemy })
+                gameEnemy.value = ''
+              }
               onlineUsers.value.delete(payload.username)
               delete lobbyPlayers.value[payload.username]
             }
@@ -154,6 +158,6 @@ export function useWebSocket() {
     lobbyPlayers,
     gameError,
     gameEnemy,
-	gameAccepted
+    gameAccepted,
   }
 }
