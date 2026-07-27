@@ -35,6 +35,14 @@ async function fetchDashboard() {
     dashboard.value = {
       ...response.data,
       ranking: Array.isArray(response.data?.ranking) ? response.data.ranking : [],
+      protocols: {
+        winner_protocols: Array.isArray(response.data?.protocols?.winner_protocols)
+          ? response.data.protocols.winner_protocols
+          : [],
+        loser_protocols: Array.isArray(response.data?.protocols?.loser_protocols)
+          ? response.data.protocols.loser_protocols
+          : [],
+      },
     }
     console.log('Updating')
   } catch (error) {
@@ -110,7 +118,11 @@ function updateActiveMobilePage() {
 
       <!-- Page 3: Protocols -->
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
-        <Protocols id="protocols-mobile" class="h-full min-h-0" />
+        <Protocols
+          id="protocols-mobile"
+          :protocols-data="dashboard?.protocols"
+          class="h-full min-h-0"
+        />
       </section>
 
       <!-- Page 4: Profile + SleepScore -->
@@ -171,7 +183,7 @@ function updateActiveMobilePage() {
 
       <section class="flex flex-col gap-4 min-h-0">
         <Ranking id="ranking" :ranking-data="dashboard?.ranking || []" />
-        <Protocols id="protocols" />
+        <Protocols id="protocols" :protocols-data="dashboard?.protocols" />
       </section>
 
       <section class="flex flex-col gap-4 min-h-0 min-w-0">
