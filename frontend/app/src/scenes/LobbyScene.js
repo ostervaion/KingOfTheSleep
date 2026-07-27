@@ -12,14 +12,6 @@ let waitingResponse = false
 watch(
   lobbyPlayers,
   (players) => {
-    scene.spawnPlayers(players)
-  },
-  { deep: true },
-)
-
-watch(
-  lobbyPlayers,
-  (players) => {
     if (!scene) return
     for (const username of Object.keys(scene.players)) {
       if (!(username in players)) {
@@ -153,6 +145,32 @@ export default class LobbyScene extends BaseScene {
   create() {
     scene = this
     this.players = {}
+
+    const stopWatchers = [
+      watch(
+        lobbyPlayers,
+        (players) => {
+          if (scene === this) this.spawnPlayers(players)
+        },
+        { deep: true },
+      ),
+      watch(
+        lobbyPlayers,
+        (players) => {
+          if (scene !== this) return
+          for (const username of Object.keys(this.players)) {
+            if (!(username in players)) {
+              this.players[username].sprite.destroy()
+              this.players[username].label.destroy()
+              delete this.players[username]
+            }
+          }
+        },
+        { deep: true },
+      ),
+    ]
+    this.events.once('shutdown', () => stopWatchers.forEach((stop) => stop()))
+
     sendPayload('get_lobby_players')
     this.input.mouse.disableContextMenu()
     this.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT)
@@ -162,6 +180,11 @@ export default class LobbyScene extends BaseScene {
       .setScale(0.05)
       .setCollideWorldBounds(true)
     this.cameras.main.startFollow(this.player)
+
+    sendPayload('lobby:move', {
+      x: Math.round(this.player.x),
+      y: Math.round(this.player.y),
+    })
 
     this.target = new Phaser.Math.Vector2(this.player.x, this.player.y)
 
@@ -199,7 +222,7 @@ export default class LobbyScene extends BaseScene {
       if (username == myUsername.value) continue
 
       const existing = this.players[username]
-      if (!existing || !existing.sprite.active) {
+      if (!existing || !existing.sprite || !existing.sprite.active) {
         console.log('new sheep', username)
         this.players[username] = {
           sprite: this.physics.add.sprite(x, y, 'sheep').setScale(0.05).setInteractive(),
