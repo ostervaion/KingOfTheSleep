@@ -6,6 +6,9 @@ from sqlmodel import Session
 
 from core.database import engine
 
+from services import getStats
+from models import User
+
 # Diccionarios globales para rastrear las conexiones
 connections: dict[WebSocket, str] = {}  # websocket -> username
 users: dict[str, WebSocket] = {}        # username -> websocket
