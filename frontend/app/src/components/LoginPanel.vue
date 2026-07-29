@@ -32,7 +32,9 @@ async function login(event) {
 <template>
   <form class="font-inter space-y-5" @submit.prevent="login">
     <div>
-      <span class="mb-4 block text-xs font-semibold uppercase tracking-[0.18em] text-yellow-400">Login</span>
+      <span class="mb-4 block text-xs font-semibold uppercase tracking-[0.18em] text-yellow-400"
+        >Login</span
+      >
       <div class="space-y-4">
         <label class="block text-xs font-medium tracking-wide text-[#A2A1A6]">
           Usuario
@@ -65,7 +67,10 @@ async function login(event) {
       {{ loading ? '// conectando...' : '▶ Entrar' }}
     </button>
 
-    <p v-if="mensaje" class="rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-3 py-2 text-xs tracking-wide text-[#A2A1A6]">
+    <p
+      v-if="mensaje"
+      class="rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) px-3 py-2 text-xs tracking-wide text-[#A2A1A6]"
+    >
       {{ mensaje }}
     </p>
   </form>

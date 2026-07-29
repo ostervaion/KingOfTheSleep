@@ -81,9 +81,7 @@ onMounted(() => {
     <div
       class="font-inter flex max-h-[90vh] min-h-0 w-full max-w-md flex-col overflow-hidden rounded-xl border-b border-[color:var(--border)] bg-(--kots-blocks-color) shadow-md shadow-black/20"
     >
-      <div
-        class="flex items-center justify-between  px-4 py-4 sm:px-6"
-      >
+      <div class="flex items-center justify-between px-4 py-4 sm:px-6">
         <p class="text-sm font-medium text-white">Messages</p>
         <button
           @click="emit('close')"
@@ -129,7 +127,9 @@ onMounted(() => {
           @click="openGlobal"
           class="flex w-full items-center gap-3 border-b border-white/5 px-4 py-3 text-left transition hover:bg-white/[0.03] sm:px-6"
         >
-          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-(--kots-background-color) text-lg">
+          <div
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-(--kots-background-color) text-lg"
+          >
             🌐
           </div>
           <div class="min-w-0 flex-1 text-left">
@@ -183,70 +183,70 @@ onMounted(() => {
         </button>
       </div>
 
-<div v-else class="min-h-0 max-h-[70vh] overflow-y-auto">
-  <p v-if="friendsLoading" class="py-8 text-center text-sm text-neutral-500">
-    Loading friends...
-  </p>
+      <div v-else class="min-h-0 max-h-[70vh] overflow-y-auto">
+        <p v-if="friendsLoading" class="py-8 text-center text-sm text-neutral-500">
+          Loading friends...
+        </p>
 
-  <p v-else-if="friendsError" class="py-8 text-center text-sm text-red-400">
-    Failed to load friends.
-  </p>
+        <p v-else-if="friendsError" class="py-8 text-center text-sm text-red-400">
+          Failed to load friends.
+        </p>
 
-  <p v-else-if="friends.length === 0" class="py-8 text-center text-sm text-neutral-500">
-    No friends
-  </p>
+        <p v-else-if="friends.length === 0" class="py-8 text-center text-sm text-neutral-500">
+          No friends
+        </p>
 
-  <button
-    v-for="username in sortedFriends"
-    :key="username"
-    @click="openPrivate(username)"
-    class="flex w-full items-center gap-3 border-b border-white/5 px-4 py-3 transition hover:bg-white/[0.03] sm:px-6"
-  >
-    <div class="relative shrink-0">
-      <div
-        class="flex h-9 w-9 items-center justify-center rounded-full bg-(--kots-background-color) text-sm font-semibold text-cyan-200"
-      >
-        {{ username[0].toUpperCase() }}
+        <button
+          v-for="username in sortedFriends"
+          :key="username"
+          @click="openPrivate(username)"
+          class="flex w-full items-center gap-3 border-b border-white/5 px-4 py-3 transition hover:bg-white/[0.03] sm:px-6"
+        >
+          <div class="relative shrink-0">
+            <div
+              class="flex h-9 w-9 items-center justify-center rounded-full bg-(--kots-background-color) text-sm font-semibold text-cyan-200"
+            >
+              {{ username[0].toUpperCase() }}
+            </div>
+
+            <span
+              :class="[
+                'absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--kots-blocks-color)]',
+                onlineUsers.has(username) ? 'bg-green-500' : 'bg-red-400',
+              ]"
+            />
+          </div>
+
+          <div class="min-w-0 flex-1 text-left">
+            <p class="text-sm font-medium leading-none text-white">
+              {{ username }}
+            </p>
+
+            <p
+              class="mt-1 text-xs"
+              :class="onlineUsers.has(username) ? 'text-green-500' : 'text-neutral-500'"
+            >
+              {{ onlineUsers.has(username) ? 'Connected' : 'Disconnected' }}
+            </p>
+          </div>
+        </button>
+
+        <!-- Botón actualizar -->
+        <div class="sticky bottom-0 border-t border-white/10 bg-(--kots-blocks-color) p-3 sm:px-6">
+          <button
+            type="button"
+            :disabled="friendsLoading"
+            @click="loadFriends"
+            class="flex w-full items-center justify-center gap-2 rounded-md bg-(--kots-background-color) px-4 py-2.5 text-xs font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <span :class="{ 'animate-spin': friendsLoading }">↻</span>
+
+            {{ friendsLoading ? 'Actualizando...' : 'Actualizar amigos' }}
+          </button>
+        </div>
       </div>
-
-      <span
-        :class="[
-          'absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--kots-blocks-color)]',
-          onlineUsers.has(username) ? 'bg-green-500' : 'bg-red-400',
-        ]"
-      />
     </div>
-
-    <div class="min-w-0 flex-1 text-left">
-      <p class="text-sm font-medium leading-none text-white">
-        {{ username }}
-      </p>
-
-      <p
-        class="mt-1 text-xs"
-        :class="onlineUsers.has(username) ? 'text-green-500' : 'text-neutral-500'"
-      >
-        {{ onlineUsers.has(username) ? 'Connected' : 'Disconnected' }}
-      </p>
-    </div>
-  </button>
-
-  <!-- Botón actualizar -->
-  <div class="sticky bottom-0 border-t border-white/10 bg-(--kots-blocks-color) p-3 sm:px-6">
-    <button
-      type="button"
-      :disabled="friendsLoading"
-      @click="loadFriends"
-      class="flex w-full items-center justify-center gap-2 rounded-md bg-(--kots-background-color) px-4 py-2.5 text-xs font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-    >
-      <span :class="{ 'animate-spin': friendsLoading }">↻</span>
-
-      {{ friendsLoading ? 'Actualizando...' : 'Actualizar amigos' }}
-    </button>
   </div>
-  </div>
-  </div>
-</div>
 
   <Chat
     v-else

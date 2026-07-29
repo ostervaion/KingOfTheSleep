@@ -498,7 +498,7 @@ async function onSaveChanges() {
     <!-- Botones inferiores -->
     <div
       v-if="!showDeleteConfirm"
-      class="flex flex-col-reverse gap-2  px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 md:px-8"
+      class="flex flex-col-reverse gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 md:px-8"
     >
       <button
         type="button"

@@ -5,10 +5,16 @@ const isConnected = ref(false)
 const isAuthenticated = ref(false)
 const onlineUsers = ref(new Set())
 const updateDashboard = ref(false)
+const lobbyPlayers = ref({})
+const gameError = ref(false)
+const gameEnemy = ref('')
+const gameAccepted = ref(false)
+const battlePaused = ref(false)
 
 const chatMessages = ref([])
 const globalMessages = ref([])
 const myUsername = ref('')
+const battleResume = ref(null)
 
 // Chat actualmente abierto por el usuario: null (cerrado), 'global', o un username.
 // Se usa para no marcar como "no leído" lo que ya se está viendo.
@@ -119,9 +125,47 @@ export function useWebSocket() {
             if (payload.online) {
               onlineUsers.value.add(payload.username)
             } else {
+              if (gameEnemy.value == payload.username) {
+                sendPayload('game:response', {
+                  accepted: false,
+                  target: enemy,
+                })
+                gameEnemy.value = ''
+              }
               onlineUsers.value.delete(payload.username)
+              delete lobbyPlayers.value[payload.username]
             }
             onlineUsers.value = new Set(onlineUsers.value)
+            break
+          case 'sheep_move':
+            lobbyPlayers.value[response.username] = [response.x, response.y]
+            break
+          case 'lobby_list':
+            lobbyPlayers.value = payload.lobby_players
+            break
+          case 'game:error':
+            gameError.value = true
+            break
+          case 'game:game_petition':
+            gameEnemy.value = payload.enemy
+            break
+          case 'game:answer':
+            console.log('game:answer', payload)
+            if (response.response) {
+              gameAccepted.value = true
+            } else {
+              gameError.value = true
+            }
+            break
+          case 'game:disconnect':
+            delete lobbyPlayers.value[response.user]
+            break
+          case 'battle:paused':
+            battlePaused.value = true
+            break
+          case 'battle:resume':
+            battlePaused.value = false
+            battleResume.value = payload
             break
           default:
             console.log('Mensaje no controlado:', response)
@@ -196,5 +240,11 @@ export function useWebSocket() {
     unreadGlobal,
     totalUnread,
     setActiveChat,
+    lobbyPlayers,
+    gameError,
+    gameEnemy,
+    gameAccepted,
+    battlePaused,
+    battleResume,
   }
 }

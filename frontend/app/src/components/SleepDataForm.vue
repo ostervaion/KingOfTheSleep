@@ -325,7 +325,7 @@ const resetForm = () => {
           v-if="currentSection > 0"
           type="button"
           @click="previousSection"
-          class="min-w-24 flex-1 rounded-lg  px-4 py-2.5 text-xs font-medium text-zinc-400 transition-colors duration-150 hover:bg-white/[0.015] "
+          class="min-w-24 flex-1 rounded-lg px-4 py-2.5 text-xs font-medium text-zinc-400 transition-colors duration-150 hover:bg-white/[0.015]"
         >
           Back
         </button>
@@ -392,7 +392,7 @@ const resetForm = () => {
         <button
           type="button"
           @click="backToSleepStep"
-          class="min-w-24 flex-1 rounded-lg  px-4 py-2.5 text-xs font-medium text-zinc-400 transition-colors duration-150 hover:bg-white/[0.015] "
+          class="min-w-24 flex-1 rounded-lg px-4 py-2.5 text-xs font-medium text-zinc-400 transition-colors duration-150 hover:bg-white/[0.015]"
         >
           Back
         </button>

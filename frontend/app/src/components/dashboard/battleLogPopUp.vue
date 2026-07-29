@@ -54,18 +54,13 @@ async function loadLogs() {
               }
             : null,
 
-          enemy_protocol: Array.isArray(battle.enemy_protocol)
-            ? battle.enemy_protocol
-            : [],
+          enemy_protocol: Array.isArray(battle.enemy_protocol) ? battle.enemy_protocol : [],
         }))
       : []
   } catch (error) {
     console.error('Error loading battle logs:', error)
 
-    loadError.value =
-      error.response?.data?.detail ||
-      error.message ||
-      'Could not load battle logs'
+    loadError.value = error.response?.data?.detail || error.message || 'Could not load battle logs'
 
     battleLogs.value = []
     me.value = null
@@ -81,16 +76,11 @@ defineExpose({ loadLogs })
 const summary = computed(() => {
   const battles = battleLogs.value.length
 
-  const wins = battleLogs.value.filter(
-    (battle) => battle.victory === true,
-  ).length
+  const wins = battleLogs.value.filter((battle) => battle.victory === true).length
 
   const losses = battles - wins
 
-  const winRate =
-    battles > 0
-      ? Math.round((wins / battles) * 100)
-      : 0
+  const winRate = battles > 0 ? Math.round((wins / battles) * 100) : 0
 
   return {
     battles,
@@ -141,9 +131,7 @@ function onClose() {
             <BoxingGlove class="h-5 w-5 shrink-0 text-zinc-400" />
 
             <div class="min-w-0">
-              <p class="text-body text-xs font-medium text-zinc-400">
-                Battles
-              </p>
+              <p class="text-body text-xs font-medium text-zinc-400">Battles</p>
 
               <p class="mt-1 text-sm font-medium leading-none text-white">
                 {{ summary.battles }}
@@ -155,9 +143,7 @@ function onClose() {
             <TriangleUp class="h-5 w-5 shrink-0" />
 
             <div class="min-w-0">
-              <p class="text-body text-xs font-medium text-zinc-400">
-                Wins
-              </p>
+              <p class="text-body text-xs font-medium text-zinc-400">Wins</p>
 
               <p class="mt-1 text-sm font-medium leading-none text-white">
                 {{ summary.wins }}
@@ -169,9 +155,7 @@ function onClose() {
             <TriangleDown class="h-5 w-5 shrink-0" />
 
             <div class="min-w-0">
-              <p class="text-body text-xs font-medium text-zinc-400">
-                Losses
-              </p>
+              <p class="text-body text-xs font-medium text-zinc-400">Losses</p>
 
               <p class="mt-1 text-sm font-medium leading-none text-white">
                 {{ summary.losses }}
@@ -188,14 +172,9 @@ function onClose() {
             </div>
 
             <div class="min-w-0">
-              <p class="text-body text-xs font-medium text-zinc-400">
-                Win rate
-              </p>
+              <p class="text-body text-xs font-medium text-zinc-400">Win rate</p>
 
-              <p
-                class="mt-1 text-sm font-medium leading-none"
-                :class="winRateClass"
-              >
+              <p class="mt-1 text-sm font-medium leading-none" :class="winRateClass">
                 {{ summary.winRate }}%
               </p>
             </div>
@@ -203,17 +182,11 @@ function onClose() {
         </div>
       </div>
 
-      <div
-        v-if="isLoading"
-        class="p-8 text-center text-sm text-zinc-400"
-      >
+      <div v-if="isLoading" class="p-8 text-center text-sm text-zinc-400">
         Loading battle logs...
       </div>
 
-      <div
-        v-else-if="loadError"
-        class="p-8 text-center"
-      >
+      <div v-else-if="loadError" class="p-8 text-center">
         <p class="text-sm text-red-400">
           {{ loadError }}
         </p>
@@ -227,25 +200,13 @@ function onClose() {
         </button>
       </div>
 
-      <div
-        v-else-if="battleLogs.length === 0"
-        class="p-8 text-center text-sm text-zinc-400"
-      >
+      <div v-else-if="battleLogs.length === 0" class="p-8 text-center text-sm text-zinc-400">
         No battle logs found.
       </div>
 
-      <ul
-        v-else
-        class="mt-4 w-full"
-      >
-        <li
-          v-for="log in battleLogs"
-          :key="log.combat_id"
-        >
-          <BattleLogsCard
-            v-bind="log"
-            :me="me"
-          />
+      <ul v-else class="mt-4 w-full">
+        <li v-for="log in battleLogs" :key="log.combat_id">
+          <BattleLogsCard v-bind="log" :me="me" />
         </li>
       </ul>
     </div>

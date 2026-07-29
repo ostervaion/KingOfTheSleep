@@ -208,29 +208,31 @@ watch(
           </div>
         </div>
 
-        <div class="mt-5 flex items-center justify-end gap-2 ">
-        <button type="button" :disabled="friendButtonDisabled" :class="[
-          'flex h-full w-full items-center justify-center  rounded-md px-4 py-2.5 text-xs font-semibold transition',
-          friendStatus === 'friend' || friendStatus === 'deleting'
-            ? 'bg-red-300 text-[#171715] hover:bg-red-200'
-            : friendStatus === 'deleteError' ||
-              friendStatus === 'addError'
-              ? 'bg-amber-200 text-[#171715] hover:bg-amber-100'
-              : 'bg-cyan-200 text-[#171715] hover:bg-cyan-50',
-          friendButtonDisabled
-            ? 'cursor-not-allowed opacity-60'
-            : 'cursor-pointer',
-        ]" @click="toggleFriend">
-          {{ friendButtonLabel }}
-        </button>
-                  <button type="button"
+        <div class="mt-5 flex items-center justify-end gap-2">
+          <button
+            type="button"
+            :disabled="friendButtonDisabled"
+            :class="[
+              'flex h-full w-full items-center justify-center  rounded-md px-4 py-2.5 text-xs font-semibold transition',
+              friendStatus === 'friend' || friendStatus === 'deleting'
+                ? 'bg-red-300 text-[#171715] hover:bg-red-200'
+                : friendStatus === 'deleteError' || friendStatus === 'addError'
+                  ? 'bg-amber-200 text-[#171715] hover:bg-amber-100'
+                  : 'bg-cyan-200 text-[#171715] hover:bg-cyan-50',
+              friendButtonDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+            ]"
+            @click="toggleFriend"
+          >
+            {{ friendButtonLabel }}
+          </button>
+          <button
+            type="button"
             class="flex items-center justify-center gap-2 rounded-md bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
-            @click="onChat">
+            @click="onChat"
+          >
             <ChatIcon class="h-4 w-4 shrink-0" />
 
-            <span>
-              Chat 
-            </span>
+            <span> Chat </span>
           </button>
         </div>
       </div>

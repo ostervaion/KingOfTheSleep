@@ -85,9 +85,7 @@ onUnmounted(() => {
     <div
       class="font-inter flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-xl border-b border-[color:var(--border)] bg-(--kots-blocks-color) shadow-md shadow-black/20"
     >
-      <div
-        class="flex items-center justify-between border-b border-white/10 px-4 py-4 sm:px-6"
-      >
+      <div class="flex items-center justify-between border-b border-white/10 px-4 py-4 sm:px-6">
         <div class="flex items-center gap-3">
           <div
             class="flex h-8 w-8 items-center justify-center rounded-full bg-(--kots-background-color) text-sm font-semibold text-cyan-200"
@@ -103,7 +101,9 @@ onUnmounted(() => {
               <span
                 :class="['h-2 w-2 rounded-full', isTargetOnline ? 'bg-green-500' : 'bg-red-400']"
               ></span>
-              <span class="text-neutral-400">{{ isTargetOnline ? 'Conected' : 'Disconected' }}</span>
+              <span class="text-neutral-400">{{
+                isTargetOnline ? 'Conected' : 'Disconected'
+              }}</span>
             </p>
           </div>
         </div>
@@ -121,7 +121,10 @@ onUnmounted(() => {
         ref="messagesContainer"
         class="flex h-72 flex-col gap-2 overflow-y-auto px-4 py-4 sm:px-6"
       >
-        <p v-if="conversationMessages.length === 0" class="mt-8 text-center text-sm text-neutral-500">
+        <p
+          v-if="conversationMessages.length === 0"
+          class="mt-8 text-center text-sm text-neutral-500"
+        >
           Waiting messages...
         </p>
 
@@ -159,9 +162,7 @@ onUnmounted(() => {
           type="text"
           :disabled="!isConnected || !isAuthenticated"
           class="min-w-0 flex-1 rounded-lg border border-transparent bg-[var(--kots-background-color)] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-neutral-600 focus:border-cyan-200/60 disabled:cursor-not-allowed disabled:opacity-50"
-          :placeholder="
-            isConnected && isAuthenticated ? 'Write a message...' : 'Conecting...'
-          "
+          :placeholder="isConnected && isAuthenticated ? 'Write a message...' : 'Conecting...'"
           @keyup.enter="handleSend"
         />
         <button

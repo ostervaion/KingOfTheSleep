@@ -1,11 +1,12 @@
 import Phaser from 'phaser'
 export default class Character {
-  constructor(name, hp, attack, attackSpeed, defense, scene, x, y) {
+  constructor(name, hp, attack, attackSpeed, defense, score, scene, x, y) {
     this.name = name
     this.hp = hp
     this.attack = attack
     this.attackSpeed = attackSpeed
     this.defense = defense
+    this.score = score
 
     this.scene = scene // <-- add this
 
@@ -38,20 +39,21 @@ export default class Character {
   attackTarget() {
     if (this.target.hp == 0) return
     const damage = Math.max(1, this.attack - this.target.defense)
-
+    this.isAttacking = true
     this.sprite.setTexture('playerAttack')
     this.sprite.play('attack')
 
     this.sprite.once('animationcomplete', () => {
       this.sprite.setTexture('playerIdle')
       this.sprite.play('idle')
+      this.isAttacking = false
     })
 
     this.target.hp -= damage
-    this.target.sprite.stop()
-    this.target.sprite.play('hit')
-
-    // return to idle AFTER hit ends
+    if (!this.target.isAttacking) {
+      this.target.sprite.stop()
+      this.target.sprite.play('hit')
+    }
     this.target.sprite.once('animationcomplete', () => {
       if (this.target.hp > 0) {
         this.target.sprite.play('idle')
@@ -81,7 +83,7 @@ export default class Character {
         this.target.sprite.setVisible(false)
       })
       this.scene.time.delayedCall(1900, () => {
-        this.scene.deathParticles.emitParticleAt(this.target.sprite.x - 60, this.target.sprite.y)
+        this.scene.deathParticles.emitParticleAt(this.target.sprite.x, this.target.sprite.y)
         this.scene.anims.globalTimeScale = 1
         this.scene.gameOver(this)
       })

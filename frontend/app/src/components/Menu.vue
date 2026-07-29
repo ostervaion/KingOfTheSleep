@@ -19,7 +19,7 @@ const authStore = useAuthStore()
         <nav class="hidden absolute right-0 md:flex items-center gap-8 justify-end">
           <button
             type="button"
-            class="flex h-5 mt-4 cursor-pointer w-15 items-center justify-center gap-3 rounded-lg  hover:bg-yellow-400 hover:text-(--kots-background-color) px-4 text-xs font-semibold text-zinc-400 "
+            class="flex h-5 mt-4 cursor-pointer w-15 items-center justify-center gap-3 rounded-lg hover:bg-yellow-400 hover:text-(--kots-background-color) px-4 text-xs font-semibold text-zinc-400"
             @click="authStore.setAuthMode('login')"
           >
             Login
@@ -41,13 +41,13 @@ const authStore = useAuthStore()
       class="md:hidden bg-(--kots-background-color) border-t border-(--border) z-10"
     >
       <nav class="flex flex-col gap-2 px-4 py-4">
-          <button
-            type="button"
-            class="flex h-5 cursor-pointer w-15 items-center justify-center gap-3 rounded-lg  hover:bg-yellow-400 hover:text-(--kots-background-color) px-4 text-xs font-semibold text-yellow-400 "
-            @click="authStore.setAuthMode('login')"
-          >
-            Login
-          </button>
+        <button
+          type="button"
+          class="flex h-5 cursor-pointer w-15 items-center justify-center gap-3 rounded-lg hover:bg-yellow-400 hover:text-(--kots-background-color) px-4 text-xs font-semibold text-yellow-400"
+          @click="authStore.setAuthMode('login')"
+        >
+          Login
+        </button>
       </nav>
     </div>
   </header>
