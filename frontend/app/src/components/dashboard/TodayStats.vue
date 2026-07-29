@@ -37,15 +37,18 @@ const summary = computed(() => {
 })
 
 const winRateColor = computed(() => {
-  if (summary.value.winRate >= 60) {
+  if (summary.value.winRate == 0) {
+    return 'text-zinc-400 border-zinc-400'
+  }
+  if (summary.value.winRate > 51) {
     return 'text-green-400 border-green-400'
   }
-
-  if (summary.value.winRate <= 40) {
+    if (summary.value.winRate == 50) {
+    return 'text-yellow-400 border-yellow-400'
+  }
+  if (summary.value.winRate < 50) {
     return 'text-red-400 border-red-400'
   }
-
-  return 'text-orange-400 border-orange-400'
 })
 
 async function openDialog() {
@@ -157,7 +160,7 @@ function closeDialog() {
 
           <div class="flex min-w-0 items-center justify-center gap-2.5">
             <div
-              class="grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 text-lg font-semibold"
+              class="grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 text-md font-semibold"
               :class="winRateColor"
             >
               %

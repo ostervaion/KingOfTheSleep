@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed} from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import LogOut from '@/components/dashboard/logOut.vue'
@@ -23,6 +23,7 @@ const achievements = ref({
   },
 })
 
+
 var usersData = ref({
   rank: '',
   level: '',
@@ -30,6 +31,34 @@ var usersData = ref({
   nextxp: '',
   todaysSleepScore: '',
 })
+
+const props = defineProps({
+  sleepScore: {
+    type: Object,
+    default: () => ({
+      labels: [],
+      scores: [],
+    }),
+  },
+    nextBattle: {
+    type: Object,
+    default: null,
+  },
+}
+)
+
+const sleepScoreValue = computed(() => {
+  const scores = props.sleepScore?.scores ?? []
+  return scores.length ? Math.round(scores.at(-1)) : 0
+})
+
+usersData.value = {
+    level: '42',
+    currentxp: 18450,
+    nextxp: 25000,
+    todaysSleepScore: sleepScoreValue.value,
+  }
+
 
 const dialog = ref(null)
 const dialog_settings = ref(null)
@@ -51,7 +80,6 @@ function closeDialogSettings() {
 }
 
 onMounted(() => {
-  loadUsersData()
 
   if (usersData.value.currentxp !== 0) {
     achievements.value.firstSleepFight.unlocked = true
@@ -62,15 +90,6 @@ onMounted(() => {
   }
 })
 
-function loadUsersData() {
-  usersData.value = {
-    rank: '4,432',
-    level: '42',
-    currentxp: 18450,
-    nextxp: 25000,
-    todaysSleepScore: '2',
-  }
-}
 </script>
 <template>
   <div
@@ -110,7 +129,7 @@ function loadUsersData() {
         <div class="flex justify-items-start">
           <div class="pr-7">
             <p class="text-xs font-medium tracking-wide text-body text-zinc-400">rank</p>
-            <p class="mb-4 text-xl font-light leading-tight text-white">#{{ usersData.rank }}</p>
+            <p class="mb-4 text-xl font-light leading-tight text-white">{{ '#' + props.nextBattle.currentRanking  ?? '—' }}</p>
           </div>
           <div>
             <p class="text-xs font-medium tracking-wide text-body text-zinc-400">achievements</p>
@@ -142,6 +161,7 @@ function loadUsersData() {
       <div class="relative size-24 lg:size-32 shrink-0">
         <svg class="size-full -rotate-90" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="42" fill="none" stroke-width="6" class="stroke-neutral-800" />
+
           <circle
             cx="50"
             cy="50"
@@ -149,14 +169,15 @@ function loadUsersData() {
             fill="none"
             stroke-width="6"
             stroke-linecap="round"
-            stroke-dasharray="264"
-            stroke-dashoffset="47"
-            class="stroke-green-500"
+            :stroke-dasharray="2 * Math.PI * 42"
+            :stroke-dashoffset="2 * Math.PI * 42 * (1 - Number(usersData.todaysSleepScore) / 100)"
+            :class="usersData.todaysSleepScore >= 80 ? 'stroke-green-500' : 'stroke-red-400'"
           />
         </svg>
 
         <div class="absolute inset-0 flex flex-col items-center justify-center">
-          <div class="text-4xl font-bold leading-none text-green-500">
+          <div class="text-4xl font-bold leading-none"
+          :class="usersData.todaysSleepScore >= 80 ? 'text-green-500' : 'text-red-400'">
             {{ usersData.todaysSleepScore }}
           </div>
           <div class="text-base font-light leading-none text-white">/100</div>
