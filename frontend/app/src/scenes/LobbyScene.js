@@ -28,7 +28,8 @@ watch(
 )
 
 watch(gameError, (stat) => {
-  scene.closePopup()
+  if (scene.popup) scene.closePopup()
+  console.log('declined or offline')
   const width = 160
   const height = 70
 

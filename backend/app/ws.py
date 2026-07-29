@@ -220,11 +220,11 @@ async def websocket_endpoint(websocket: WebSocket):
                     active_battles[attacker] = battle
                     active_battles[sender] = battle
 
-                    if attacker in users:
-                        await users[attacker].send_text(json.dumps({
-                            "type": "game:answer",
-                            "response": accepted
-                        }))
+                if attacker in users:
+                    await users[attacker].send_text(json.dumps({
+                        "type": "game:answer",
+                        "response": accepted
+                    }))
 
                 continue
             if msg_type == 'battle:end':
