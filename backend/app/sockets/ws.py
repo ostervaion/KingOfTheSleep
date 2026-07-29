@@ -136,12 +136,9 @@ async def websocket_endpoint(websocket: WebSocket):
                             }
                         }))
                         if opponent_name in users:
+                            print(f"[DEBUG] mandando opponent_reconnected a {opponent_name}")
                             await users[opponent_name].send_text(json.dumps({
-                                "type": "battle:resume",
-                                "payload": {
-                                    "player": battle["players"][opponent_name],
-                                    "opponent": battle["players"][user.username],
-                                }
+                                "type": "battle:opponent_reconnected"
                             }))
                     await websocket.send_text(json.dumps({
                         "type": "auth:success",

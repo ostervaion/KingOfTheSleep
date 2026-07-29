@@ -106,6 +106,7 @@ watch(gameEnemy, (enemy) => {
     waitingResponse = false
     scene.closePopup()
     sendPayload('game:disconnect')
+    console.log('Batalla por invitacion')
     scene.switchScene('GameScene', {
       player: {
         username: myUsername.value,
@@ -141,6 +142,7 @@ watch(gameAccepted, (answer) => {
     waitingResponse = false
     scene.closePopup()
     sendPayload('game:disconnect')
+    console.log('Batalla por invitacion 2')
     scene.switchScene('GameScene', {
       player: {
         username: myUsername.value,
@@ -161,16 +163,19 @@ export default class LobbyScene extends BaseScene {
 
   preload() {
     this.load.image('sheep', 'sheep.webp')
+    this.load.image('lobbyBG', 'gameAssets/lobbyBG.png')
   }
 
   create() {
     scene = this
     this.players = {}
+      this.bg = this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, 'lobbyBG')
+  this.bg.setOrigin(0, 0)
+  this.bg.setDepth(-1)
     this.stopResumeWatcher = watch(
       battleResume,
       (data) => {
         if (!data) return
-
         this.switchScene('GameScene', {
           reconnect: true,
           player: data.player,

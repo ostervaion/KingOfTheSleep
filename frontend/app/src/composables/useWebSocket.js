@@ -167,6 +167,14 @@ export function useWebSocket() {
             battlePaused.value = false
             battleResume.value = payload
             break
+          case 'battle:destroyed':
+            battlePaused.value = false;
+            battleResume.value = null;
+            break;
+          case 'battle:opponent_reconnected':
+            console.log('[DEBUG] llegó opponent_reconnected, battlePaused antes:', battlePaused.value)
+            battlePaused.value = false
+            break
           default:
             console.log('Mensaje no controlado:', response)
         }
