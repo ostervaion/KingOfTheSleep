@@ -82,9 +82,7 @@ async function register() {
 <template>
   <form class="font-inter space-y-5" @submit.prevent="register">
     <div>
-      <span
-        class="mb-4 block text-xs font-semibold uppercase tracking-[0.18em] text-yellow-400"
-      >
+      <span class="mb-4 block text-xs font-semibold uppercase tracking-[0.18em] text-yellow-400">
         Register
       </span>
 
@@ -140,9 +138,7 @@ async function register() {
       </div>
     </div>
 
-    <div
-      class="rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) p-4"
-    >
+    <div class="rounded-lg border border-[color:var(--border)] bg-(--kots-background-color) p-4">
       <div class="flex items-start gap-3">
         <input
           id="accept-legal"
@@ -152,10 +148,7 @@ async function register() {
           class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-[color:var(--border)] accent-cyan-200"
         />
 
-        <label
-          for="accept-legal"
-          class="cursor-pointer text-xs leading-5 text-[#A2A1A6]"
-        >
+        <label for="accept-legal" class="cursor-pointer text-xs leading-5 text-[#A2A1A6]">
           I have read and accept the
 
           <RouterLink
@@ -175,8 +168,8 @@ async function register() {
             class="font-semibold text-cyan-200 underline decoration-cyan-200/50 underline-offset-2 transition-colors hover:text-cyan-100"
             @click.stop
           >
-            Privacy Policy
-          </RouterLink>.
+            Privacy Policy </RouterLink
+          >.
         </label>
       </div>
     </div>
@@ -187,11 +180,7 @@ async function register() {
       class="w-full rounded-lg border-none bg-cyan-200 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-[#171715] transition-colors duration-150 hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-40"
     >
       {{
-        loading
-          ? '// registering...'
-          : acceptedTerms
-            ? '▶ Register'
-            : 'Accept terms to register'
+        loading ? '// registering...' : acceptedTerms ? '▶ Register' : 'Accept terms to register'
       }}
     </button>
 

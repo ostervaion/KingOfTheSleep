@@ -102,14 +102,14 @@ onUnmounted(() => {
       <span class="hidden text-zinc-400 text-xs lg:inline"> until daily reset</span>
     </div>
   </div>
-<div
-  v-else
-  class="font-inter rounded-full border-b border-[color:var(--border)] bg-yellow-400 px-3 py-2 text-sm sm:px-4 sm:py-3 lg:p-4"
->
-  <div class="flex items-cente rounded-md justify-center">
-    <span class="font-inter text-sm font-bold text-(--kots-blocks-color) animate-pulse">
-      LOADING NEXT BATTLE
-    </span>
+  <div
+    v-else
+    class="font-inter rounded-full border-b border-[color:var(--border)] bg-yellow-400 px-3 py-2 text-sm sm:px-4 sm:py-3 lg:p-4"
+  >
+    <div class="flex items-cente rounded-md justify-center">
+      <span class="font-inter text-sm font-bold text-(--kots-blocks-color) animate-pulse">
+        LOADING NEXT BATTLE
+      </span>
+    </div>
   </div>
-</div>
 </template>

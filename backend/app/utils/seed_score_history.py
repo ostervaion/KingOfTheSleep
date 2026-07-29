@@ -7,22 +7,14 @@ from services import recalculate_protocol_stats
 from sqlmodel import Session, select
 from utils.security import hash_password
 
+from core.config import PROTOCOL_NAMES
+
 # Fijamos la semilla para que los nombres aleatorios sigan un patrón predecible
 seed(42)
 
-PROTOCOL_NAMES = [
-    "Temperature Cycling",
-    "Light Management",
-    "Stimulant Control",
-    "Magnesium Intake",
-    "Melatonin Intake",
-    "Sunlight Maxing",
-    "Caffeine Minimum",
-]
 
 # Mismos offsets (en días) usados para generar el ScoreHistory de cada usuario
 SCORE_OFFSETS = [0, 3, 6, 9, 12]
-
 
 def _ensure_users(session: Session, additional_count: int = 20) -> list[User]:
     """

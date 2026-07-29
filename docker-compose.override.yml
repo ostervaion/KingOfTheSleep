@@ -1,19 +1,22 @@
 services:
   backend:
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-appuser}:${POSTGRES_PASSWORD:-apppassword}@db:5432/${POSTGRES_DB:-appdb}
-      APP_ENV: ${APP_ENV:-development}
+    image: kots-backend:dev
+    container_name: app_backend_dev
     volumes:
       - ./backend/app:/app
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
   frontend:
+    image: kots-frontend:dev
+    container_name: app_frontend_dev
     build:
       target: dev
     restart: unless-stopped
     volumes:
       - ./frontend/app:/app               # Mount the full frontend directory
-      - /app/node_modules              # Protect container node_modules from being overwritten
+      - /app/node_modules              # Protect container node_modules from being over written
+    depends_on:
+      - backend
     healthcheck:
           test: ["CMD-SHELL", "nc -z localhost 5173 || exit 1"]
           interval: 10s
@@ -21,6 +24,10 @@ services:
           retries: 5
           start_period: 30s
   server:
+    image: kots-caddy:dev
+    container_name: app_server_dev
+    build:
+      target: dev
     depends_on:
       frontend:
           condition: service_healthy

@@ -32,96 +32,94 @@ function openRegistration() {
     <div
       class="mx-auto w-full max-w-[1240px] px-6 pb-8 pt-6 sm:px-8 lg:px-12 lg:pb-12 lg:pt-8 xl:px-16"
     >
-<!-- HERO -->
-<section
-  class="grid items-center gap-12 py-12 sm:py-16 lg:min-h-[620px] lg:grid-cols-[0.92fr_1.08fr] lg:gap-16 lg:py-20"
->
-  <!-- Hero content -->
-  <div class="mx-auto w-full max-w-[560px] lg:mx-0">
-    <h1
-      class="text-center text-5xl font-semibold leading-[0.95] tracking-[-0.06em] sm:text-7xl sm:leading-[0.95] lg:text-left"
-    >
-      Enter the arena and
-      <span class="text-yellow-400">master your sleep.</span>
-    </h1>
-
-    <p
-      class="mx-auto mt-6 max-w-[520px] text-balance text-center text-base leading-6 text-zinc-400 sm:text-lg sm:leading-7 lg:mx-0 lg:text-left"
-    >
-      Maximize your sleep quality with a competitive auto-battle game powered by your real sleep
-      data.
-    </p>
-
-    <!-- Authentication form -->
-    <div
-      class="mt-8 rounded-xl bg-(--kots-blocks-color) p-3 sm:mt-10 sm:p-5"
-    >
-      <template v-if="appStore.authMode === 'default'">
-        <form class="space-y-3" @submit.prevent="submitJoin">
-          <div class="flex flex-col gap-2 sm:flex-row">
-            <input
-              v-model="homeEmail"
-              type="email"
-              required
-              placeholder="Type your email here..."
-              class="h-11 w-full rounded-lg border border-white/10 bg-(--kots-background-color) px-4 text-sm text-white outline-none transition placeholder:text-white/35 hover:border-white/20 focus:border-cyan-200 focus:ring-1 focus:ring-cyan-200/30 sm:w-3/4"
-            />
-
-            <button
-              type="submit"
-              class="flex h-11 w-full cursor-pointer items-center justify-center gap-3 rounded-lg border-none bg-cyan-200 px-5 text-sm font-semibold text-[#171715] transition hover:bg-cyan-100 sm:w-1/4"
-            >
-              Join
-              <span aria-hidden="true">→</span>
-            </button>
-          </div>
-
-          <button
-            type="button"
-            class="w-full cursor-pointer rounded-lg px-3 text-center text-xs text-zinc-400 transition hover:text-cyan-200"
-            @click="appStore.setAuthMode('login')"
+      <!-- HERO -->
+      <section
+        class="grid items-center gap-12 py-12 sm:py-16 lg:min-h-[620px] lg:grid-cols-[0.92fr_1.08fr] lg:gap-16 lg:py-20"
+      >
+        <!-- Hero content -->
+        <div class="mx-auto w-full max-w-[560px] lg:mx-0">
+          <h1
+            class="text-center text-5xl font-semibold leading-[0.95] tracking-[-0.06em] sm:text-7xl sm:leading-[0.95] lg:text-left"
           >
-            If you already have an account, we'll log you in
-          </button>
-        </form>
-      </template>
+            Enter the arena and
+            <span class="text-yellow-400">master your sleep.</span>
+          </h1>
 
-      <div v-else class="relative rounded-lg">
-        <button
-          type="button"
-          class="mb-4 cursor-pointer rounded-lg px-3 py-2 text-xs font-medium text-white/55 transition hover:bg-white/5 hover:text-cyan-200"
-          @click="appStore.setAuthMode('default')"
-        >
-          ← Back
-        </button>
+          <p
+            class="mx-auto mt-6 max-w-[520px] text-balance text-center text-base leading-6 text-zinc-400 sm:text-lg sm:leading-7 lg:mx-0 lg:text-left"
+          >
+            Maximize your sleep quality with a competitive auto-battle game powered by your real
+            sleep data.
+          </p>
 
-        <LoginPanel v-if="appStore.authMode === 'login'" />
+          <!-- Authentication form -->
+          <div class="mt-8 rounded-xl bg-(--kots-blocks-color) p-3 sm:mt-10 sm:p-5">
+            <template v-if="appStore.authMode === 'default'">
+              <form class="space-y-3" @submit.prevent="submitJoin">
+                <div class="flex flex-col gap-2 sm:flex-row">
+                  <input
+                    v-model="homeEmail"
+                    type="email"
+                    required
+                    placeholder="Type your email here..."
+                    class="h-11 w-full rounded-lg border border-white/10 bg-(--kots-background-color) px-4 text-sm text-white outline-none transition placeholder:text-white/35 hover:border-white/20 focus:border-cyan-200 focus:ring-1 focus:ring-cyan-200/30 sm:w-3/4"
+                  />
 
-        <RegisterPanel
-          v-else
-          :email="homeEmail"
-          @back="appStore.setAuthMode('default')"
-          @login="appStore.setAuthMode('login')"
-        />
-      </div>
-    </div>
-  </div>
+                  <button
+                    type="submit"
+                    class="flex h-11 w-full cursor-pointer items-center justify-center gap-3 rounded-lg border-none bg-cyan-200 px-5 text-sm font-semibold text-[#171715] transition hover:bg-cyan-100 sm:w-1/4"
+                  >
+                    Join
+                    <span aria-hidden="true">→</span>
+                  </button>
+                </div>
 
-  <!-- Dashboard preview -->
-  <div class="flex w-full items-center justify-center">
-    <div
-      class="relative w-full overflow-hidden rounded-2xl bg-[#171715] shadow-xl shadow-black/20"
-    >
-      <img
-        :src="DashboardImage"
-        alt="King Of The Sleep dashboard preview"
-        class="aspect-[16/10] w-full object-cover"
-      />
-    </div>
-  </div>
-</section>
+                <button
+                  type="button"
+                  class="w-full cursor-pointer rounded-lg px-3 text-center text-xs text-zinc-400 transition hover:text-cyan-200"
+                  @click="appStore.setAuthMode('login')"
+                >
+                  If you already have an account, we'll log you in
+                </button>
+              </form>
+            </template>
 
-            <!-- GAME INTRODUCTION -->
+            <div v-else class="relative rounded-lg">
+              <button
+                type="button"
+                class="mb-4 cursor-pointer rounded-lg px-3 py-2 text-xs font-medium text-white/55 transition hover:bg-white/5 hover:text-cyan-200"
+                @click="appStore.setAuthMode('default')"
+              >
+                ← Back
+              </button>
+
+              <LoginPanel v-if="appStore.authMode === 'login'" />
+
+              <RegisterPanel
+                v-else
+                :email="homeEmail"
+                @back="appStore.setAuthMode('default')"
+                @login="appStore.setAuthMode('login')"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard preview -->
+        <div class="flex w-full items-center justify-center">
+          <div
+            class="relative w-full overflow-hidden rounded-2xl bg-[#171715] shadow-xl shadow-black/20"
+          >
+            <img
+              :src="DashboardImage"
+              alt="King Of The Sleep dashboard preview"
+              class="aspect-[16/10] w-full object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- GAME INTRODUCTION -->
       <section class="py-16 sm:py-20 lg:py-10">
         <div class="mx-auto max-w-[820px] text-center">
           <div class="flex justify-center">
@@ -133,25 +131,24 @@ function openRegistration() {
           <h2
             class="mx-auto mt-6 max-w-[700px] text-3xl font-semibold leading-thigh tracking-[-0.045em] sm:text-4xl lg:text-5xl"
           >
-          <span> Your real life sleep determines how your avatar performs in the arena.</span>
+            <span> Your real life sleep determines how your avatar performs in the arena.</span>
           </h2>
 
-      <p class="mx-auto mt-4 max-w-[760px] text-sm leading-7 text-white/60 sm:text-base">
-        King Of Sleep turns your real sleep data into the performance of your avatar in a
+          <p class="mx-auto mt-4 max-w-[760px] text-sm leading-7 text-white/60 sm:text-base">
+            King Of Sleep turns your real sleep data into the performance of your avatar in a
             competitive auto-battle game. Every day, up to 100 players enter the same arena, fight
             automatically, and climb the rankings based on how well they slept.
           </p>
 
           <p class="mx-auto mt-4 max-w-[760px] text-sm leading-7 text-white/60 sm:text-base">
-            Sleep duration, efficiency, consistency, REM, and deep sleep determine each battle. As the
-            day progresses, players can explore the lobby, challenge rivals, compare sleep protocols,
-            and discover which habits produce the best results.
+            Sleep duration, efficiency, consistency, REM, and deep sleep determine each battle. As
+            the day progresses, players can explore the lobby, challenge rivals, compare sleep
+            protocols, and discover which habits produce the best results.
           </p>
         </div>
       </section>
 
       <section class="py-16 sm:py-20 lg:py-8">
-
         <div class="grid gap-3 md:grid-cols-12 md:auto-rows-[230px]">
           <article
             class="relative min-h-[520px] overflow-hidden rounded-2xl bg-[#1B1B19] md:col-span-5 md:row-span-2 md:min-h-0"
@@ -269,7 +266,7 @@ function openRegistration() {
 
           <button
             type="button"
-            class="group flex min-h-[230px] items-end justify-between rounded-2xl bg-yellow-500 p-6 text-left text-[#171715] transition  md:col-span-2 md:min-h-0"
+            class="group flex min-h-[230px] items-end justify-between rounded-2xl bg-yellow-500 p-6 text-left text-[#171715] transition md:col-span-2 md:min-h-0"
             @click="openRegistration"
           >
             <span class="text-base font-bold uppercase tracking-[-0.02em]">Join the arena</span>
@@ -287,156 +284,133 @@ function openRegistration() {
             </div>
           </div>
 
-          <h2
-            class="mt-6 text-3xl font-semibold tracking-[-0.045em] text-white sm:text-4xl"
-          >
+          <h2 class="mt-6 text-3xl font-semibold tracking-[-0.045em] text-white sm:text-4xl">
             Sleep, compete, and improve.
           </h2>
 
           <p class="mx-auto mt-4 max-w-[560px] text-sm leading-6 text-white/50 sm:text-base">
-            Your sleep data powers your avatar, determines your results, and helps you discover which
-            habits improve your recovery.
+            Your sleep data powers your avatar, determines your results, and helps you discover
+            which habits improve your recovery.
           </p>
         </div>
 
         <!-- Steps -->
-<!-- Steps -->
-<div class="mx-auto mt-12 grid max-w-[1050px] gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-5">
-  <!-- Step 1 -->
-  <article class="relative flex flex-col rounded-2xl bg-[#1B1B19] p-5">
-    <div class="flex items-center justify-between">
-      <span
-        class="grid h-10 w-10 place-items-center rounded-full border border-yellow-400 text-sm font-semibold text-yellow-400"
-      >
-        1
-      </span>
+        <!-- Steps -->
+        <div class="mx-auto mt-12 grid max-w-[1050px] gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-5">
+          <!-- Step 1 -->
+          <article class="relative flex flex-col rounded-2xl bg-[#1B1B19] p-5">
+            <div class="flex items-center justify-between">
+              <span
+                class="grid h-10 w-10 place-items-center rounded-full border border-yellow-400 text-sm font-semibold text-yellow-400"
+              >
+                1
+              </span>
 
-      <span class="text-xs font-medium uppercase text-zinc-400">
-        Tonight
-      </span>
-    </div>
+              <span class="text-xs font-medium uppercase text-zinc-400"> Tonight </span>
+            </div>
 
-    <div class="mt-auto pt-6 align-top">
-      <h3 class="text-lg font-semibold tracking-[-0.025em]">
-        Track your daily sleep
-      </h3>
+            <div class="mt-auto pt-6 align-top">
+              <h3 class="text-lg font-semibold tracking-[-0.025em]">Track your daily sleep</h3>
 
-      <p class="mt-2 text-sm leading-5 text-white/50">
-        Use your preferred device to measure your sleep data.
-      </p>
-    </div>
-  </article>
+              <p class="mt-2 text-sm leading-5 text-white/50">
+                Use your preferred device to measure your sleep data.
+              </p>
+            </div>
+          </article>
 
-  <!-- Step 2 -->
-  <article class="relative flex flex-col rounded-2xl bg-[#1B1B19] p-5">
-    <div class="flex items-center justify-between">
-      <span
-        class="grid h-10 w-10 place-items-center rounded-full border border-yellow-400 text-sm font-semibold text-yellow-400"
-      >
-        2
-      </span>
+          <!-- Step 2 -->
+          <article class="relative flex flex-col rounded-2xl bg-[#1B1B19] p-5">
+            <div class="flex items-center justify-between">
+              <span
+                class="grid h-10 w-10 place-items-center rounded-full border border-yellow-400 text-sm font-semibold text-yellow-400"
+              >
+                2
+              </span>
 
-      <span class="text-xs font-medium uppercase text-zinc-400">
-        Tomorrow
-      </span>
-    </div>
+              <span class="text-xs font-medium uppercase text-zinc-400"> Tomorrow </span>
+            </div>
 
-    <div class="mt-auto pt-6 align-top">
-      <h3 class="text-lg font-semibold tracking-[-0.025em]">
-        Enter tomorrow's battle
-      </h3>
+            <div class="mt-auto pt-6 align-top">
+              <h3 class="text-lg font-semibold tracking-[-0.025em]">Enter tomorrow's battle</h3>
 
-      <p class="mt-2 text-sm leading-5 text-white/50">
-        Your avatar enters the arena based on how well you slept.
-      </p>
-    </div>
-  </article>
+              <p class="mt-2 text-sm leading-5 text-white/50">
+                Your avatar enters the arena based on how well you slept.
+              </p>
+            </div>
+          </article>
 
-  <!-- Step 3 -->
-  <article class="relative flex flex-col rounded-2xl bg-[#1B1B19] p-5">
-    <div class="flex items-center justify-between">
-      <span
-        class="grid h-10 w-10 place-items-center rounded-full border border-yellow-400 text-sm font-semibold text-yellow-400"
-      >
-        3
-      </span>
+          <!-- Step 3 -->
+          <article class="relative flex flex-col rounded-2xl bg-[#1B1B19] p-5">
+            <div class="flex items-center justify-between">
+              <span
+                class="grid h-10 w-10 place-items-center rounded-full border border-yellow-400 text-sm font-semibold text-yellow-400"
+              >
+                3
+              </span>
 
-      <span class="text-xs font-medium uppercase text-zinc-400">
-        Compete
-      </span>
-    </div>
+              <span class="text-xs font-medium uppercase text-zinc-400"> Compete </span>
+            </div>
 
-    <div class="mt-auto pt-6 align-top">
-      <h3 class="text-lg font-semibold tracking-[-0.025em]">
-        Earn points and climb
-      </h3>
+            <div class="mt-auto pt-6 align-top">
+              <h3 class="text-lg font-semibold tracking-[-0.025em]">Earn points and climb</h3>
 
-      <p class="mt-2 text-sm leading-5 text-white/50">
-        Win automatic battles, earn points, and rise through the rankings.
-      </p>
-    </div>
-  </article>
+              <p class="mt-2 text-sm leading-5 text-white/50">
+                Win automatic battles, earn points, and rise through the rankings.
+              </p>
+            </div>
+          </article>
 
-  <!-- Step 4 -->
-  <article class="relative flex flex-col rounded-2xl bg-[#1B1B19] p-5">
-    <div class="flex items-center justify-between">
-      <span
-        class="grid h-10 w-10 place-items-center rounded-full border border-yellow-400 text-sm font-semibold text-yellow-400"
-      >
-        4
-      </span>
+          <!-- Step 4 -->
+          <article class="relative flex flex-col rounded-2xl bg-[#1B1B19] p-5">
+            <div class="flex items-center justify-between">
+              <span
+                class="grid h-10 w-10 place-items-center rounded-full border border-yellow-400 text-sm font-semibold text-yellow-400"
+              >
+                4
+              </span>
 
-      <span class="text-xs font-medium uppercase text-zinc-400">
-        Adapt
-      </span>
-    </div>
+              <span class="text-xs font-medium uppercase text-zinc-400"> Adapt </span>
+            </div>
 
-    <div class="mt-auto pt-6 align-top">
-      <h3 class="text-lg font-semibold tracking-[-0.025em]">
-        Refine your protocol
-      </h3>
+            <div class="mt-auto pt-6 align-top">
+              <h3 class="text-lg font-semibold tracking-[-0.025em]">Refine your protocol</h3>
 
-      <p class="mt-2 text-sm leading-5 text-white/50">
-        Test new habits, adjust your routine, and improve your recovery.
-      </p>
-    </div>
-  </article>
+              <p class="mt-2 text-sm leading-5 text-white/50">
+                Test new habits, adjust your routine, and improve your recovery.
+              </p>
+            </div>
+          </article>
 
-  <!-- Step 5 -->
-  <article
-    class="relative flex flex-col rounded-2xl bg-[#1B1B19] p-5 sm:col-span-2 lg:col-span-1"
-  >
-    <div class="flex items-center justify-between">
-      <span
-        class="grid h-10 w-10 place-items-center rounded-full border border-yellow-400 text-sm font-semibold text-yellow-400"
-      >
-        5
-      </span>
+          <!-- Step 5 -->
+          <article
+            class="relative flex flex-col rounded-2xl bg-[#1B1B19] p-5 sm:col-span-2 lg:col-span-1"
+          >
+            <div class="flex items-center justify-between">
+              <span
+                class="grid h-10 w-10 place-items-center rounded-full border border-yellow-400 text-sm font-semibold text-yellow-400"
+              >
+                5
+              </span>
 
-      <span class="text-xs font-medium uppercase text-zinc-400">
-        Improve
-      </span>
-    </div>
+              <span class="text-xs font-medium uppercase text-zinc-400"> Improve </span>
+            </div>
 
-    <div class="mt-auto pt-6 align-top">
-      <h3 class="text-lg font-semibold tracking-[-0.025em]">
-        Learn from the arena
-      </h3>
+            <div class="mt-auto pt-6 align-top">
+              <h3 class="text-lg font-semibold tracking-[-0.025em]">Learn from the arena</h3>
 
-      <p class="mt-2 text-sm leading-5 text-white/50">
-        Explore other strategies, learn from players, and keep improving.
-      </p>
-    </div>
-  </article>
-</div>
+              <p class="mt-2 text-sm leading-5 text-white/50">
+                Explore other strategies, learn from players, and keep improving.
+              </p>
+            </div>
+          </article>
+        </div>
       </section>
 
-   
       <!-- DASHBOARD -->
-      <section class=" py-16 sm:py-20 lg:py-24">
+      <section class="py-16 sm:py-20 lg:py-24">
         <div class="flex justify-center">
           <div class="rounded-lg border border-cyan-200 px-2 py-0.5 text-gray-800 leading-none">
-             <span class="text-sm font-medium text-cyan-200">Dashboard</span>
+            <span class="text-sm font-medium text-cyan-200">Dashboard</span>
           </div>
         </div>
 
@@ -462,5 +436,4 @@ function openRegistration() {
 
 <style scoped>
 @reference "@/assets/main.css";
-
 </style>

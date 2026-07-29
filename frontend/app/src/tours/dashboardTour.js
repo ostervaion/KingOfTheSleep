@@ -81,20 +81,20 @@ const desktopSteps = (showSleepForm) => [
         'Follow the evolution of your overall sleep quality over the last seven days and see whether your sleep is improving.',
     },
   },
-{
-  element: '#protocol-impact',
+  {
+    element: '#protocol-impact',
 
-  popover: {
-    title: 'Protocol impact',
-    description:
-      'Discover which protocols were associated with your best and worst sleep. Use these results to decide which habits to keep, change or remove.',
+    popover: {
+      title: 'Protocol impact',
+      description:
+        'Discover which protocols were associated with your best and worst sleep. Use these results to decide which habits to keep, change or remove.',
 
-    onNextClick: async (_element, _step, { driver }) => {
-      await showSleepForm()
+      onNextClick: async (_element, _step, { driver }) => {
+        await showSleepForm()
         driver.moveNext()
+      },
     },
   },
-},
   {
     element: '#sleep-form',
     popover: {
@@ -106,7 +106,7 @@ const desktopSteps = (showSleepForm) => [
 ]
 
 const mobileSteps = (showSleepForm) => [
-    {
+  {
     popover: {
       title: 'Welcome to King Of Sleep',
       description: `
@@ -184,20 +184,20 @@ const mobileSteps = (showSleepForm) => [
         'Follow the evolution of your overall sleep quality over the last seven days and see whether your sleep is improving.',
     },
   },
-{
-  element: '#protocol-impact-mobile',
+  {
+    element: '#protocol-impact-mobile',
 
-  popover: {
-    title: 'Protocol impact',
-    description:
-      'Discover which protocols were associated with your best and worst sleep. Use these results to decide which habits to keep, change or remove.',
+    popover: {
+      title: 'Protocol impact',
+      description:
+        'Discover which protocols were associated with your best and worst sleep. Use these results to decide which habits to keep, change or remove.',
 
-    onNextClick: async (_element, _step, { driver }) => {
-      await showSleepForm()
+      onNextClick: async (_element, _step, { driver }) => {
+        await showSleepForm()
         driver.moveNext()
+      },
     },
   },
-},
   {
     element: '#sleep-form-mobile',
     popover: {
@@ -219,9 +219,7 @@ export function startDashboardTour(showSleepForm, onCompleted) {
     showProgress: true,
     allowClose: false,
 
-    steps: isMobile
-      ? mobileSteps(showSleepForm)
-      : desktopSteps(showSleepForm),
+    steps: isMobile ? mobileSteps(showSleepForm) : desktopSteps(showSleepForm),
 
     onDoneClick: () => {
       onCompleted?.()

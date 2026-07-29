@@ -7,7 +7,12 @@ RUN xcaddy build \
     --with github.com/DeRuina/timberjack
 
 # Step 2: Assemble the final production image
-FROM caddy:2-alpine
+FROM caddy:2-alpine AS dev
+
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+COPY Caddyfile_dev /etc/caddy/Caddyfile
+
+FROM caddy:2-alpine AS prod
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 COPY Caddyfile /etc/caddy/Caddyfile

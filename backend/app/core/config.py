@@ -22,6 +22,16 @@ ORIGINS = [
 	
 ]
 
+PROTOCOL_NAMES = [
+    "Temperature Cycling",
+    "Light Management",
+    "Stimulant Control",
+    "Magnesium Intake",
+    "Melatonin Intake",
+    "Sunlight Maxing",
+    "Caffeine Minimum",
+]
+
 DAY_NAMES = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
 UPLOAD_BASE_DIR = Path(__file__).resolve().parent.parent / "uploads" #maybe is only one parent, it was changed due to file moved to core
 AVATAR_DIR = UPLOAD_BASE_DIR / "avatars"

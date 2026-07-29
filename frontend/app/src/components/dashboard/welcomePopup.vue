@@ -53,24 +53,22 @@ function selectAvatar(index) {
 }
 
 /// Temporal, aqui falta guardar el valor
-function onContinue(){
-  emit('close') 
+function onContinue() {
+  emit('close')
 }
 </script>
 
 <template>
   <div
-    class="font-inter py-5 px-8 mx-auto flex max-h-[90dvh] w-full max-w-[420px] min-w-0 flex-col overflow-x-hidden overflow-y-auto rounded-lg bg-[#171715]  text-white shadow-[0_12px_30px_rgb(0_0_0_/_40%)]"
+    class="font-inter py-5 px-8 mx-auto flex max-h-[90dvh] w-full max-w-[420px] min-w-0 flex-col overflow-x-hidden overflow-y-auto rounded-lg bg-[#171715] text-white shadow-[0_12px_30px_rgb(0_0_0_/_40%)]"
   >
     <!-- Welcome section -->
     <section class="min-w-0">
-      <h1 class="pr-7 text-lg font-semibold text-white">
-        Choose your avatar
-      </h1>
+      <h1 class="pr-7 text-lg font-semibold text-white">Choose your avatar</h1>
 
       <p class="mt-2 text-xs leading-4 tracking-wide text-white">
-        You now know how the arena works. Choose the avatar that will represent
-        you in battles, rankings and your player profile.
+        You now know how the arena works. Choose the avatar that will represent you in battles,
+        rankings and your player profile.
       </p>
     </section>
 
@@ -92,10 +90,7 @@ function onContinue(){
           <div
             class="relative mx-auto aspect-[4/5] w-full max-w-[180px] overflow-hidden rounded-lg bg-(--kots-background-color)"
           >
-            <Transition
-              name="avatar"
-              mode="out-in"
-            >
+            <Transition name="avatar" mode="out-in">
               <img
                 :key="selectedAvatar.id"
                 :src="selectedAvatar.image"
@@ -104,9 +99,7 @@ function onContinue(){
               />
             </Transition>
 
-            <div
-              class="absolute inset-x-0 bottom-0 bg-black/40 px-3 py-2 text-center"
-            >
+            <div class="absolute inset-x-0 bottom-0 bg-black/40 px-3 py-2 text-center">
               <p class="text-sm font-semibold text-white">
                 {{ selectedAvatar.name }}
               </p>
@@ -135,9 +128,7 @@ function onContinue(){
           :aria-pressed="selectedAvatarIndex === index"
           class="h-1.5 rounded-full transition-all"
           :class="
-            selectedAvatarIndex === index
-              ? 'w-6 bg-cyan-200'
-              : 'w-1.5 bg-[#a2a1a6] hover:bg-white'
+            selectedAvatarIndex === index ? 'w-6 bg-cyan-200' : 'w-1.5 bg-[#a2a1a6] hover:bg-white'
           "
           @click="selectAvatar(index)"
         ></button>
@@ -145,14 +136,14 @@ function onContinue(){
     </section>
 
     <p class="mt-5 text-xs leading-4 tracking-wide text-[#a2a1a6]">
-      Every avatar competes under the same conditions. Your real sleep data
-      determines your performance in each automatic battle.
+      Every avatar competes under the same conditions. Your real sleep data determines your
+      performance in each automatic battle.
     </p>
 
     <div class="mt-5 px-5">
       <button
         type="button"
-        class="rounded-lg w-full border-none bg-cyan-200 px-[14px] py-2 text-xs text-[#171715] transition hover:bg-cyan-100 "
+        class="rounded-lg w-full border-none bg-cyan-200 px-[14px] py-2 text-xs text-[#171715] transition hover:bg-cyan-100"
         @click="onContinue"
       >
         Enter the arena

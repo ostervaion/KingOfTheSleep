@@ -9,6 +9,7 @@ COMPOSE_FILE   := docker-compose.yml
 COMPOSE_FILE_OVERRIDE := docker-compose.override.yml
 COMPOSE_FILE_PRODUCTION := docker-compose.prod.yml
 ENV_FILE       := .env
+POSTGRES_USER := $(shell cat secrets/postgres_user 2>/dev/null || echo appuser)
 
 # Colours
 GREEN  := \033[0;32m
@@ -199,7 +200,7 @@ db-restore: guard-.env ## Restore database from ./db/backup.sql
 .PHONY: populate
 populate: ## Creates fake data for testing purposes
 	@echo -e "$(YELLOW)Populating database with users$(RESET)"
-	docker compose exec backend python3 -m utils.seed_score_history
+	docker compose exec backend sh -c '. ../entrypoint.sh && python3 -m utils.seed_score_history'
 
 # ── Cleanup ──────────────────────────────────────────────────
 .PHONY: clean

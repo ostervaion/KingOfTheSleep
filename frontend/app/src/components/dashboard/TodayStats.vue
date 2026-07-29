@@ -23,10 +23,7 @@ const summary = computed(() => {
   const losses = Number(props.todayStats?.losses ?? 0)
   const battles = wins + losses
 
-  const winRate =
-    battles > 0
-      ? Math.round((wins / battles) * 100)
-      : 0
+  const winRate = battles > 0 ? Math.round((wins / battles) * 100) : 0
 
   return {
     battles,
@@ -64,18 +61,12 @@ function closeDialog() {
   >
     <div class="px-6 pb-4 pt-5.5">
       <div class="flex items-center justify-between">
-        <div
-          class="rounded-md border border-cyan-200 px-1.5 py-0.5 leading-none text-gray-800"
-        >
-          <h2 class="text-heading text-xs font-medium text-cyan-200">
-            Today's Stats
-          </h2>
+        <div class="rounded-md border border-cyan-200 px-1.5 py-0.5 leading-none text-gray-800">
+          <h2 class="text-heading text-xs font-medium text-cyan-200">Today's Stats</h2>
         </div>
 
         <div class="flex rounded-full px-1.25 text-right">
-          <div
-            class="flex rounded-full bg-(--kots-background-color) px-1.25 py-0.75"
-          >
+          <div class="flex rounded-full bg-(--kots-background-color) px-1.25 py-0.75">
             <button
               type="button"
               class="px-2 py-1 text-xs font-medium leading-none text-white"
@@ -87,16 +78,10 @@ function closeDialog() {
         </div>
       </div>
 
-      <div
-        class="grid grid-cols-4 justify-between gap-1 rounded-lg py-3 sm:py-6"
-      >
+      <div class="grid grid-cols-4 justify-between gap-1 rounded-lg py-3 sm:py-6">
         <!-- Battles -->
         <div class="justify-center">
-          <p
-            class="pb-1 text-center text-xs font-medium text-zinc-400"
-          >
-            Battles
-          </p>
+          <p class="pb-1 text-center text-xs font-medium text-zinc-400">Battles</p>
 
           <div class="flex min-w-0 items-center justify-center gap-2.5">
             <BoxingGlove class="h-7 w-7 shrink-0" />
@@ -111,11 +96,7 @@ function closeDialog() {
 
         <!-- Wins -->
         <div class="justify-center">
-          <p
-            class="pb-1 text-center text-xs font-medium text-zinc-400"
-          >
-            Wins
-          </p>
+          <p class="pb-1 text-center text-xs font-medium text-zinc-400">Wins</p>
 
           <div class="flex min-w-0 items-center justify-center gap-2.5">
             <TriangleUp class="h-7 w-7 shrink-0" />
@@ -130,11 +111,7 @@ function closeDialog() {
 
         <!-- Losses -->
         <div class="justify-center">
-          <p
-            class="pb-1 text-center text-xs font-medium text-zinc-400"
-          >
-            Losses
-          </p>
+          <p class="pb-1 text-center text-xs font-medium text-zinc-400">Losses</p>
 
           <div class="flex min-w-0 items-center justify-center gap-2.5">
             <TriangleDown class="h-7 w-7 shrink-0" />
@@ -149,11 +126,7 @@ function closeDialog() {
 
         <!-- Win rate -->
         <div class="justify-center">
-          <p
-            class="pb-1 text-center text-xs font-medium text-zinc-400"
-          >
-            Win rate
-          </p>
+          <p class="pb-1 text-center text-xs font-medium text-zinc-400">Win rate</p>
 
           <div class="flex min-w-0 items-center justify-center gap-2.5">
             <div
@@ -164,10 +137,7 @@ function closeDialog() {
             </div>
 
             <div class="min-w-0">
-              <p
-                class="mt-1 text-xl font-medium leading-none"
-                :class="winRateColor"
-              >
+              <p class="mt-1 text-xl font-medium leading-none" :class="winRateColor">
                 {{ summary.winRate }}
               </p>
             </div>
@@ -182,11 +152,7 @@ function closeDialog() {
       ref="dialog"
       class="m-auto max-w-5xl overflow-y-auto rounded-xl border-none bg-transparent p-0 backdrop:bg-black/60 sm:w-[90vw] lg:w-[50vw]"
     >
-      <BattleLog
-        ref="battleLogRef"
-        :summary="summary"
-        @close="closeDialog"
-      />
+      <BattleLog ref="battleLogRef" :summary="summary" @close="closeDialog" />
     </dialog>
   </Teleport>
 </template>

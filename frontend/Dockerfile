@@ -20,6 +20,8 @@ RUN corepack enable pnpm
 # Copy your source code (will be overridden by compose bind-mount during dev)
 #COPY index.html vite.config.js .
 
+EXPOSE 5173
+
 WORKDIR /app
 
 # The actual execution command when the container boots

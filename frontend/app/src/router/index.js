@@ -39,7 +39,7 @@ const router = createRouter({
       component: AdminView,
       meta: { requiresAuth: true },
     },
-      {
+    {
       path: '/dashboard-tour',
       name: 'dashboard-tour',
       component: DashboardTourView,

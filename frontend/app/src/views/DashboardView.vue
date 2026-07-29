@@ -18,7 +18,6 @@ import api from '@/api/api'
 const router = useRouter()
 const auth = useAuthStore()
 
-
 const dashboard = ref(null)
 const { connect, disconnect, updateDashboard } = useWebSocket()
 
@@ -53,8 +52,7 @@ async function fetchDashboard() {
 let intervalId = null
 
 onMounted(async () => {
-  if (auth.tutorial) 
-  {
+  if (auth.tutorial) {
     await router.replace({
       name: 'dashboard-tour',
     })
@@ -163,7 +161,9 @@ function updateActiveMobilePage() {
   </div>
 
   <!-- PARA ORDENADOR -->
-  <div class="hidden h-[calc(100dvh-64px)] flex-col gap-3 overflow-hidden px-8 py-4 mt-5 text-(--text) lg:flex ">
+  <div
+    class="hidden h-[calc(100dvh-64px)] flex-col gap-3 overflow-hidden px-8 py-4 mt-5 text-(--text) lg:flex"
+  >
     <NextBattle id="next-battle" :next-battle="dashboard?.nextBattle" />
 
     <div

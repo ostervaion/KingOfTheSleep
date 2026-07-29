@@ -9,5 +9,7 @@ services:
       volumes:
         - ./frontend/dist:/dist 
     server:
+      build:
+        target: prod
       volumes:
       - ./frontend/dist:/dist:ro
