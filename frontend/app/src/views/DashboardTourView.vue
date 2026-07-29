@@ -9,16 +9,234 @@ import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Battle from '@/components/dashboard/Battle.vue'
 import ChatButton from '@/components/dashboard/ChatButton.vue'
 import SleepDataForm from '@/components/SleepDataForm.vue'
-import { ref, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import { startDashboardTour } from '@/tours/dashboardTour'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import WelcomePopup from '@/components/dashboard/welcomePopup.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
-const dashboard = ref(null)
-const dialog = ref(null)
+const dashboard = ref({
+  nextBattle: {
+    currentRanking: 4,
+    seconds: 1232,
+    endDay: 38794,
+    deltaRanking: 3,
+  },
+
+  sleepScore: {
+    labels: ['THU', 'FRI', 'SAT', 'SUN', 'MON', 'TUE', 'WED'],
+    scores: [76, 81, 79, 84, 80, 86, 82],
+  },
+
+  ranking: [
+    {
+      ranking: '1',
+      user_id: 36,
+      name: 'stormowl36',
+      avatar_path: null,
+      points: '1649',
+      posChange: '3',
+      trend: 'up',
+    },
+    {
+      ranking: '2',
+      user_id: 34,
+      name: 'echowolf34',
+      avatar_path: null,
+      points: '1645',
+      posChange: '1',
+      trend: 'up',
+    },
+    {
+      ranking: '3',
+      user_id: 30,
+      name: 'auroramystic30',
+      avatar_path: null,
+      points: '1640',
+      posChange: '2',
+      trend: 'down',
+    },
+    {
+      ranking: '4',
+      user_id: 48,
+      name: 'Martin',
+      avatar_path: null,
+      points: '1618',
+      posChange: '3',
+      trend: 'up',
+    },
+    {
+      ranking: '5',
+      user_id: 37,
+      name: 'velvettiger37',
+      avatar_path: null,
+      points: '1617',
+      posChange: '1',
+      trend: 'down',
+    },
+    {
+      ranking: '6',
+      user_id: 39,
+      name: 'novashadow39',
+      avatar_path: null,
+      points: '1565',
+      posChange: '4',
+      trend: 'up',
+    },
+    {
+      ranking: '7',
+      user_id: 32,
+      name: 'lunartiger32',
+      avatar_path: null,
+      points: '1549',
+      posChange: '2',
+      trend: 'up',
+    },
+    {
+      ranking: '8',
+      user_id: 25,
+      name: 'novanova25',
+      avatar_path: null,
+      points: '1511',
+      posChange: '1',
+      trend: 'same',
+    },
+    {
+      ranking: '9',
+      user_id: 21,
+      name: 'novawolf21',
+      avatar_path: null,
+      points: '1509',
+      posChange: '2',
+      trend: 'down',
+    },
+    {
+      ranking: '10',
+      user_id: 31,
+      name: 'pixelmystic31',
+      avatar_path: null,
+      points: '1505',
+      posChange: '4',
+      trend: 'up',
+    },
+  ],
+
+  protocolImpacts: [
+    {
+      id: 1,
+      name: 'Temperature Cycling',
+      percentage: 18,
+      daysUsed: 12,
+    },
+    {
+      id: 2,
+      name: 'Magnesium Intake',
+      percentage: 12,
+      daysUsed: 18,
+    },
+    {
+      id: 3,
+      name: 'Light Management',
+      percentage: 8,
+      daysUsed: 15,
+    },
+    {
+      id: 4,
+      name: 'Late Caffeine',
+      percentage: -14,
+      daysUsed: 6,
+    },
+    {
+      id: 5,
+      name: 'Stimulant Control',
+      percentage: -7,
+      daysUsed: 9,
+    },
+  ],
+
+  lobby: true,
+
+  todayStats: {
+    wins: 3,
+    losses: 2,
+  },
+
+  protocols: {
+    winner_protocols: [
+      {
+        ranking: 1,
+        protocol: 'Melatonin Intake',
+        usage: 190,
+        winrate: 0.5263157894736842,
+      },
+      {
+        ranking: 2,
+        protocol: 'Magnesium Intake',
+        usage: 165,
+        winrate: 0.49696969696969695,
+      },
+      {
+        ranking: 3,
+        protocol: 'Sunlight Maxing',
+        usage: 154,
+        winrate: 0.4935064935064935,
+      },
+      {
+        ranking: 4,
+        protocol: 'Light Management',
+        usage: 132,
+        winrate: 0.48484848484848486,
+      },
+      {
+        ranking: 5,
+        protocol: 'Temperature Cycling',
+        usage: 140,
+        winrate: 0.4714285714285714,
+      },
+    ],
+    loser_protocols: [
+      {
+        ranking: 1,
+        protocol: 'Stimulant Control',
+        usage: 91,
+        winrate: 0.4175824175824176,
+      },
+      {
+        ranking: 2,
+        protocol: 'Caffeine Minimum',
+        usage: 83,
+        winrate: 0.46987951807228917,
+      },
+      {
+        ranking: 3,
+        protocol: 'Temperature Cycling',
+        usage: 140,
+        winrate: 0.4714285714285714,
+      },
+      {
+        ranking: 4,
+        protocol: 'Light Management',
+        usage: 132,
+        winrate: 0.48484848484848486,
+      },
+      {
+        ranking: 5,
+        protocol: 'Sunlight Maxing',
+        usage: 154,
+        winrate: 0.4935064935064935,
+      },
+    ],
+  },
+
+  profile: {
+    rank: 4432,
+    level: 42,
+    xp: 18450,
+    nextxp: 25000,
+    todaysSleepScore: 82,
+  },
+})
 
 const showSleepFormTour = ref(false)
 
@@ -27,28 +245,18 @@ async function showSleepForm() {
   await nextTick()
 }
 
-function openDialog() {
-  dialog.value?.showModal()
-}
-
-async function closeDialog() {
-  dialog.value?.close()
-
-  await auth.removeTutorial()
-
-  await router.replace({
-    name: 'dashboard',
-  })
-}
-
 onMounted(async () => {
   await nextTick()
 
   startDashboardTour(showSleepForm, async () => {
     await nextTick()
-    openDialog()
+    auth.removeTutorial()
+    await router.replace({
+    name: 'dashboard',
+  })
   })
 })
+
 const mobileScroller = ref(null)
 const activeMobilePage = ref(0)
 
@@ -102,11 +310,13 @@ function updateActiveMobilePage() {
             v-else
             id="sleep-form-mobile"
             class="h-full min-h-0"
-            @saved="fetchDashboard"
           />
 
           <div id="today-stats-mobile">
-            <TodayStats class="min-h-0" />
+            <TodayStats
+            :today-stats="dashboard?.todayStats || {}"
+            class="min-h-0"
+          />
           </div>
         </div>
       </section>
@@ -128,6 +338,7 @@ function updateActiveMobilePage() {
       >
         <Protocols
           id="protocols-mobile"
+          :protocols-data="dashboard?.protocols"
           class="h-full min-h-0"
         />
       </section>
@@ -138,7 +349,11 @@ function updateActiveMobilePage() {
       >
         <div class="grid h-full min-h-0 grid-rows-2 gap-4">
           <div id="profile-mobile">
-            <Profile class="h-full min-h-0" />
+            <Profile
+              :sleep-score="dashboard?.sleepScore"
+              :next-battle="dashboard?.nextBattle"
+              class="h-full min-h-0"
+            />
           </div>
 
           <SleepScore
@@ -155,6 +370,7 @@ function updateActiveMobilePage() {
       >
         <ProtocolsImpact
           id="protocol-impact-mobile"
+          :protocol-impacts="dashboard?.protocolImpacts || []"
           class="h-full min-h-0"
         />
       </section>
@@ -201,14 +417,13 @@ function updateActiveMobilePage() {
           v-else
           id="sleep-form"
           class="min-h-0 flex-1"
-          @saved="fetchDashboard"
         />
 
         <div
           id="today-stats"
           class="shrink-0"
         >
-          <TodayStats />
+          <TodayStats :today-stats="dashboard?.todayStats || {}" />
         </div>
       </section>
 
@@ -218,30 +433,31 @@ function updateActiveMobilePage() {
           :ranking-data="dashboard?.ranking || []"
         />
 
-        <Protocols id="protocols" />
+        <Protocols
+          id="protocols"
+          :protocols-data="dashboard?.protocols"
+        />
       </section>
 
       <section class="flex min-h-0 min-w-0 flex-col gap-4">
         <div id="user-profile">
-          <Profile />
+          <Profile
+            :sleep-score="dashboard?.sleepScore"
+            :next-battle="dashboard?.nextBattle"
+          />
         </div>
 
         <SleepScore
           id="sleep-score"
           :sleep-score="dashboard?.sleepScore"
         />
-
-        <ProtocolsImpact id="protocol-impact" />
+        
+        <ProtocolsImpact
+          id="protocol-impact"
+          :protocol-impacts="dashboard?.protocolImpacts || []"
+        />
       </section>
     </div>
   </div>
   <ChatButton />
-    <Teleport to="body">
-    <dialog
-      ref="dialog"
-      class="m-auto lg:w-[50vw] max-w-5xl overflow-y-auto rounded-xl border-none bg-transparent p-0 backdrop:bg-black/60 sm:w-[90vw]"
-    >
-      <WelcomePopup @close="closeDialog" />
-    </dialog>
-  </Teleport>
 </template>

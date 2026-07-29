@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed} from 'vue'
+import { ref, onMounted, computed, markRaw} from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import LogOut from '@/components/dashboard/logOut.vue'
@@ -11,15 +11,15 @@ import First100PointsIcon from '@/assets/first-100-points-v2.svg'
 const achievements = ref({
   tutorialCompleted: {
     unlocked: true,
-    icon: TutorialCompletedIcon,
+    icon: markRaw(TutorialCompletedIcon),
   },
   firstSleepFight: {
     unlocked: false,
-    icon: FirstVictoryFightIcon,
+    icon: markRaw(FirstVictoryFightIcon),
   },
   first100Points: {
     unlocked: false,
-    icon: First100PointsIcon,
+    icon: markRaw(First100PointsIcon),
   },
 })
 
@@ -129,7 +129,7 @@ onMounted(() => {
         <div class="flex justify-items-start">
           <div class="pr-7">
             <p class="text-xs font-medium tracking-wide text-body text-zinc-400">rank</p>
-            <p class="mb-4 text-xl font-light leading-tight text-white">{{ '#' + props.nextBattle.currentRanking  ?? '—' }}</p>
+            <p class="mb-4 text-xl font-light leading-tight text-white">4</p>
           </div>
           <div>
             <p class="text-xs font-medium tracking-wide text-body text-zinc-400">achievements</p>
@@ -184,9 +184,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-  </div>
-
-  <Teleport to="body">
+      <Teleport to="body">
     <dialog
       ref="dialog"
       class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent"
@@ -202,6 +200,7 @@ onMounted(() => {
       <ProfileSettings @close="closeDialogSettings" />
     </dialog>
   </Teleport>
+  </div>
 </template>
 
 <style scoped>

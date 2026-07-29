@@ -86,17 +86,21 @@ function buttonClass(ranking) {
     </div>
 
     <div class="flex-1 min-h-0 overflow-y-auto">
-      <ul>
+      <ul v-if="protocolsUp.length > 0">
         <!--poner en la key la id del protocolo, no el nombre -->
         <ProtocolCard
           v-for="protocolup in protocolsUp"
           :key="`winner-${protocolup.ranking}-${protocolup.protocol}`"
+          type="winner"
           :ranking="protocolup.ranking"
           :name="protocolup.protocol"
           :usage="protocolup.usage"
           :winrate="protocolup.winrate"
         />
       </ul>
+        <div v-else class="flex h-full items-center justify-center text-xs text-zinc-400">
+          No data yet
+      </div>
     </div>
     <div
       class="mt-4 grid grid-cols-[40px_1fr_100px_100px] px-6 pb-2 text-xs text-body text-zinc-400"
@@ -110,16 +114,20 @@ function buttonClass(ranking) {
     </div>
 
     <div class="flex-1 min-h-0 overflow-y-auto">
-      <ul>
+      <ul v-if="protocolsDown.length > 0">
         <ProtocolCard
           v-for="protocoldown in protocolsDown"
           :key="`loser-${protocoldown.ranking}-${protocoldown.protocol}`"
+          type="loser"
           :ranking="protocoldown.ranking"
           :name="protocoldown.protocol"
           :usage="protocoldown.usage"
           :winrate="protocoldown.winrate"
         />
       </ul>
+        <div v-else class="flex h-full items-center justify-center text-xs text-zinc-400">
+          No data yet
+      </div>
     </div>
   </div>
 </template>

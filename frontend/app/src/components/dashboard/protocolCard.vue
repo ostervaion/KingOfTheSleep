@@ -2,9 +2,10 @@
 import example from '@/assets/example.jpg'
 
 defineProps({
-  ranking: String,
+  type : String,
+  ranking: Number,
   name: String,
-  usage: String,
+  usage: Number,
   winrate: String,
 })
 </script>
@@ -20,7 +21,9 @@ defineProps({
 
       <div class="text-right text-sm text-heading">{{ usage }}</div>
 
-      <div class="text-right text-sm font-medium text-red-400">{{ winrate }}</div>
+      <div class="text-right text-sm font-medium"
+      :class="type === 'winner' ? 'text-green-400' : 'text-red-400'"
+      >{{ winrate }}</div>
     </div>
   </li>
 </template>

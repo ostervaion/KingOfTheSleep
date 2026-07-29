@@ -39,6 +39,7 @@ defineProps({
 
     <div class="flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto bg-white/[0.015] pt-2">
       <div
+        v-if="protocolImpacts.length > 0"
         v-for="item in protocolImpacts"
         :key="item.id"
         class="grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)_52px] items-center gap-2 px-6 py-1.5 text-xs sm:grid-cols-[120px_minmax(0,1fr)_100px] sm:gap-4"
@@ -90,6 +91,9 @@ defineProps({
         <div class="min-w-0 truncate text-right text-xs text-body">
           {{ item.daysUsed }}
         </div>
+      </div>
+      <div v-else class="flex h-full items-center justify-center text-xs text-zinc-400">
+          No data yet
       </div>
     </div>
   </div>
