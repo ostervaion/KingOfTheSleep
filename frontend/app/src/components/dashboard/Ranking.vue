@@ -65,6 +65,7 @@ function buttonClass(ranking) {
           :points="user.points"
           :pos-change="user.posChange"
           :trend="user.trend"
+          :experience="user.experience"
           :profilePicture="user.avatar_path"
         />
       </ul>
