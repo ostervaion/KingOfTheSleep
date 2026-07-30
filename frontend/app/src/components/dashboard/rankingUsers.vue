@@ -11,6 +11,7 @@ const props = defineProps({
   points: String,
   posChange: String,
   profilePicture: String,
+  experience: String,
   trend: {
     type: String,
     default: 'same',
@@ -75,7 +76,7 @@ function closeDialog() {
           username: props.name,
           profilePicture: props.profilePicture || example,
           rank: props.ranking,
-          level: '42',
+          level: props.experience,
           points: props.points,
         }"
         @close="closeDialog"

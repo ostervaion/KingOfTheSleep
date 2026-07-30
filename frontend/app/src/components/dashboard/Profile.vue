@@ -1,75 +1,126 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { ref, computed, markRaw, watchEffect } from 'vue'
 import LogOut from '@/components/dashboard/logOut.vue'
 import ProfileSettings from '@/components/dashboard/profileSettings.vue'
 import TutorialCompletedIcon from '@/assets/tutorial-completed-v2.svg'
 import FirstVictoryFightIcon from '@/assets/achievement-v2.svg'
 import First100PointsIcon from '@/assets/first-100-points-v2.svg'
 
-const achievements = ref({
-  tutorialCompleted: {
-    unlocked: true,
-    icon: TutorialCompletedIcon,
+const props = defineProps({
+  experience: {
+    type: Number,
+    default: 0,
   },
-  firstSleepFight: {
-    unlocked: false,
-    icon: FirstVictoryFightIcon,
+
+  sleepScore: {
+    type: Object,
+    default: () => ({
+      labels: [],
+      scores: [],
+    }),
   },
-  first100Points: {
-    unlocked: false,
-    icon: First100PointsIcon,
+
+  nextBattle: {
+    type: Object,
+    default: () => ({
+      currentRanking: 0,
+      seconds: 0,
+      endDay: 0,
+      deltaRanking: 0,
+    }),
   },
 })
 
-var usersData = ref({
-  rank: '',
-  level: '',
-  xp: '',
-  nextxp: '',
-  todaysSleepScore: '',
+const achievements = ref({
+  tutorialCompleted: {
+    unlocked: true,
+    icon: markRaw(TutorialCompletedIcon),
+  },
+
+  firstSleepFight: {
+    unlocked: false,
+    icon: markRaw(FirstVictoryFightIcon),
+  },
+
+  first100Points: {
+    unlocked: false,
+    icon: markRaw(First100PointsIcon),
+  },
+})
+
+const XP_BASE = 100
+
+const totalExperience = computed(() => {
+  return Math.max(0, Number(props.experience) || 0)
+})
+
+const level = computed(() => {
+  return Math.floor(Math.log2(totalExperience.value / XP_BASE + 1)) + 1
+})
+
+const currentLevelXP = computed(() => {
+  return XP_BASE * (2 ** (level.value - 1) - 1)
+})
+
+const nextLevelXP = computed(() => {
+  return XP_BASE * (2 ** level.value - 1)
+})
+
+const xpProgress = computed(() => {
+  const earnedThisLevel = totalExperience.value - currentLevelXP.value
+
+  const requiredThisLevel = nextLevelXP.value - currentLevelXP.value
+
+  if (requiredThisLevel <= 0) {
+    return 0
+  }
+
+  const progress = (earnedThisLevel / requiredThisLevel) * 100
+
+  return Math.min(100, Math.max(0, progress))
+})
+
+const sleepScoreValue = computed(() => {
+  const scores = props.sleepScore?.scores ?? []
+
+  if (!Array.isArray(scores) || scores.length === 0) {
+    return 0
+  }
+
+  return Math.round(Number(scores.at(-1)) || 0)
+})
+
+const usersData = computed(() => ({
+  rank: props.nextBattle.currentRanking,
+  level: level.value,
+  currentxp: totalExperience.value,
+  nextxp: nextLevelXP.value,
+  todaysSleepScore: sleepScoreValue.value,
+}))
+
+watchEffect(() => {
+  achievements.value.firstSleepFight.unlocked = totalExperience.value > 0
+
+  achievements.value.first100Points.unlocked = totalExperience.value >= 100
 })
 
 const dialog = ref(null)
 const dialog_settings = ref(null)
 
 function openDialog() {
-  dialog.value.showModal()
+  dialog.value?.showModal()
 }
 
 function closeDialog() {
-  dialog.value.close()
+  dialog.value?.close()
 }
 
 function openDialogSettings() {
-  dialog_settings.value.showModal()
+  dialog_settings.value?.showModal()
 }
 
 function closeDialogSettings() {
-  dialog_settings.value.close()
-}
-
-onMounted(() => {
-  loadUsersData()
-
-  if (usersData.value.currentxp !== 0) {
-    achievements.value.firstSleepFight.unlocked = true
-  }
-
-  if (usersData.value.currentxp >= 100) {
-    achievements.value.first100Points.unlocked = true
-  }
-})
-
-function loadUsersData() {
-  usersData.value = {
-    rank: '4,432',
-    level: '42',
-    currentxp: 18450,
-    nextxp: 25000,
-    todaysSleepScore: '2',
-  }
+  dialog_settings.value?.close()
 }
 </script>
 <template>
@@ -110,7 +161,7 @@ function loadUsersData() {
         <div class="flex justify-items-start">
           <div class="pr-7">
             <p class="text-xs font-medium tracking-wide text-body text-zinc-400">rank</p>
-            <p class="mb-4 text-xl font-light leading-tight text-white">#{{ usersData.rank }}</p>
+            <p class="mb-4 text-xl font-light leading-tight text-white">{{ usersData.rank }}</p>
           </div>
           <div>
             <p class="text-xs font-medium tracking-wide text-body text-zinc-400">achievements</p>
@@ -131,7 +182,10 @@ function loadUsersData() {
         <p class="mb-2 text-xl font-light leading-tight text-white">{{ usersData.level }}</p>
 
         <div class="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-neutral-800">
-          <div class="h-full w-[74%] rounded-full bg-yellow-400"></div>
+          <div
+            class="h-full rounded-full bg-yellow-400 transition-all duration-500"
+            :style="{ width: `${xpProgress}%` }"
+          ></div>
         </div>
 
         <p class="text-xs font-light text-neutral-300">
@@ -142,6 +196,7 @@ function loadUsersData() {
       <div class="relative size-24 lg:size-32 shrink-0">
         <svg class="size-full -rotate-90" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="42" fill="none" stroke-width="6" class="stroke-neutral-800" />
+
           <circle
             cx="50"
             cy="50"
@@ -149,38 +204,40 @@ function loadUsersData() {
             fill="none"
             stroke-width="6"
             stroke-linecap="round"
-            stroke-dasharray="264"
-            stroke-dashoffset="47"
-            class="stroke-green-500"
+            :stroke-dasharray="2 * Math.PI * 42"
+            :stroke-dashoffset="2 * Math.PI * 42 * (1 - Number(usersData.todaysSleepScore) / 100)"
+            :class="usersData.todaysSleepScore >= 80 ? 'stroke-green-500' : 'stroke-red-400'"
           />
         </svg>
 
         <div class="absolute inset-0 flex flex-col items-center justify-center">
-          <div class="text-4xl font-bold leading-none text-green-500">
+          <div
+            class="text-4xl font-bold leading-none"
+            :class="usersData.todaysSleepScore >= 80 ? 'text-green-500' : 'text-red-400'"
+          >
             {{ usersData.todaysSleepScore }}
           </div>
           <div class="text-base font-light leading-none text-white">/100</div>
         </div>
       </div>
     </div>
+    <Teleport to="body">
+      <dialog
+        ref="dialog"
+        class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent"
+      >
+        <LogOut @close="closeDialog" />
+      </dialog>
+
+      <!-- profile settings button -->
+      <dialog
+        ref="dialog_settings"
+        class="m-auto w-[720px] max-w-[94vw] rounded-xl border-none bg-transparent p-0"
+      >
+        <ProfileSettings @close="closeDialogSettings" />
+      </dialog>
+    </Teleport>
   </div>
-
-  <Teleport to="body">
-    <dialog
-      ref="dialog"
-      class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent"
-    >
-      <LogOut @close="closeDialog" />
-    </dialog>
-
-    <!-- profile settings button -->
-    <dialog
-      ref="dialog_settings"
-      class="m-auto w-[720px] max-w-[94vw] rounded-xl border-none bg-transparent p-0"
-    >
-      <ProfileSettings @close="closeDialogSettings" />
-    </dialog>
-  </Teleport>
 </template>
 
 <style scoped>

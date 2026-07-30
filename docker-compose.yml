@@ -7,22 +7,16 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-appuser}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-apppassword}
       POSTGRES_DB: ${POSTGRES_DB:-appdb}
+    secrets:
+      - postgres_user
+      - postgres_password
     volumes:
       - db_data:/var/lib/postgresql
-      - ./backend/app:/app # Mount the full frontend directory
-
-    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
     networks:
       - db_network
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-appuser} -d ${POSTGRES_DB:-appdb}",
-        ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -32,9 +26,14 @@ services:
       context: ./backend
     container_name: app_backend
     restart: unless-stopped
+    env_file:
+      - .env
+    secrets:
+      - postgres_user
+      - postgres_password
+      - secret_key
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-appuser}:${POSTGRES_PASSWORD:-apppassword}@db:5432/${POSTGRES_DB:-appdb}
-      APP_ENV: ${APP_ENV:-development}
+      LOG_VERBOSE: "True"
     volumes:
       - ./backend/app:/app
     depends_on:
@@ -53,24 +52,12 @@ services:
     build:
       context: ./frontend
     container_name: app_frontend
-    restart: unless-stopped
+
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
-    volumes:
-      - ./frontend/app:/app               # Mount the full frontend directory
-      - /app/node_modules              # Protect container node_modules from being overwritten
-    #ports:
-    #  - "5173:5173"                    # Expose Vite's port if you want direct access from the host browser
-    depends_on:
-      - backend
     networks:
       - web_network
-    healthcheck:
-          test: ["CMD-SHELL", "nc -z localhost 5173 || exit 1"]
-          interval: 10s
-          timeout: 5s
-          retries: 5
-          start_period: 30s
+    
   server:
     build:
       context: ./server
@@ -84,13 +71,18 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
-      frontend:
-        condition: service_healthy
       backend:
         condition: service_healthy
     networks:
       - web_network
 
+secrets:
+  postgres_user:
+    file: secrets/postgres_user
+  postgres_password:
+    file: secrets/postgres_password
+  secret_key:
+    file: secrets/secret_key
 volumes:
   db_data:
   caddy_data:

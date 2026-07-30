@@ -3,25 +3,14 @@
 #  Listens on :80 (Caddy auto-redirects to HTTPS in production;
 #  for local dev the HTTP-only block below is more convenient).
 # ──────────────────────────────────────────────────────────────
+
 {
-    # 1. Tell Caddy where the WAF middleware sits in the execution chain
-    order coraza_waf first
+    auto_https off
 }
 
-localhost, 127.0.0.1 {
+:80 {
     # ── API → FastAPI backend ──────────────────────────────────
-    tls internal
     handle /api/* {
-        # 2. Enable Coraza with the OWASP Core Ruleset (CRS) preloaded HERE WILL ONLY WORK FOR THE BACKEND API
-        coraza_waf {
-            load_owasp_crs
-            directives `
-                Include @coraza.conf-recommended
-                Include @crs-setup.conf.example
-                Include @owasp_crs/*.conf
-                SecRuleEngine On
-            `
-        }
         uri strip_prefix /api
         reverse_proxy backend:8000
     }
@@ -29,18 +18,7 @@ localhost, 127.0.0.1 {
     # ── Frontend → Vue dev server (development) ───────────────
     #    Switch to `frontend:80` for the production nginx stage.
     handle {
-        coraza_waf {
-            load_owasp_crs
-            directives `
-                Include @coraza.conf-recommended
-                Include @crs-setup.conf.example
-                Include @owasp_crs/*.conf
-                SecRuleEngine On
-            `
-        }
-        root * /dist
-        try_files {path} /index.html
-        file_server
+        reverse_proxy frontend:5173
     }
 
     # ── Logging ───────────────────────────────────────────────
@@ -49,10 +27,6 @@ localhost, 127.0.0.1 {
         format console
     }
 }
-
-#:80 {
-#    redir https://{host}{uri} permanent
-#}
 
 # ── Production HTTPS example (uncomment & set your domain) ───
 # yourdomain.com {

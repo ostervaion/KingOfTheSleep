@@ -46,6 +46,11 @@ def build_ranking(session, current_user_id: int):
                 if user.id in profiles_by_user
                 else None
             ),
+            "experience": (
+                profiles_by_user[user.id].exp
+                if user.id in profiles_by_user
+                else 0
+            ),
 
             "current_points": (
                 latest_by_user[user.id].elo_score
@@ -96,6 +101,7 @@ def build_ranking(session, current_user_id: int):
             "ranking": str(current_pos),
             "user_id": entry["user_id"],
             "name": entry["name"],
+            "experience": entry["experience"],
             "avatar_path": (
                 f"/api{entry['avatar_path']}"
                 if entry["avatar_path"]

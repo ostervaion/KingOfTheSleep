@@ -16,6 +16,7 @@ from services import (
     lobby_state,
     protocol_stats,
     today_stats,
+    get_experience,
 )
 from sockets.ws import broadcast_fetch
 from utils.security import (
@@ -56,6 +57,7 @@ def get_me(
             else None
         ),
     }
+    
 
 @router.get("/dashboard")
 async def dashboard_fake(
@@ -69,6 +71,7 @@ async def dashboard_fake(
     sleep_score = build_sleep_score(session, current_user.id, now)
     protocol_impact = build_protocol_impacts(session, current_user.id)
     lobby = lobby_state(session, current_user.id, now)
+    experience = get_experience(session, current_user.id)
     today_stats_var = today_stats(session, current_user.id, now)
     protocols = protocol_stats(session)
     return {
@@ -78,5 +81,6 @@ async def dashboard_fake(
         "protocolImpacts": protocol_impact,
         "lobby": lobby,
         "todayStats": today_stats_var,
-        "protocols": protocols
+        "protocols": protocols,
+        "experience": experience
     }

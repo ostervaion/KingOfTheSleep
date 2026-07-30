@@ -64,9 +64,25 @@ onUnmounted(() => {
       </div>
       <div>
         <div class="ml-1 hidden lg:inline">
-          <span class="ml-2 text-xs text-green-400 lg:text-xl">
-            ▲ {{ props.nextBattle.deltaRanking }}
-            <span class="text-zinc-400 text-sm">since last battle</span>
+          <span
+            class="ml-2 text-xs lg:text-xl"
+            :class="{
+              'text-green-400': props.nextBattle.deltaRanking > 0,
+              'text-red-400': props.nextBattle.deltaRanking < 0,
+              'text-zinc-400': props.nextBattle.deltaRanking === 0,
+            }"
+          >
+            <template v-if="props.nextBattle.deltaRanking > 0">
+              ▲ {{ props.nextBattle.deltaRanking }}
+            </template>
+
+            <template v-else-if="props.nextBattle.deltaRanking < 0">
+              ▼ {{ Math.abs(props.nextBattle.deltaRanking) }}
+            </template>
+
+            <template v-else> — 0 </template>
+
+            <span class="text-sm text-zinc-400"> since last battle </span>
           </span>
         </div>
       </div>
