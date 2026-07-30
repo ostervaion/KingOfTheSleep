@@ -3,7 +3,7 @@ import Character from "../Character.js";
 import BaseScene from "./BaseScene.js";
 import { watch } from "vue";
 import { useWebSocket } from "@/composables/useWebSocket";
-const { battlePaused, sendPayload } = useWebSocket();
+const { battlePaused, sendPayload, battleHit } = useWebSocket();
 let scene = null;
 let isGamePaused = false;
 
@@ -108,7 +108,7 @@ export default class GameScene extends BaseScene {
     const centerX = this.cameras.main.midPoint.x;
 
     const createStats = (score) => ({
-      hp: 100 + score * 4,
+      hp: 5000 + score * 4,
       attack: 70 + score * 0.15,
       attackSpeed: 1 + score * 0.01,
       defense: 5 + score * 0.05,
@@ -119,7 +119,7 @@ export default class GameScene extends BaseScene {
 
     this.player1 = new Character(
       usernamePlayer1,
-      Math.round(s1.hp),
+      this.playerData.hp ?? Math.round(s1.hp),
       Math.round(s1.attack),
       s1.attackSpeed,
       Math.round(s1.defense),
@@ -127,11 +127,12 @@ export default class GameScene extends BaseScene {
       this,
       -centerX * 2,
       300,
+      true,
     );
 
     this.player2 = new Character(
       usernamePlayer2,
-      Math.round(s2.hp),
+      this.opponentData.hp ?? Math.round(s2.hp),
       Math.round(s2.attack),
       s2.attackSpeed,
       Math.round(s2.defense),
@@ -139,20 +140,34 @@ export default class GameScene extends BaseScene {
       this,
       centerX * 2,
       300,
+      false,
     );
-
+    this.player1MaxHp = this.player1.hp;
+    this.player2MaxHp = this.player2.hp;
     this.player2.sprite.setFlipX(true);
   }
   create() {
     this.isGameOver = false;
     scene = this;
     this.stopWatch = watch(battlePaused, (paused) => {
-      console.log('[DEBUG] watcher disparado, paused =', paused)
+      console.log("[DEBUG] watcher disparado, paused =", paused);
       if (paused) {
         this.pauseBattle();
       } else {
         this.resumeBattle();
       }
+    });
+    this.stopHitWatch = watch(battleHit, (payload) => {
+      console.log("HIT WATCH", this.scene.isActive());
+      if (!payload) return;
+      const attackerChar =
+        this.player1.name === payload.attacker ? this.player1 : this.player2;
+      attackerChar.receiveAttack(payload.damage, payload.targetHp);
+      battleHit.value = null;
+    });
+    this.events.once(Phaser.Scenes.Events.DESTROY, () => {
+      this.stopWatch?.();
+      this.stopHitWatch?.();
     });
     this.input.mouse.disableContextMenu();
     this.attackSfx = this.sound.add("attackSfx");
@@ -272,9 +287,6 @@ export default class GameScene extends BaseScene {
     this.player1Bar = this.add.graphics();
     this.player2Bar = this.add.graphics();
 
-    this.player1MaxHp = this.player1.hp;
-    this.player2MaxHp = this.player2.hp;
-
     this.player1HpBar = this.add.graphics();
     this.player2HpBar = this.add.graphics();
 
@@ -382,6 +394,10 @@ export default class GameScene extends BaseScene {
     const range = 20;
     this.hitParticles.emitParticleAt(x, y + Phaser.Math.Between(-range, range));
   }
+  reportAttack(targetName) {
+    console.log("SENDING ATTACK", targetName);
+    sendPayload("game:attack_action", { target: targetName });
+  }
 
   spawnJewelRain() {
     const screenW = this.scale.width;
@@ -453,7 +469,7 @@ export default class GameScene extends BaseScene {
 
   gameOver(winner) {
     this.isGameOver = true;
-sendPayload("battle:end", {});
+    sendPayload("battle:end", {});
     const midX = this.scale.width / 2;
     const midY = this.scale.height / 2;
 

@@ -1,5 +1,5 @@
 import json
-
+import time
 from fastapi import WebSocket, WebSocketDisconnect
 from utils.security import verify_token
 from sqlmodel import Session
@@ -54,6 +54,14 @@ def unregister_connection(websocket: WebSocket):
         game_positions.pop(username, None)
         pending_challenges.pop(username, None)
     return username
+
+def compute_stats(score: float) -> dict:
+    return {
+        "hp": round(5000 + score * 4),
+        "attack": 70 + score * 0.15,
+        "attackSpeed": 1 + score * 0.01,
+        "defense": 5 + score * 0.05,
+    }
 
 async def notify_pending_attackers(target_username: str):
     """If someone challenged target_username and is still waiting, tell them it's off."""
@@ -128,6 +136,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         player = battle["players"][user.username]
                         opponent = battle["players"][opponent_name]
 
+                        # Restore this player's battle scene.
                         await websocket.send_text(json.dumps({
                             "type": "battle:resume",
                             "payload": {
@@ -135,8 +144,14 @@ async def websocket_endpoint(websocket: WebSocket):
                                 "opponent": opponent,
                             }
                         }))
+
+                        # Only resume combat once both players are connected.
                         if opponent_name in users:
-                            print(f"[DEBUG] mandando opponent_reconnected a {opponent_name}")
+                            battle["paused"] = False
+                            battle["last_attack"] = {}
+
+                            print(f"[DEBUG] Battle resumed: {user.username} <-> {opponent_name}")
+
                             await users[opponent_name].send_text(json.dumps({
                                 "type": "battle:opponent_reconnected"
                             }))
@@ -225,23 +240,27 @@ async def websocket_endpoint(websocket: WebSocket):
                 pending_challenges.pop(attacker, None)
 
                 if accepted:
+                    attacker_stats = compute_stats(100)
+                    sender_stats = compute_stats(1)
+
                     battle = {
                         "players": {
                             attacker: {
                                 "username": attacker,
-                                "hp": 10000,
                                 "score": 100,
                                 "attackProgress": 0,
+                                **attacker_stats,
                             },
                             sender: {
                                 "username": sender,
-                                "hp": 10000,
                                 "score": 1,
                                 "attackProgress": 0,
+                                **sender_stats,
                             },
                         },
                         "paused": False,
                         "started": True,
+                        "last_attack": {},
                     }
 
                     active_battles[attacker] = battle
@@ -270,6 +289,63 @@ async def websocket_endpoint(websocket: WebSocket):
             if msg_type == 'game:disconnect':
                 game_positions.pop(sender, None)
                 await broadcast_except(websocket, {"type": "game:disconnect", "user": sender})
+                continue
+            if msg_type == 'game:attack_action':
+                target = data.get("target")
+
+                battle = active_battles.get(sender)
+                if not battle:
+                    continue
+
+                players = battle["players"]
+
+                # El objetivo tiene que ser exactamente el rival real de ESTA batalla
+                opponent_of_sender = next((p for p in players if p != sender), None)
+                if target != opponent_of_sender:
+                    continue
+
+                attacker_stats = players.get(sender)
+                target_stats = players.get(target)
+                if not attacker_stats or not target_stats:
+                    continue
+
+                if attacker_stats["hp"] <= 0 or target_stats["hp"] <= 0:
+                    continue
+
+                if battle.get("paused"):
+                    print("[DEBUG] attack ignored because battle paused")
+                    continue
+
+                # Rate limit: no se puede atacar más rápido de lo que attackSpeed permite
+                now = time.monotonic()
+                min_interval = 1.0 / attacker_stats["attackSpeed"]
+                last = battle.setdefault("last_attack", {}).get(sender, 0)
+                if now - last < min_interval * 0.7:  # 30% de tolerancia por jitter de red
+                    continue
+                battle["last_attack"][sender] = now
+
+                # El daño se calcula SIEMPRE aquí, nunca se confía en lo que manda el cliente
+                damage = max(1, round(attacker_stats["attack"] - target_stats["defense"]))
+                target_stats["hp"] = max(0, target_stats["hp"] - damage)
+
+                hit_payload = json.dumps({
+                    "type": "battle:hit",
+                    "payload": {
+                        "attacker": sender,
+                        "target": target,
+                        "damage": damage,
+                        "targetHp": target_stats["hp"],
+                    }
+                })
+
+                # Se lo mandamos a AMBOS jugadores, incluido el propio atacante
+                for name in (sender, target):
+                    if name in users:
+                        try:
+                            await users[name].send_text(hit_payload)
+                        except Exception:
+                            pass
+
                 continue
 
     except WebSocketDisconnect:

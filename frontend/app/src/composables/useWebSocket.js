@@ -10,6 +10,7 @@ const gameError = ref(false)
 const gameEnemy = ref('')
 const gameAccepted = ref(false)
 const battlePaused = ref(false)
+const battleHit = ref(null)
 
 const chatMessages = ref([])
 const globalMessages = ref([])
@@ -128,7 +129,7 @@ export function useWebSocket() {
               if (gameEnemy.value == payload.username) {
                 sendPayload('game:response', {
                   accepted: false,
-                  target: enemy,
+                  target: payload.username,
                 })
                 gameEnemy.value = ''
               }
@@ -167,12 +168,19 @@ export function useWebSocket() {
             battlePaused.value = false
             battleResume.value = payload
             break
+          case 'battle:hit':
+            console.log("BATTLE HIT RECEIVED", payload);
+            battleHit.value = payload
+            break
           case 'battle:destroyed':
-            battlePaused.value = false;
-            battleResume.value = null;
-            break;
+            battlePaused.value = false
+            battleResume.value = null
+            break
           case 'battle:opponent_reconnected':
-            console.log('[DEBUG] llegó opponent_reconnected, battlePaused antes:', battlePaused.value)
+            console.log(
+              '[DEBUG] llegó opponent_reconnected, battlePaused antes:',
+              battlePaused.value,
+            )
             battlePaused.value = false
             break
           default:
@@ -254,5 +262,6 @@ export function useWebSocket() {
     gameAccepted,
     battlePaused,
     battleResume,
+    battleHit,
   }
 }
