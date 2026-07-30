@@ -127,7 +127,10 @@ function updateActiveMobilePage() {
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
         <div class="grid h-full min-h-0 grid-rows-2 gap-4">
           <div id="profile-mobile">
-            <Profile class="h-full min-h-0" />
+            <Profile 
+            :sleep-score="dashboard?.sleepScore"
+            :next-battle="dashboard?.nextBattle"
+            class="h-full min-h-0" />
           </div>
           <SleepScore
             id="sleep-score-mobile"
@@ -188,7 +191,11 @@ function updateActiveMobilePage() {
 
       <section class="flex flex-col gap-4 min-h-0 min-w-0">
         <div id="user-profile">
-          <Profile />
+          <Profile             
+          :sleep-score="dashboard?.sleepScore"
+          :next-battle="dashboard?.nextBattle"
+          :experience="dashboard?.experience"
+          class="h-full min-h-0" />
         </div>
         <SleepScore id="sleep-score" :sleep-score="dashboard?.sleepScore" />
         <ProtocolsImpact

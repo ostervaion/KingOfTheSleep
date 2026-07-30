@@ -56,7 +56,7 @@ function buttonClass(ranking) {
     </div>
 
     <div class="flex-1 min-h-0 overflow-y-auto">
-      <ul>
+      <ul v-if="usersRanking.length > 0">
         <rankingUser
           v-for="user in usersRanking"
           :key="user.name"
@@ -69,6 +69,9 @@ function buttonClass(ranking) {
           :profilePicture="user.avatar_path"
         />
       </ul>
+        <div v-else class="flex h-full items-center justify-center text-xs text-zinc-400">
+          No data yet
+        </div>
     </div>
   </div>
 </template>

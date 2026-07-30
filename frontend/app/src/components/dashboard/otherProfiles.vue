@@ -15,6 +15,7 @@ const props = defineProps({
       rank: '4,432',
       level: '42',
       points: '2,500',
+      experience: '0',
     }),
   },
 })
@@ -40,6 +41,19 @@ const friendButtonLabel = computed(() => {
 const friendButtonDisabled = computed(() => {
   return ['checking', 'adding', 'deleting'].includes(friendStatus.value)
 })
+
+const XP_BASE = 100
+
+const totalExperience = computed(() => {
+  return Math.max(0, Number(props.user.experience) || 0)
+})
+
+const userlevel = computed(() => {
+  return Math.floor(
+    Math.log2(totalExperience.value / XP_BASE + 1),
+  ) + 1
+})
+
 
 function onClose() {
   emit('close')
@@ -195,7 +209,7 @@ watch(
             <p class="text-xs font-medium text-neutral-400">Level</p>
 
             <p class="mt-1 text-xl font-light text-white">
-              {{ user.level }}
+              {{ userlevel }}
             </p>
           </div>
 
