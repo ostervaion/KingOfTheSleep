@@ -251,3 +251,9 @@ prod-down-volumes: ## Stop containers AND remove volumes for production (destruc
 admin: ## Creates users admin role
 	@echo -e "$(YELLOW)Creating admin user$(RESET)"
 	docker compose exec backend python3 -m utils.create_admin
+
+.PHONY: init-secrets
+init-secrets: ## Creates de necessary secret files, but empty 
+	@echo -e "$(YELLOW)Creating admin user$(RESET)"
+	@mkdir -p secrets
+	@touch secrets/postgres_password secrets/postgres_user secrets/secret_key

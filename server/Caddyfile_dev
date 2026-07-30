@@ -15,52 +15,13 @@
         reverse_proxy backend:8000
     }
 
-    # ── Frontend →{
-    order coraza_waf first
-}
-
-localhost, 127.0.0.1 {
-    tls internal
-
-    # WebSocket: /api/ws → backend:8000/ws
-    handle /api/ws {
-        uri strip_prefix /api
-        reverse_proxy backend:8000
-    }
-
-    # API REST
-    handle /api/* {
-        coraza_waf {
-            load_owasp_crs
-            directives `
-                Include @coraza.conf-recommended
-                Include @crs-setup.conf.example
-                Include @owasp_crs/*.conf
-                SecRuleEngine On
-            `
-        }
-
-        uri strip_prefix /api
-        reverse_proxy backend:8000
-    }
-
-    # Frontend
+    # ── Frontend → Vue dev server (development) ───────────────
+    #    Switch to `frontend:80` for the production nginx stage.
     handle {
-        coraza_waf {
-            load_owasp_crs
-            directives `
-                Include @coraza.conf-recommended
-                Include @crs-setup.conf.example
-                Include @owasp_crs/*.conf
-                SecRuleEngine On
-            `
-        }
-
-        root * /dist
-        try_files {path} /index.html
-        file_server
+        reverse_proxy frontend:5173
     }
 
+    # ── Logging ───────────────────────────────────────────────
     log {
         output stdout
         format console

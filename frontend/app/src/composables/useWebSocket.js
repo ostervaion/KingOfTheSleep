@@ -24,10 +24,7 @@ const unreadPrivate = ref({})
 const unreadGlobal = ref(0)
 
 const totalUnread = computed(() => {
-  const privateTotal = Object.values(unreadPrivate.value).reduce(
-    (total, count) => total + count,
-    0,
-  )
+  const privateTotal = Object.values(unreadPrivate.value).reduce((total, count) => total + count, 0)
 
   return privateTotal + unreadGlobal.value
 })
@@ -37,28 +34,20 @@ const conversations = computed(() => {
   const map = new Map()
 
   for (const message of chatMessages.value) {
-    const otherUsername =
-      message.from === myUsername.value
-        ? message.to
-        : message.from
+    const otherUsername = message.from === myUsername.value ? message.to : message.from
 
-    if (
-      !otherUsername ||
-      otherUsername === myUsername.value
-    ) {
+    if (!otherUsername || otherUsername === myUsername.value) {
       continue
     }
 
     map.set(otherUsername, message)
   }
 
-  return Array.from(map.entries()).map(
-    ([username, lastMessage]) => ({
-      username,
-      lastMessage,
-      unread: unreadPrivate.value[username] || 0,
-    }),
-  )
+  return Array.from(map.entries()).map(([username, lastMessage]) => ({
+    username,
+    lastMessage,
+    unread: unreadPrivate.value[username] || 0,
+  }))
 })
 
 export function useWebSocket() {
@@ -71,31 +60,21 @@ export function useWebSocket() {
    *
    * Caddy elimina /api y lo envía al backend como /ws.
    */
-  const wsProtocol =
-    window.location.protocol === 'https:'
-      ? 'wss:'
-      : 'ws:'
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
 
-  const API_WS_URL =
-    `${wsProtocol}//${window.location.host}/api/ws`
+  const API_WS_URL = `${wsProtocol}//${window.location.host}/api/ws`
 
   function connect() {
     // Evita abrir conexiones duplicadas si ya está conectado
     // o todavía está intentando conectar.
     if (
       ws.value &&
-      (
-        ws.value.readyState === WebSocket.OPEN ||
-        ws.value.readyState === WebSocket.CONNECTING
-      )
+      (ws.value.readyState === WebSocket.OPEN || ws.value.readyState === WebSocket.CONNECTING)
     ) {
       return
     }
 
-    console.log(
-      'Conectando WebSocket a:',
-      API_WS_URL,
-    )
+    console.log('Conectando WebSocket a:', API_WS_URL)
 
     const socket = new WebSocket(API_WS_URL)
     ws.value = socket
@@ -106,20 +85,13 @@ export function useWebSocket() {
 
       isConnected.value = true
 
-      console.log(
-        'WebSocket conectado:',
-        API_WS_URL,
-      )
+      console.log('WebSocket conectado:', API_WS_URL)
 
       // Admite ambas claves por si el login usa una u otra.
-      const token =
-        localStorage.getItem('token') ||
-        localStorage.getItem('access_token')
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token')
 
       if (!token) {
-        console.error(
-          'No se encontró ningún token para autenticar el WebSocket',
-        )
+        console.error('No se encontró ningún token para autenticar el WebSocket')
         return
       }
 
@@ -142,19 +114,13 @@ export function useWebSocket() {
             isAuthenticated.value = true
             myUsername.value = payload.username
 
-            console.log(
-              'Autenticación exitosa como:',
-              payload.username,
-            )
+            console.log('Autenticación exitosa como:', payload.username)
             break
 
           case 'auth:fail':
             isAuthenticated.value = false
 
-            console.error(
-              'Fallo en la autenticación:',
-              payload,
-            )
+            console.error('Fallo en la autenticación:', payload)
 
             disconnect()
             break
@@ -162,19 +128,11 @@ export function useWebSocket() {
           case 'chat:message':
             chatMessages.value.push(payload)
 
-            if (
-              payload.from !== myUsername.value &&
-              activeChatTarget.value !== payload.from
-            ) {
+            if (payload.from !== myUsername.value && activeChatTarget.value !== payload.from) {
               unreadPrivate.value = {
                 ...unreadPrivate.value,
 
-                [payload.from]:
-                  (
-                    unreadPrivate.value[
-                      payload.from
-                    ] || 0
-                  ) + 1,
+                [payload.from]: (unreadPrivate.value[payload.from] || 0) + 1,
               }
             }
             break
@@ -182,34 +140,24 @@ export function useWebSocket() {
           case 'chat:global':
             globalMessages.value.push(payload)
 
-            if (
-              payload.from !== myUsername.value &&
-              activeChatTarget.value !== 'global'
-            ) {
+            if (payload.from !== myUsername.value && activeChatTarget.value !== 'global') {
               unreadGlobal.value += 1
             }
             break
 
           case 'error':
-            console.warn(
-              'Error recibido del servidor:',
-              payload,
-            )
+            console.warn('Error recibido del servidor:', payload)
             break
 
           case 'presence:list':
-            onlineUsers.value = new Set(
-              payload?.online || [],
-            )
+            onlineUsers.value = new Set(payload?.online || [])
             break
 
           case 'presence:update':
             if (!payload?.username) break
 
             if (payload.online) {
-              onlineUsers.value.add(
-                payload.username,
-              )
+              onlineUsers.value.add(payload.username)
             } else {
               /*
                * Si el usuario que se desconecta era quien
@@ -217,9 +165,7 @@ export function useWebSocket() {
                *
                * Antes se utilizaba `enemy`, que no existía.
                */
-              if (
-                gameEnemy.value === payload.username
-              ) {
+              if (gameEnemy.value === payload.username) {
                 sendPayload('game:response', {
                   accepted: false,
                   target: gameEnemy.value,
@@ -228,19 +174,13 @@ export function useWebSocket() {
                 gameEnemy.value = ''
               }
 
-              onlineUsers.value.delete(
-                payload.username,
-              )
+              onlineUsers.value.delete(payload.username)
 
-              delete lobbyPlayers.value[
-                payload.username
-              ]
+              delete lobbyPlayers.value[payload.username]
             }
 
             // Nueva referencia para que Vue detecte el cambio.
-            onlineUsers.value = new Set(
-              onlineUsers.value,
-            )
+            onlineUsers.value = new Set(onlineUsers.value)
 
             // Nueva referencia para actualizar el lobby.
             lobbyPlayers.value = {
@@ -259,10 +199,7 @@ export function useWebSocket() {
             lobbyPlayers.value = {
               ...lobbyPlayers.value,
 
-              [response.username]: [
-                response.x,
-                response.y,
-              ],
+              [response.username]: [response.x, response.y],
             }
             break
 
@@ -278,15 +215,11 @@ export function useWebSocket() {
 
           case 'game:game_petition':
             gameError.value = false
-            gameEnemy.value =
-              payload?.enemy || ''
+            gameEnemy.value = payload?.enemy || ''
             break
 
           case 'game:answer':
-            console.log(
-              'game:answer',
-              response,
-            )
+            console.log('game:answer', response)
 
             if (response.response) {
               gameAccepted.value = true
@@ -300,9 +233,7 @@ export function useWebSocket() {
           case 'game:disconnect':
             if (!response.user) break
 
-            delete lobbyPlayers.value[
-              response.user
-            ]
+            delete lobbyPlayers.value[response.user]
 
             lobbyPlayers.value = {
               ...lobbyPlayers.value,
@@ -324,33 +255,21 @@ export function useWebSocket() {
             break
 
           case 'battle:opponent_reconnected':
-            console.log(
-              '[DEBUG] opponent_reconnected',
-            )
+            console.log('[DEBUG] opponent_reconnected')
 
             battlePaused.value = false
             break
 
           default:
-            console.log(
-              'Mensaje WebSocket no controlado:',
-              response,
-            )
+            console.log('Mensaje WebSocket no controlado:', response)
         }
       } catch (error) {
-        console.error(
-          'No se pudo procesar el mensaje WebSocket:',
-          error,
-          event.data,
-        )
+        console.error('No se pudo procesar el mensaje WebSocket:', error, event.data)
       }
     }
 
     socket.onerror = (error) => {
-      console.error(
-        'Error en el WebSocket:',
-        error,
-      )
+      console.error('Error en el WebSocket:', error)
     }
 
     socket.onclose = (event) => {
@@ -364,14 +283,11 @@ export function useWebSocket() {
       isAuthenticated.value = false
       ws.value = null
 
-      console.log(
-        'Conexión WebSocket cerrada:',
-        {
-          code: event.code,
-          reason: event.reason,
-          clean: event.wasClean,
-        },
-      )
+      console.log('Conexión WebSocket cerrada:', {
+        code: event.code,
+        reason: event.reason,
+        clean: event.wasClean,
+      })
     }
   }
 
@@ -384,14 +300,8 @@ export function useWebSocket() {
      * Solo se puede enviar close cuando está conectado
      * o intentando conectar.
      */
-    if (
-      socket.readyState === WebSocket.OPEN ||
-      socket.readyState === WebSocket.CONNECTING
-    ) {
-      socket.close(
-        1000,
-        'Cierre controlado por el usuario',
-      )
+    if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
+      socket.close(1000, 'Cierre controlado por el usuario')
     }
 
     if (ws.value === socket) {
@@ -411,10 +321,7 @@ export function useWebSocket() {
       return
     }
 
-    if (
-      target &&
-      unreadPrivate.value[target]
-    ) {
+    if (target && unreadPrivate.value[target]) {
       const nextUnread = {
         ...unreadPrivate.value,
       }
@@ -425,13 +332,8 @@ export function useWebSocket() {
   }
 
   function sendPayload(type, data = {}) {
-    if (
-      !ws.value ||
-      ws.value.readyState !== WebSocket.OPEN
-    ) {
-      console.warn(
-        'No se puede enviar el mensaje: el WebSocket está cerrado',
-      )
+    if (!ws.value || ws.value.readyState !== WebSocket.OPEN) {
+      console.warn('No se puede enviar el mensaje: el WebSocket está cerrado')
 
       return false
     }

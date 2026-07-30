@@ -1,5 +1,6 @@
 {
     order coraza_waf first
+    order rate_limit before reverse_proxy
 }
 
 localhost, 127.0.0.1 {
@@ -13,6 +14,13 @@ localhost, 127.0.0.1 {
 
     # API REST
     handle /api/* {
+        rate_limit {
+            zone api_zone {
+                key {remote_host}
+                events 30
+                window 1m
+            }
+        }
         coraza_waf {
             load_owasp_crs
             directives `
@@ -29,6 +37,13 @@ localhost, 127.0.0.1 {
 
     # Frontend
     handle {
+        rate_limit {
+            zone static_zone {
+                key {remote_host}
+                events 100
+                window 1m
+            }
+        }
         coraza_waf {
             load_owasp_crs
             directives `
