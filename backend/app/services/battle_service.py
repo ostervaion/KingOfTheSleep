@@ -95,7 +95,31 @@ def getElo(id: int) :
             ScoreHistory.user_id == id
         )).last()
 
+    if user is None :
+        return 400
+
     return(user.elo_score)
+
+def gainExperience(id: int, session: Session) :
+    user = session.exec(select(UserProfile).where(
+        UserProfile.user_id == id
+    ))
+    if user is None :
+        return
+    user.exp += 10
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+def editElo(id: int, raiting: int, session: Session) :
+    elo = ScoreHistory(
+        user_id = id, 
+        elo_score = raiting
+	)
+
+    session.add(elo)
+    session.commit()
+    session.refresh(elo)
 
 def record_combat(
     idA: int,
@@ -145,37 +169,9 @@ def record_combat(
         newRaitingA = ratingA + 10 * (sA - expectedA)
         newRaitingB = ratingB + 10 * (sB - expectedB)
 
-        eloA = ScoreHistory(
-            user_id = idA,
-            elo_score = newRaitingA,
-        )
+        editElo(idA, newRaitingA, session)
+        editElo(idB, newRaitingB, session)
 
-        session.add(eloA)
-        session.commit()
-        session.refresh(eloA)
-
-        eloB = ScoreHistory(
-            user_id = idB,
-            elo_score = newRaitingB,
-        )
-
-        session.add(eloB)
-        session.commit()
-        session.refresh(eloB)
-
-        expA = session.exec(select(UserProfile).where(
-            UserProfile.user_id == idA
-        ))
-        expA.exp += 10
-        session.add(expA)
-        session.commit()
-        session.refresh(expA)
-
-        expB = session.exec(select(UserProfile).where(
-            UserProfile.user_id == idB
-        ))
-        expB.exp += 10
-        session.add(expB)
-        session.commit()
-        session.refresh(expB)
+        gainExperience(idA, session)
+        gainExperience(idB, session)
 
