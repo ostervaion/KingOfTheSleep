@@ -22,3 +22,6 @@ frontend/app/.pnpm-store/
 .DS_Store
 Thumbs.db
 .vscode
+
+# Backup
+backup.sql

@@ -359,16 +359,8 @@ async function onSaveChanges() {
           </div>
         </div>
 
-        <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          <button
-            @click="onChangePicture"
-            class="rounded-md bg-(--kots-background-color) px-3 py-2 text-xs font-medium text-white transition hover:bg-white/10"
-          >
-            Change Picture
-          </button>
-        </div>
         <!-- Formulario -->
-        <form class="space-y-4" @submit.prevent="onSaveChanges">
+        <form class="mt-6 space-y-4" @submit.prevent="onSaveChanges">
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <label class="block">
               <span class="mb-1.5 block text-xs font-medium text-neutral-400"> Username </span>
@@ -449,7 +441,9 @@ async function onSaveChanges() {
             {{ saveError }}
           </p>
 
-          <p v-if="saveSuccess" class="text-xs text-emerald-400">Changes saved successfully</p>
+          <p v-if="saveSuccess" class="text-xs text-green-400 text-end">
+            Changes saved successfully
+          </p>
         </form>
       </template>
 

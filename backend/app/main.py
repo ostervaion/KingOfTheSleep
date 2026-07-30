@@ -11,7 +11,6 @@ from core.database import create_db_and_tables
 from schedules.battle_scheduler import battle_scheduler
 from sockets.ws import websocket_endpoint
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import Chat from '@/components/Chat.vue'
 import ChatIcon from '@/assets/chat-icon_white.svg'
 import api from '@/api/api'
@@ -15,13 +15,15 @@ const props = defineProps({
       rank: '4,432',
       level: '42',
       points: '2,500',
+      experience: '0',
     }),
   },
 })
 
 const selectedUser = ref(null)
-
 const friendStatus = ref('checking')
+
+let friendshipRequestId = 0
 
 const friendButtonLabel = computed(() => {
   const labels = {
@@ -41,6 +43,16 @@ const friendButtonDisabled = computed(() => {
   return ['checking', 'adding', 'deleting'].includes(friendStatus.value)
 })
 
+const XP_BASE = 100
+
+const totalExperience = computed(() => {
+  return Math.max(0, Number(props.user.experience) || 0)
+})
+
+const userlevel = computed(() => {
+  return Math.floor(Math.log2(totalExperience.value / XP_BASE + 1)) + 1
+})
+
 function onClose() {
   emit('close')
 }
@@ -55,24 +67,30 @@ function getEncodedUsername() {
 }
 
 async function checkFriendship() {
-  if (!props.user?.username) {
+  const username = props.user?.username
+
+  if (!username || username === 'Enemy Player') {
     friendStatus.value = 'notFriend'
     return
   }
 
+  const requestId = ++friendshipRequestId
   friendStatus.value = 'checking'
 
   try {
     const { data } = await api.get('/friends')
 
+    if (requestId !== friendshipRequestId) return
+
     const usernames = Array.isArray(data)
       ? data.map((friend) => (typeof friend === 'string' ? friend : friend.username))
       : []
 
-    friendStatus.value = usernames.includes(props.user.username) ? 'friend' : 'notFriend'
+    friendStatus.value = usernames.includes(username) ? 'friend' : 'notFriend'
   } catch (err) {
-    console.error('No se pudo comprobar la lista de amigos:', err)
+    if (requestId !== friendshipRequestId) return
 
+    console.error('No se pudo comprobar la lista de amigos:', err)
     friendStatus.value = 'notFriend'
   }
 }
@@ -101,7 +119,6 @@ async function deleteFriend() {
 
   try {
     await api.delete(`/friends/${getEncodedUsername()}`)
-
     friendStatus.value = 'notFriend'
   } catch (err) {
     const detail = err.response?.data?.detail
@@ -127,16 +144,13 @@ async function toggleFriend() {
   await addFriend()
 }
 
-onMounted(() => {
-  checkFriendship()
-})
-
 watch(
-  () => props.user.username,
+  () => props.user?.username,
   () => {
     selectedUser.value = null
     checkFriendship()
   },
+  { immediate: true },
 )
 </script>
 
@@ -187,21 +201,18 @@ watch(
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div class="rounded-lg bg-[var(--kots-background-color)] px-4 py-3 text-center">
             <p class="text-xs font-medium text-neutral-400">Rank</p>
-
             <p class="mt-1 text-xl font-light text-white">#{{ user.rank }}</p>
           </div>
 
           <div class="rounded-lg bg-[var(--kots-background-color)] px-4 py-3 text-center">
             <p class="text-xs font-medium text-neutral-400">Level</p>
-
             <p class="mt-1 text-xl font-light text-white">
-              {{ user.level }}
+              {{ userlevel }}
             </p>
           </div>
 
           <div class="rounded-lg bg-[var(--kots-background-color)] px-4 py-3 text-center">
             <p class="text-xs font-medium text-neutral-400">Points</p>
-
             <p class="mt-1 text-xl font-light text-white">
               {{ user.points }}
             </p>
@@ -213,7 +224,7 @@ watch(
             type="button"
             :disabled="friendButtonDisabled"
             :class="[
-              'flex h-full w-full items-center justify-center  rounded-md px-4 py-2.5 text-xs font-semibold transition',
+              'flex h-full w-full items-center justify-center rounded-md px-4 py-2.5 text-xs font-semibold transition',
               friendStatus === 'friend' || friendStatus === 'deleting'
                 ? 'bg-red-300 text-[#171715] hover:bg-red-200'
                 : friendStatus === 'deleteError' || friendStatus === 'addError'
@@ -225,14 +236,14 @@ watch(
           >
             {{ friendButtonLabel }}
           </button>
+
           <button
             type="button"
             class="flex items-center justify-center gap-2 rounded-md bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
             @click="onChat"
           >
             <ChatIcon class="h-4 w-4 shrink-0" />
-
-            <span> Chat </span>
+            <span>Chat</span>
           </button>
         </div>
       </div>
