@@ -1,38 +1,17 @@
 <script setup>
-import { ref, onMounted, computed, markRaw} from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { ref, computed, markRaw, watchEffect } from 'vue'
 import LogOut from '@/components/dashboard/logOut.vue'
 import ProfileSettings from '@/components/dashboard/profileSettings.vue'
 import TutorialCompletedIcon from '@/assets/tutorial-completed-v2.svg'
 import FirstVictoryFightIcon from '@/assets/achievement-v2.svg'
 import First100PointsIcon from '@/assets/first-100-points-v2.svg'
 
-const achievements = ref({
-  tutorialCompleted: {
-    unlocked: true,
-    icon: markRaw(TutorialCompletedIcon),
-  },
-  firstSleepFight: {
-    unlocked: false,
-    icon: markRaw(FirstVictoryFightIcon),
-  },
-  first100Points: {
-    unlocked: false,
-    icon: markRaw(First100PointsIcon),
-  },
-})
-
-
-var usersData = ref({
-  rank: '',
-  level: '',
-  xp: '',
-  nextxp: '',
-  todaysSleepScore: '',
-})
-
 const props = defineProps({
+  experience: {
+    type: Number,
+    default: 0,
+  },
+
   sleepScore: {
     type: Object,
     default: () => ({
@@ -40,56 +19,116 @@ const props = defineProps({
       scores: [],
     }),
   },
-    nextBattle: {
+
+  nextBattle: {
     type: Object,
-    default: null,
+    default: () => ({
+      currentRanking: 0,
+      seconds: 0,
+      endDay: 0,
+      deltaRanking: 0,
+    }),
   },
-}
-)
+})
+
+const achievements = ref({
+  tutorialCompleted: {
+    unlocked: true,
+    icon: markRaw(TutorialCompletedIcon),
+  },
+
+  firstSleepFight: {
+    unlocked: false,
+    icon: markRaw(FirstVictoryFightIcon),
+  },
+
+  first100Points: {
+    unlocked: false,
+    icon: markRaw(First100PointsIcon),
+  },
+})
+
+const XP_BASE = 100
+
+const totalExperience = computed(() => {
+  return Math.max(0, Number(props.experience) || 0)
+})
+
+const level = computed(() => {
+  return Math.floor(
+    Math.log2(totalExperience.value / XP_BASE + 1),
+  ) + 1
+})
+
+const currentLevelXP = computed(() => {
+  return XP_BASE * (2 ** (level.value - 1) - 1)
+})
+
+const nextLevelXP = computed(() => {
+  return XP_BASE * (2 ** level.value - 1)
+})
+
+const xpProgress = computed(() => {
+  const earnedThisLevel =
+    totalExperience.value - currentLevelXP.value
+
+  const requiredThisLevel =
+    nextLevelXP.value - currentLevelXP.value
+
+  if (requiredThisLevel <= 0) {
+    return 0
+  }
+
+  const progress =
+    (earnedThisLevel / requiredThisLevel) * 100
+
+  return Math.min(100, Math.max(0, progress))
+})
 
 const sleepScoreValue = computed(() => {
   const scores = props.sleepScore?.scores ?? []
-  return scores.length ? Math.round(scores.at(-1)) : 0
-})
 
-usersData.value = {
-    level: '42',
-    currentxp: 18450,
-    nextxp: 25000,
-    todaysSleepScore: sleepScoreValue.value,
+  if (!Array.isArray(scores) || scores.length === 0) {
+    return 0
   }
 
+  return Math.round(Number(scores.at(-1)) || 0)
+})
+
+const usersData = computed(() => ({
+  rank: props.nextBattle.currentRanking,
+  level: level.value,
+  currentxp: totalExperience.value,
+  nextxp: nextLevelXP.value,
+  todaysSleepScore: sleepScoreValue.value,
+}))
+
+watchEffect(() => {
+  achievements.value.firstSleepFight.unlocked =
+    totalExperience.value > 0
+
+  achievements.value.first100Points.unlocked =
+    totalExperience.value >= 100
+})
 
 const dialog = ref(null)
 const dialog_settings = ref(null)
 
 function openDialog() {
-  dialog.value.showModal()
+  dialog.value?.showModal()
 }
 
 function closeDialog() {
-  dialog.value.close()
+  dialog.value?.close()
 }
 
 function openDialogSettings() {
-  dialog_settings.value.showModal()
+  dialog_settings.value?.showModal()
 }
 
 function closeDialogSettings() {
-  dialog_settings.value.close()
+  dialog_settings.value?.close()
 }
-
-onMounted(() => {
-
-  if (usersData.value.currentxp !== 0) {
-    achievements.value.firstSleepFight.unlocked = true
-  }
-
-  if (usersData.value.currentxp >= 100) {
-    achievements.value.first100Points.unlocked = true
-  }
-})
-
 </script>
 <template>
   <div
@@ -129,7 +168,7 @@ onMounted(() => {
         <div class="flex justify-items-start">
           <div class="pr-7">
             <p class="text-xs font-medium tracking-wide text-body text-zinc-400">rank</p>
-            <p class="mb-4 text-xl font-light leading-tight text-white">4</p>
+            <p class="mb-4 text-xl font-light leading-tight text-white"> {{ usersData.rank }}</p>
           </div>
           <div>
             <p class="text-xs font-medium tracking-wide text-body text-zinc-400">achievements</p>
@@ -150,7 +189,10 @@ onMounted(() => {
         <p class="mb-2 text-xl font-light leading-tight text-white">{{ usersData.level }}</p>
 
         <div class="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-neutral-800">
-          <div class="h-full w-[74%] rounded-full bg-yellow-400"></div>
+          <div
+            class="h-full rounded-full bg-yellow-400 transition-all duration-500"
+            :style="{ width: `${xpProgress}%` }"
+          ></div>
         </div>
 
         <p class="text-xs font-light text-neutral-300">

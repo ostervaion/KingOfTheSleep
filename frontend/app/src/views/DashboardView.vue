@@ -194,6 +194,7 @@ function updateActiveMobilePage() {
           <Profile             
           :sleep-score="dashboard?.sleepScore"
           :next-battle="dashboard?.nextBattle"
+          :experience="dashboard?.experience"
           class="h-full min-h-0" />
         </div>
         <SleepScore id="sleep-score" :sleep-score="dashboard?.sleepScore" />
