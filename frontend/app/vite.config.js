@@ -19,9 +19,6 @@ export default defineConfig({
     outDir: '/dist',
     emptyOutDir: true
   },
-  server: {
-  allowedHosts: true,
-},
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -31,5 +28,7 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     strictPort: true,
+        host: true,
+    allowedHosts: true
   },
 })

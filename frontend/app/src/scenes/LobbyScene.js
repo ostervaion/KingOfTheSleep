@@ -169,9 +169,9 @@ export default class LobbyScene extends BaseScene {
   create() {
     scene = this
     this.players = {}
-      this.bg = this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, 'lobbyBG')
-  this.bg.setOrigin(0, 0)
-  this.bg.setDepth(-1)
+    this.bg = this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, 'lobbyBG')
+    this.bg.setOrigin(0, 0)
+    this.bg.setDepth(-1)
     this.stopResumeWatcher = watch(
       battleResume,
       (data) => {

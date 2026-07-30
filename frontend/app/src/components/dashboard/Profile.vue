@@ -8,8 +8,8 @@ import First100PointsIcon from '@/assets/first-100-points-v2.svg'
 
 const props = defineProps({
   experience: {
-    type: Number,
-    default: 0,
+    type: String,
+    default: '0',
   },
 
   sleepScore: {

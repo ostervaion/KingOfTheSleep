@@ -49,7 +49,6 @@ onMounted(() => {
 onUnmounted(() => {
   game?.destroy(true)
   game = null
-  scene = null
 })
 </script>
 
