@@ -1,11 +1,11 @@
-import Phaser, { LEFT } from "phaser";
-import Character from "../Character.js";
-import BaseScene from "./BaseScene.js";
-import { watch } from "vue";
-import { useWebSocket } from "@/composables/useWebSocket";
-const { battlePaused, sendPayload, battleHit } = useWebSocket();
-let scene = null;
-let isGamePaused = false;
+import Phaser, { LEFT } from 'phaser'
+import Character from '../Character.js'
+import BaseScene from './BaseScene.js'
+import { watch } from 'vue'
+import { useWebSocket } from '@/composables/useWebSocket'
+const { battlePaused, sendPayload, battleHit, battleOpponentReconnected } = useWebSocket()
+let scene = null
+let isGamePaused = false
 
 export default class GameScene extends BaseScene {
   constructor() {
@@ -14,6 +14,7 @@ export default class GameScene extends BaseScene {
   init(data) {
     this.playerData = data.player
     this.opponentData = data.opponent
+    this.isReconnect = !!data.reconnect
   }
   preload() {
     this.load.audio('moveSfx', 'gameAssets/move.ogg')
@@ -120,7 +121,7 @@ export default class GameScene extends BaseScene {
       -centerX * 2,
       300,
       true,
-    );
+    )
 
     this.player2 = new Character(
       usernamePlayer2,
@@ -133,38 +134,42 @@ export default class GameScene extends BaseScene {
       centerX * 2,
       300,
       false,
-    );
-this.player1MaxHp = Math.round(s1.hp);
-this.player2MaxHp = Math.round(s2.hp);
-    this.player2.sprite.setFlipX(true);
+    )
+    this.player1MaxHp = Math.round(s1.hp)
+    this.player2MaxHp = Math.round(s2.hp)
+    this.player2.sprite.setFlipX(true)
   }
   create() {
     this.isGameOver = false
     scene = this
+    this.isGamePaused = this.isReconnect
     this.stopWatch = watch(battlePaused, (paused) => {
-      console.log("[DEBUG] watcher disparado, paused =", paused);
+      console.log('[DEBUG] watcher disparado, paused =', paused)
       if (paused) {
         this.pauseBattle()
       } else {
         this.resumeBattle()
       }
-    });
+    }) 
     this.stopHitWatch = watch(battleHit, (payload) => {
-      console.log("HIT WATCH", this.scene.isActive());
-      if (!payload) return;
-      const attackerChar =
-        this.player1.name === payload.attacker ? this.player1 : this.player2;
-      attackerChar.receiveAttack(payload.damage, payload.targetHp);
-      battleHit.value = null;
-    });
+      console.log('HIT WATCH', this.scene.isActive())
+      if (!payload) return
+      const attackerChar = this.player1.name === payload.attacker ? this.player1 : this.player2
+      attackerChar.receiveAttack(payload.damage, payload.targetHp)
+      battleHit.value = null
+    })
+    this.stopReconnectWatch = watch(battleOpponentReconnected, () => {
+      this.resumeBattle()
+    })
     this.events.once(Phaser.Scenes.Events.DESTROY, () => {
-      this.stopWatch?.();
-      this.stopHitWatch?.();
-    });
-    this.input.mouse.disableContextMenu();
-    this.attackSfx = this.sound.add("attackSfx");
-    this.lastHitSfx = this.sound.add("lastHitSfx");
-    this.moveSfx = this.sound.add("moveSfx", {
+      this.stopWatch?.()
+      this.stopHitWatch?.()
+      this.stopReconnectWatch?.()
+    })
+    this.input.mouse.disableContextMenu()
+    this.attackSfx = this.sound.add('attackSfx')
+    this.lastHitSfx = this.sound.add('lastHitSfx')
+    this.moveSfx = this.sound.add('moveSfx', {
       loop: true,
     })
     if (!this.anims.exists('idle')) {
@@ -279,9 +284,9 @@ this.player2MaxHp = Math.round(s2.hp);
     this.player1Bar = this.add.graphics()
     this.player2Bar = this.add.graphics()
 
-    this.player1HpBar = this.add.graphics();
-    this.player2HpBar = this.add.graphics();
-
+    this.player1HpBar = this.add.graphics()
+    this.player2HpBar = this.add.graphics()
+    this.drawBars()
     this.player1NameText = this.add
       .text(margin, 75, this.player1.name, {
         fontSize: '16px',
@@ -373,6 +378,12 @@ this.player2MaxHp = Math.round(s2.hp);
         this.player1.setTarget(this.player2)
         this.player2.setTarget(this.player1)
         this.moveSfx.stop()
+        if (this.isReconnect) {
+          sendPayload('game:ready')
+          // stay paused until server confirms via battle:opponent_reconnected
+        } else {
+          this.isGamePaused = false
+        }
       },
     })
     this.input.on('pointerdown', (pointer) => {
@@ -387,8 +398,8 @@ this.player2MaxHp = Math.round(s2.hp);
     this.hitParticles.emitParticleAt(x, y + Phaser.Math.Between(-range, range))
   }
   reportAttack(targetName) {
-    console.log("SENDING ATTACK", targetName);
-    sendPayload("game:attack_action", { target: targetName });
+    console.log('SENDING ATTACK', targetName)
+    sendPayload('game:attack_action', { target: targetName })
   }
 
   spawnJewelRain() {
@@ -454,10 +465,10 @@ this.player2MaxHp = Math.round(s2.hp);
   }
 
   gameOver(winner) {
-    this.isGameOver = true;
-    sendPayload("battle:end", {});
-    const midX = this.scale.width / 2;
-    const midY = this.scale.height / 2;
+    this.isGameOver = true
+    sendPayload('battle:end', {})
+    const midX = this.scale.width / 2
+    const midY = this.scale.height / 2
 
     const overlay = this.add.rectangle(
       midX,
@@ -534,16 +545,25 @@ this.player2MaxHp = Math.round(s2.hp);
   }
 
   update(time, delta) {
-    if (this.isGamePaused || this.isGameOver || this.player1.hp <= 0) return
+    if (this.isGameOver) return
+
+    // Always keep the UI in sync, even while paused/reconnecting
+    this.drawBars()
+
+    if (this.isGamePaused || this.player1.hp <= 0) return
 
     this.player1.update(delta)
     this.player2.update(delta)
 
+    this.player1NameText.setPosition(20, 75)
+    this.player2NameText.setPosition(this.scale.width - 20, 75)
+  }
+
+  drawBars() {
     const screenW = this.scale.width
     const margin = 20
     const hpBarWidth = 140
     const atkBarWidth = 96
-
     const hpY = 86
     const atkY = 110
 
@@ -555,8 +575,5 @@ this.player2MaxHp = Math.round(s2.hp);
 
     const player2AtkX = screenW - margin - atkBarWidth - 12
     this.drawAttackBar(this.player2Bar, player2AtkX, atkY, this.player2.attackProgress, true)
-
-    this.player1NameText.setPosition(margin, 75)
-    this.player2NameText.setPosition(screenW - margin, 75)
   }
 }

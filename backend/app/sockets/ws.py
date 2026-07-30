@@ -128,33 +128,14 @@ async def websocket_endpoint(websocket: WebSocket):
                     battle = active_battles.get(user.username)
 
                     if battle:
-                        opponent_name = next(
-                            p for p in battle["players"]
-                            if p != user.username
-                        )
-
+                        opponent_name = next(p for p in battle["players"] if p != user.username)
                         player = battle["players"][user.username]
                         opponent = battle["players"][opponent_name]
 
-                        # Restore this player's battle scene.
                         await websocket.send_text(json.dumps({
                             "type": "battle:resume",
-                            "payload": {
-                                "player": player,
-                                "opponent": opponent,
-                            }
+                            "payload": {"player": player, "opponent": opponent}
                         }))
-
-                        # Only resume combat once both players are connected.
-                        if opponent_name in users:
-                            battle["paused"] = False
-                            battle["last_attack"] = {}
-
-                            print(f"[DEBUG] Battle resumed: {user.username} <-> {opponent_name}")
-
-                            await users[opponent_name].send_text(json.dumps({
-                                "type": "battle:opponent_reconnected"
-                            }))
                     await websocket.send_text(json.dumps({
                         "type": "auth:success",
                         "payload": {"username": user.username}
@@ -289,6 +270,23 @@ async def websocket_endpoint(websocket: WebSocket):
             if msg_type == 'game:disconnect':
                 game_positions.pop(sender, None)
                 await broadcast_except(websocket, {"type": "game:disconnect", "user": sender})
+                continue
+            if msg_type == 'game:ready':
+                battle = active_battles.get(sender)
+                if not battle:
+                    continue
+
+                opponent_name = next((p for p in battle["players"] if p != sender), None)
+
+                # only resume once the OTHER player is actually connected
+                if opponent_name in users:
+                    battle["paused"] = False
+                    battle["last_attack"] = {}
+
+                    # tell the reconnecting client it can start
+                    await websocket.send_text(json.dumps({"type": "battle:opponent_reconnected"}))
+                    # tell the other client too, in case they were paused/waiting
+                    await users[opponent_name].send_text(json.dumps({"type": "battle:opponent_reconnected"}))
                 continue
             if msg_type == 'game:attack_action':
                 target = data.get("target")
