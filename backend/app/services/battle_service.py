@@ -5,6 +5,7 @@ from sqlmodel import select
 from math import exp, ceil
 from fastapi import HTTPException, Depends
 from core.database import get_session
+from datetime import timezone
 
 from schedules.battle_scheduler import (
     get_time_until_next_battle,
@@ -46,7 +47,7 @@ def lobby_state(session, current_user_id: int, now: datetime) -> bool:
 
 
 def getStats(id: int, session=Depends(get_session)):
-    today = now.date()
+    today = datetime.now(timezone.utc).date()
     user = session.exec(select(SleepData).where(
         SleepData.user_id == id,
         SleepData.created_at == today

@@ -1,5 +1,10 @@
 import asyncio
 from datetime import datetime, timedelta, timezone
+from models import SleepData
+from core.database import get_session
+from fastapi import Depends
+from sqlmodel import select
+from collections import defaultdict
 
 # Variables globales para configuración del scheduler
 BATTLE_INTERVAL_MINUTES = 120  # Intervalo por defecto: 2 horas
@@ -26,15 +31,62 @@ class BattleSchedule:
 
 _battle_queue: list[BattleSchedule] = []
 
+# --- Matchmaking ---
+today_battles = defaultdict(set)
+today = None
+battles_per_interval = 5
 
-async def start_battle():
+def _make_pairs(entries: list[SleepData]) -> list[tuple[SleepData, SleepData]]:
     """
-    Función dummy que será llamada cuando llegue la hora de ejecutar una batalla.
-    Reemplaza esta función con la lógica real de batalla cuando esté lista.
+    Empareja entradas de dos en dos.
     """
-    print(f"⚔️  ¡BATALLA INICIADA! - {datetime.now(timezone.utc)}")
-    # Aquí irá la lógica real de batalla
-    # await run_battle()
+    global today_battles
+    counts = defaultdict(int)
+    pairs: list[tuple[SleepData, SleepData]] = []
+
+    for i in range(0, len(entries) - 1) :
+        available = [e for e in entries if counts[e] < battles_per_interval and e.username != entries[i].username]
+        for j in range(0, len(available)) :
+            if (available[j].username in today_battles[entries[i].username]) :
+                continue
+            counts[entries[i]] += 1
+            counts[available[j]] += 1
+            today_battles[entries[i].username].add(available[j].username)
+            today_battles[available[j].username].add(entries[i].username)
+            pairs.append((entries[i], available[j]))
+            if (counts[entries[i]] >= 5) :
+                break
+
+    return pairs
+
+
+async def start_battle(session=Depends(get_session)):
+    """
+    Toma las entradas registradas para el día, las empareja de dos en dos
+    teniendo en cuenta combates previosy ejecuta un combate por cada pareja.
+    """
+    key = datetime.now(timezone.utc).date()
+    start_of_day = datetime.combine(key, datetime.min.time())
+    end_of_day = start_of_day + timedelta(days=1)
+    global today
+
+    if today is None or key != today :
+        today_battles.clear()
+        today = key
+
+    sleepers = session.exec(select(SleepData).where(
+        SleepData.created_at >= start_of_day,
+        SleepData.created_at < end_of_day,
+    )).all()
+
+    if len(sleepers) < 2:
+        print(f"⚠️  Matchmaking {key}: only {len(sleepers)} entries, not enough")
+        return
+
+    pairs = _make_pairs(sleepers)
+
+    for p1, p2 in pairs:
+        print(f"   🥊 {p1.username}  vs  {p2.username}") #Llamada de ws?
 
 
 def _update_next_battle_time():
