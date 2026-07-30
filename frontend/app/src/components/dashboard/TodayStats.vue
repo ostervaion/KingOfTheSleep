@@ -40,7 +40,7 @@ const winRateColor = computed(() => {
   if (summary.value.winRate > 51) {
     return 'text-green-400 border-green-400'
   }
-    if (summary.value.winRate == 50) {
+  if (summary.value.winRate == 50) {
     return 'text-yellow-400 border-yellow-400'
   }
   if (summary.value.winRate < 50) {
@@ -148,14 +148,14 @@ function closeDialog() {
         </div>
       </div>
     </div>
-      <Teleport to="body">
-    <dialog
-      ref="dialog"
-      class="m-auto max-w-5xl overflow-y-auto rounded-xl border-none bg-transparent p-0 backdrop:bg-black/60 sm:w-[90vw] lg:w-[50vw]"
-    >
-      <BattleLog ref="battleLogRef" :summary="summary" @close="closeDialog" />
-    </dialog>
-  </Teleport>
+    <Teleport to="body">
+      <dialog
+        ref="dialog"
+        class="m-auto max-w-5xl overflow-y-auto rounded-xl border-none bg-transparent p-0 backdrop:bg-black/60 sm:w-[90vw] lg:w-[50vw]"
+      >
+        <BattleLog ref="battleLogRef" :summary="summary" @close="closeDialog" />
+      </dialog>
+    </Teleport>
   </div>
 </template>
 

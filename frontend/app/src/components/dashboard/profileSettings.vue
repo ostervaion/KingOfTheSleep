@@ -360,7 +360,7 @@ async function onSaveChanges() {
         </div>
 
         <!-- Formulario -->
-        <form class=" mt-6 space-y-4" @submit.prevent="onSaveChanges">
+        <form class="mt-6 space-y-4" @submit.prevent="onSaveChanges">
           <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <label class="block">
               <span class="mb-1.5 block text-xs font-medium text-neutral-400"> Username </span>
@@ -441,7 +441,9 @@ async function onSaveChanges() {
             {{ saveError }}
           </p>
 
-          <p v-if="saveSuccess" class="text-xs text-green-400 text-end">Changes saved successfully</p>
+          <p v-if="saveSuccess" class="text-xs text-green-400 text-end">
+            Changes saved successfully
+          </p>
         </form>
       </template>
 

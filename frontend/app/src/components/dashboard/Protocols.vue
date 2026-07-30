@@ -94,8 +94,8 @@ function buttonClass(ranking) {
           :winrate="protocolup.winrate"
         />
       </ul>
-        <div v-else class="flex h-full items-center justify-center text-xs text-zinc-400">
-          No data yet
+      <div v-else class="flex h-full items-center justify-center text-xs text-zinc-400">
+        No data yet
       </div>
     </div>
     <div
@@ -121,8 +121,8 @@ function buttonClass(ranking) {
           :winrate="protocoldown.winrate"
         />
       </ul>
-        <div v-else class="flex h-full items-center justify-center text-xs text-zinc-400">
-          No data yet
+      <div v-else class="flex h-full items-center justify-center text-xs text-zinc-400">
+        No data yet
       </div>
     </div>
   </div>

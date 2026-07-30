@@ -55,9 +55,7 @@ const totalExperience = computed(() => {
 })
 
 const level = computed(() => {
-  return Math.floor(
-    Math.log2(totalExperience.value / XP_BASE + 1),
-  ) + 1
+  return Math.floor(Math.log2(totalExperience.value / XP_BASE + 1)) + 1
 })
 
 const currentLevelXP = computed(() => {
@@ -69,18 +67,15 @@ const nextLevelXP = computed(() => {
 })
 
 const xpProgress = computed(() => {
-  const earnedThisLevel =
-    totalExperience.value - currentLevelXP.value
+  const earnedThisLevel = totalExperience.value - currentLevelXP.value
 
-  const requiredThisLevel =
-    nextLevelXP.value - currentLevelXP.value
+  const requiredThisLevel = nextLevelXP.value - currentLevelXP.value
 
   if (requiredThisLevel <= 0) {
     return 0
   }
 
-  const progress =
-    (earnedThisLevel / requiredThisLevel) * 100
+  const progress = (earnedThisLevel / requiredThisLevel) * 100
 
   return Math.min(100, Math.max(0, progress))
 })
@@ -104,11 +99,9 @@ const usersData = computed(() => ({
 }))
 
 watchEffect(() => {
-  achievements.value.firstSleepFight.unlocked =
-    totalExperience.value > 0
+  achievements.value.firstSleepFight.unlocked = totalExperience.value > 0
 
-  achievements.value.first100Points.unlocked =
-    totalExperience.value >= 100
+  achievements.value.first100Points.unlocked = totalExperience.value >= 100
 })
 
 const dialog = ref(null)
@@ -168,7 +161,7 @@ function closeDialogSettings() {
         <div class="flex justify-items-start">
           <div class="pr-7">
             <p class="text-xs font-medium tracking-wide text-body text-zinc-400">rank</p>
-            <p class="mb-4 text-xl font-light leading-tight text-white"> {{ usersData.rank }}</p>
+            <p class="mb-4 text-xl font-light leading-tight text-white">{{ usersData.rank }}</p>
           </div>
           <div>
             <p class="text-xs font-medium tracking-wide text-body text-zinc-400">achievements</p>
@@ -218,30 +211,32 @@ function closeDialogSettings() {
         </svg>
 
         <div class="absolute inset-0 flex flex-col items-center justify-center">
-          <div class="text-4xl font-bold leading-none"
-          :class="usersData.todaysSleepScore >= 80 ? 'text-green-500' : 'text-red-400'">
+          <div
+            class="text-4xl font-bold leading-none"
+            :class="usersData.todaysSleepScore >= 80 ? 'text-green-500' : 'text-red-400'"
+          >
             {{ usersData.todaysSleepScore }}
           </div>
           <div class="text-base font-light leading-none text-white">/100</div>
         </div>
       </div>
     </div>
-      <Teleport to="body">
-    <dialog
-      ref="dialog"
-      class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent"
-    >
-      <LogOut @close="closeDialog" />
-    </dialog>
+    <Teleport to="body">
+      <dialog
+        ref="dialog"
+        class="m-auto w-[400px] max-w-[90vw] rounded-xl border-none bg-transparent"
+      >
+        <LogOut @close="closeDialog" />
+      </dialog>
 
-    <!-- profile settings button -->
-    <dialog
-      ref="dialog_settings"
-      class="m-auto w-[720px] max-w-[94vw] rounded-xl border-none bg-transparent p-0"
-    >
-      <ProfileSettings @close="closeDialogSettings" />
-    </dialog>
-  </Teleport>
+      <!-- profile settings button -->
+      <dialog
+        ref="dialog_settings"
+        class="m-auto w-[720px] max-w-[94vw] rounded-xl border-none bg-transparent p-0"
+      >
+        <ProfileSettings @close="closeDialogSettings" />
+      </dialog>
+    </Teleport>
   </div>
 </template>
 

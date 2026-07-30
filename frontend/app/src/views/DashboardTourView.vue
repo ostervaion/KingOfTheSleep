@@ -252,8 +252,8 @@ onMounted(async () => {
     await nextTick()
     auth.removeTutorial()
     await router.replace({
-    name: 'dashboard',
-  })
+      name: 'dashboard',
+    })
   })
 })
 
@@ -296,17 +296,10 @@ function updateActiveMobilePage() {
             :lobby="dashboard?.lobby"
           />
 
-          <SleepDataForm
-            v-else
-            id="sleep-form-mobile"
-            class="h-full min-h-0"
-          />
+          <SleepDataForm v-else id="sleep-form-mobile" class="h-full min-h-0" />
 
           <div id="today-stats-mobile">
-            <TodayStats
-            :today-stats="dashboard?.todayStats || {}"
-            class="min-h-0"
-          />
+            <TodayStats :today-stats="dashboard?.todayStats || {}" class="min-h-0" />
           </div>
         </div>
       </section>
@@ -321,9 +314,7 @@ function updateActiveMobilePage() {
       </section>
 
       <!-- Page 3: Protocols -->
-      <section
-        class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6"
-      >
+      <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
         <Protocols
           id="protocols-mobile"
           :protocols-data="dashboard?.protocols"
@@ -351,9 +342,7 @@ function updateActiveMobilePage() {
       </section>
 
       <!-- Page 5: Protocol Impact -->
-      <section
-        class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6"
-      >
+      <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
         <ProtocolsImpact
           id="protocol-impact-mobile"
           :protocol-impacts="dashboard?.protocolImpacts || []"
@@ -392,16 +381,9 @@ function updateActiveMobilePage() {
           :lobby="dashboard?.lobby"
         />
 
-        <SleepDataForm
-          v-else
-          id="sleep-form"
-          class="min-h-0 flex-1"
-        />
+        <SleepDataForm v-else id="sleep-form" class="min-h-0 flex-1" />
 
-        <div
-          id="today-stats"
-          class="shrink-0"
-        >
+        <div id="today-stats" class="shrink-0">
           <TodayStats :today-stats="dashboard?.todayStats || {}" />
         </div>
       </section>
@@ -409,25 +391,16 @@ function updateActiveMobilePage() {
       <section class="flex min-h-0 flex-col gap-4">
         <Ranking id="ranking" :ranking-data="dashboard?.ranking || []" />
 
-        <Protocols
-          id="protocols"
-          :protocols-data="dashboard?.protocols"
-        />
+        <Protocols id="protocols" :protocols-data="dashboard?.protocols" />
       </section>
 
       <section class="flex min-h-0 min-w-0 flex-col gap-4">
         <div id="user-profile">
-          <Profile
-            :sleep-score="dashboard?.sleepScore"
-            :next-battle="dashboard?.nextBattle"
-          />
+          <Profile :sleep-score="dashboard?.sleepScore" :next-battle="dashboard?.nextBattle" />
         </div>
 
-        <SleepScore
-          id="sleep-score"
-          :sleep-score="dashboard?.sleepScore"
-        />
-        
+        <SleepScore id="sleep-score" :sleep-score="dashboard?.sleepScore" />
+
         <ProtocolsImpact
           id="protocol-impact"
           :protocol-impacts="dashboard?.protocolImpacts || []"

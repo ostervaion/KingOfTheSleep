@@ -76,7 +76,7 @@ function closeDialog() {
           username: props.name,
           profilePicture: props.profilePicture || example,
           rank: props.ranking,
-          level:  props.experience,
+          level: props.experience,
           points: props.points,
         }"
         @close="closeDialog"
