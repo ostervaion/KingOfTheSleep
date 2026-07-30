@@ -1,4 +1,5 @@
 from datetime import timedelta
+from models import User, UserProfile
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -23,7 +24,11 @@ from utils.security import (
 router = APIRouter()
 
 
-@router.post("/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED,)
+@router.post(
+    "/register",
+    response_model=UserPublic,
+    status_code=status.HTTP_201_CREATED,
+)
 def register(
     user_data: UserCreate,
     session: Session = Depends(get_session),
@@ -51,19 +56,38 @@ def register(
             detail="Email already registered",
         )
 
-    new_user = User(
-        username=username,
-        email=email,
-        password=hash_password(user_data.password),
-        role="user",
-        active=True,
-    )
+    try:
+        new_user = User(
+            username=username,
+            email=email,
+            password=hash_password(user_data.password),
+            role="user",
+            active=True,
+        )
 
-    session.add(new_user)
-    session.commit()
-    session.refresh(new_user)
+        session.add(new_user)
 
-    return new_user
+        # Envía el INSERT sin confirmar la transacción.
+        # Así PostgreSQL genera new_user.id.
+        session.flush()
+
+        new_profile = UserProfile(
+            user_id=new_user.id,
+            exp=0,
+            public=True,
+        )
+
+        session.add(new_profile)
+
+        # Usuario y perfil se guardan juntos.
+        session.commit()
+        session.refresh(new_user)
+
+        return new_user
+
+    except Exception:
+        session.rollback()
+        raise
 
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), session=Depends(get_session)):
