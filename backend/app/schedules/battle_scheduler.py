@@ -1,10 +1,11 @@
 import asyncio
 from datetime import datetime, timedelta, timezone
 from models import SleepData
-from core.database import get_session
-from fastapi import Depends
 from sqlmodel import select
 from collections import defaultdict
+from sqlmodel import Session, select
+from core.database import engine
+
 
 # Variables globales para configuración del scheduler
 BATTLE_INTERVAL_MINUTES = 120  # Intervalo por defecto: 2 horas
@@ -60,33 +61,42 @@ def _make_pairs(entries: list[SleepData]) -> list[tuple[SleepData, SleepData]]:
     return pairs
 
 
-async def start_battle(session=Depends(get_session)):
-    """
-    Toma las entradas registradas para el día, las empareja de dos en dos
-    teniendo en cuenta combates previosy ejecuta un combate por cada pareja.
-    """
-    key = datetime.now(timezone.utc).date()
-    start_of_day = datetime.combine(key, datetime.min.time())
-    end_of_day = start_of_day + timedelta(days=1)
+async def start_battle():
     global today
 
-    if today is None or key != today :
+    now = datetime.now(timezone.utc)
+    key = now.date()
+
+    start_of_day = datetime.combine(
+        key,
+        datetime.min.time(),
+        tzinfo=timezone.utc,
+    )
+    end_of_day = start_of_day + timedelta(days=1)
+
+    if today is None or key != today:
         today_battles.clear()
         today = key
 
-    sleepers = session.exec(select(SleepData).where(
-        SleepData.created_at >= start_of_day,
-        SleepData.created_at < end_of_day,
-    )).all()
+    with Session(engine) as session:
+        sleepers = session.exec(
+            select(SleepData).where(
+                SleepData.created_at >= start_of_day,
+                SleepData.created_at < end_of_day,
+            )
+        ).all()
 
     if len(sleepers) < 2:
-        print(f"⚠️  Matchmaking {key}: only {len(sleepers)} entries, not enough")
+        print(
+            f"⚠️ Matchmaking {key}: "
+            f"only {len(sleepers)} entries, not enough"
+        )
         return
 
     pairs = _make_pairs(sleepers)
 
     for p1, p2 in pairs:
-        print(f"   🥊 {p1.username}  vs  {p2.username}") #Llamada de ws?
+        print(f"🥊 {p1.username} vs {p2.username}")
 
 
 def _update_next_battle_time():
