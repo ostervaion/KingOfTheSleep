@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
 
 from sqlalchemy import func
-from sqlmodel import select
+from sqlmodel import select, Session
 from math import exp, ceil
 from fastapi import HTTPException, Depends
 from core.database import get_session
 from datetime import timezone
+from core.database import engine
 
 from schedules.battle_scheduler import (
     get_time_until_next_battle,
@@ -46,12 +47,14 @@ def lobby_state(session, current_user_id: int, now: datetime) -> bool:
     return today_data is not None
 
 
-def getStats(id: int, session=Depends(get_session)):
+def getStats(id: int):
     today = datetime.now(timezone.utc).date()
-    user = session.exec(select(SleepData).where(
-        SleepData.user_id == id,
-        SleepData.created_at == today
-    )).first()
+
+    with Session(engine) as session :
+        user = session.exec(select(SleepData).where(
+            SleepData.user_id == id,
+            SleepData.created_at == today
+        )).first()
     if user is None:
         raise HTTPException(status_code=404, detail="Sleep data not found")
 
@@ -86,20 +89,20 @@ def getStats(id: int, session=Depends(get_session)):
     return {"vitality": vitality, "defense": defense, "attack": attack, "speed": speed}
 
 
-def getElo(id: int, session=Depends(get_session)) :
-    user = session.exec(select(ScoreHistory).where(
-        ScoreHistory.user_id == id
-    )).last()
+def getElo(id: int) :
+    with Session(engine) :
+        user = Session.exec(select(ScoreHistory).where(
+            ScoreHistory.user_id == id
+        )).last()
 
     return(user.elo_score)
 
 def record_combat(
     idA: int,
     idB: int,
-    session=Depends(get_session),
 ):
-    userA = getStats(idA, session)
-    userB = getStats(idB, session)
+    userA = getStats(idA)
+    userB = getStats(idB)
 
     effectiveAttackA = max(userA["attack"] - userB["defense"], 1)
     effectiveAttackB = max(userB["attack"] - userA["defense"], 1)
@@ -118,60 +121,61 @@ def record_combat(
     else:
         winner, loser = idA, idB
 
-    combat = CombatHistory(
-        winner_user_id=winner,
-        loser_user_id=loser,
-    )
+    with Session(engine) as session :
+        combat = CombatHistory(
+            winner_user_id=winner,
+            loser_user_id=loser,
+        )
 
-    session.add(combat)
-    session.commit()
-    session.refresh(combat)
+        session.add(combat)
+        session.commit()
+        session.refresh(combat)
 
-    ratingA = getElo(idA)
-    ratingB = getElo(idB)
+        ratingA = getElo(idA)
+        ratingB = getElo(idB)
 
-    expectedA = 1 / (1 + pow(10, (ratingB - ratingA) / 400))
-    expectedB = 1 / (1 + pow(10, (ratingA - ratingB) / 400))
+        expectedA = 1 / (1 + pow(10, (ratingB - ratingA) / 400))
+        expectedB = 1 / (1 + pow(10, (ratingA - ratingB) / 400))
 
-    if winner == idA :
-        sA, sB = 1, 0
-    else :
-        sA, sB = 0, 1
+        if winner == idA :
+            sA, sB = 1, 0
+        else :
+            sA, sB = 0, 1
 
-    newRaitingA = ratingA + 10 * (sA - expectedA)
-    newRaitingB = ratingB + 10 * (sB - expectedB)
+        newRaitingA = ratingA + 10 * (sA - expectedA)
+        newRaitingB = ratingB + 10 * (sB - expectedB)
 
-    eloA = ScoreHistory(
-        user_id = idA,
-        elo_score = newRaitingA,
-    )
+        eloA = ScoreHistory(
+            user_id = idA,
+            elo_score = newRaitingA,
+        )
 
-    session.add(eloA)
-    session.commit()
-    session.refresh(eloA)
+        session.add(eloA)
+        session.commit()
+        session.refresh(eloA)
 
-    eloB = ScoreHistory(
-        user_id = idB,
-        elo_score = newRaitingB,
-    )
+        eloB = ScoreHistory(
+            user_id = idB,
+            elo_score = newRaitingB,
+        )
 
-    session.add(eloB)
-    session.commit()
-    session.refresh(eloB)
+        session.add(eloB)
+        session.commit()
+        session.refresh(eloB)
 
-    expA = session.exec(select(UserProfile).where(
-        UserProfile.user_id == idA
-    ))
-    expA.exp += 10
-    session.add(expA)
-    session.commit()
-    session.refresh(expA)
+        expA = session.exec(select(UserProfile).where(
+            UserProfile.user_id == idA
+        ))
+        expA.exp += 10
+        session.add(expA)
+        session.commit()
+        session.refresh(expA)
 
-    expB = session.exec(select(UserProfile).where(
-        UserProfile.user_id == idB
-    ))
-    expB.exp += 10
-    session.add(expB)
-    session.commit()
-    session.refresh(expB)
+        expB = session.exec(select(UserProfile).where(
+            UserProfile.user_id == idB
+        ))
+        expB.exp += 10
+        session.add(expB)
+        session.commit()
+        session.refresh(expB)
 

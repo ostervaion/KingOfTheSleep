@@ -1,8 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta, timezone
 from models import SleepData
-from core.database import get_session
-from fastapi import Depends
 from sqlmodel import select
 from collections import defaultdict
 from sqlmodel import Session, select
@@ -80,7 +78,6 @@ async def start_battle():
         today_battles.clear()
         today = key
 
-    # Abrir sesión.
     with Session(engine) as session:
         sleepers = session.exec(
             select(SleepData).where(
@@ -89,7 +86,6 @@ async def start_battle():
             )
         ).all()
 
-    # Sesión cerrada.
     if len(sleepers) < 2:
         print(
             f"⚠️ Matchmaking {key}: "
@@ -101,15 +97,6 @@ async def start_battle():
 
     for p1, p2 in pairs:
         print(f"🥊 {p1.username} vs {p2.username}")
-
-
-        # Resultado del combate.
-        # result = calculate_battle(p1, p2)
-
-        # Si tienes que guardar algo:
-        # with Session(engine) as session:
-        #     session.add(result)
-        #     session.commit()
 
 
 def _update_next_battle_time():
