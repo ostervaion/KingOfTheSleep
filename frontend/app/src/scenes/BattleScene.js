@@ -134,8 +134,8 @@ export default class GameScene extends BaseScene {
       300,
       false,
     );
-    this.player1MaxHp = this.player1.hp;
-    this.player2MaxHp = this.player2.hp;
+this.player1MaxHp = Math.round(s1.hp);
+this.player2MaxHp = Math.round(s2.hp);
     this.player2.sprite.setFlipX(true);
   }
   create() {
