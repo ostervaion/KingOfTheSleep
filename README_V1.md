@@ -209,3 +209,44 @@ One of the main technical challenges was creating a dashboard with many independ
 
 To address this, the dashboard data was centralised and distributed to the different components through properties and computed values. This made the components easier to maintain and reduced unnecessary requests and duplicated state.
 
+## 10.3 imugica-
+
+My main contribution to the project was the design and implementation of the complete **real-time combat system**, together with the **game artwork and visual presentation**.
+
+Although the multiplayer lobby and player movement were primarily developed by another team member, I was responsible for everything that happens once a battle starts and some parts prior to it.
+
+1. **Combat System:**
+
+I designed and implemented the complete combat system using **Phaser.js**, creating the entire battle flow from the moment a fight begins until a winner is declared. The combat mechanics include player statistics such as health, attack, defense, and attack speed, together with an attack system that handles damage calculation, health reduction, and attack cooldowns.
+
+To improve the gameplay experience, I implemented synchronized health and attack progress bars, victory and defeat screens, sound effects, character animations, and several visual effects including hit particles, death animations, jewel rain during victory, and scene transition effects. I also implemented the automatic cleanup of battle resources once a fight has finished.
+
+2. **Multiplayer Synchronization:**
+
+I implemented the real-time combat synchronization using **WebSockets**, ensuring that both players always share the same battle state. The combat system follows a **server-authoritative** model, where all attacks and damage calculations are validated on the backend to prevent cheating or inconsistent game states.
+
+The synchronization system keeps both clients updated with attacks, damage, health changes, battle start events, and battle completion, while preventing invalid or excessively frequent attacks through server-side validation.
+
+3. **Reconnection System:**
+
+A significant part of my contribution was developing the reconnection system for ongoing battles. When a player disconnects, the battle is automatically paused until they reconnect.
+
+Upon reconnection, the player is returned directly to the battle with their latest combat state restored, including their current health and battle statistics. The system resumes gameplay seamlessly by restoring the battle state and synchronizing both players before combat continues.
+
+4. **Art and Visual Design:**
+
+I also created and integrated the game's visual assets, including character animations, backgrounds, user interface elements, icons, particle textures, combat effects, and scene transitions.
+
+These assets were integrated into Phaser to provide a cohesive and polished visual experience during battles, complementing the gameplay mechanics with responsive animations and effects.
+
+## 10.3 anagomez
+
+1. **Multiplayer lobby:** Through the already built web-socket I stablished the communication bewteen the online user's avatars in order for them to be able to explore the lobby and meet in real time. Every player has their own avatar, represented by a sheep. The sheep's movements are shared with every online user, they then represent said movement with a slight tilt as a moving indicator.
+
+2. **Between users challenges:** Users preent in the loobby are able to challenge eachother and start a battle, which pulls their real data from the server and begins a new battle bewteen them. Challenged users are also able to decline a battle.
+
+3. **Matchmaking:** Other than the manual challenging, the server pairs up the users with data entries of the day and compares them in order to build up a ranking for the day based on real data.
+
+4. **Mathematical model:** The comparisons are completely objective, based on different mathematical equations with real data entered by the user.
+
+The main challenge was the communication through web socket, as I had never used them before
