@@ -6,8 +6,8 @@
 localhost, 127.0.0.1 {
     tls internal
 
-    # WebSocket: /api/ws → backend:8000/ws
-    handle /api/ws {
+    # WebSockets (sin WAF ni rate limit)
+    handle /api/ws* {
         uri strip_prefix /api
         reverse_proxy backend:8000
     }
@@ -21,6 +21,7 @@ localhost, 127.0.0.1 {
                 window 1m
             }
         }
+
         coraza_waf {
             load_owasp_crs
             directives `
@@ -44,6 +45,7 @@ localhost, 127.0.0.1 {
                 window 1m
             }
         }
+
         coraza_waf {
             load_owasp_crs
             directives `

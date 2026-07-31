@@ -7,7 +7,6 @@ import SleepScore from '@/components/dashboard/SleepScore.vue'
 import Profile from '@/components/dashboard/Profile.vue'
 import TodayStats from '@/components/dashboard/TodayStats.vue'
 import Battle from '@/components/dashboard/Battle.vue'
-import ChatButton from '@/components/dashboard/ChatButton.vue'
 import SleepDataForm from '@/components/SleepDataForm.vue'
 import { ref, nextTick, onMounted } from 'vue'
 import { startDashboardTour } from '@/tours/dashboardTour'
@@ -408,5 +407,4 @@ function updateActiveMobilePage() {
       </section>
     </div>
   </div>
-  <ChatButton />
 </template>
