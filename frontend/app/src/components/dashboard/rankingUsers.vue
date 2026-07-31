@@ -12,7 +12,7 @@ const props = defineProps({
   points: String,
   posChange: String,
   profilePicture: String,
-  experience: String,
+  experience: Number,
   trend: {
     type: String,
     default: 'same',

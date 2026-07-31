@@ -250,7 +250,7 @@ prod-down-volumes: ## Stop containers AND remove volumes for production (destruc
 .PHONY: admin
 admin: ## Creates users admin role
 	@echo -e "$(YELLOW)Creating admin user$(RESET)"
-	$(COMPOSE) exec backend python3 -m utils.create_admin
+	$(COMPOSE) exec backend sh -c '. ../entrypoint.sh && python3 -m utils.create_admin'
 
 .PHONY: init-secrets
 init-secrets: ## Creates de necessary secret files, but empty 

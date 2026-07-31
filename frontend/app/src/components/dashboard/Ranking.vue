@@ -69,9 +69,9 @@ function buttonClass(ranking) {
           :profilePicture="user.avatar_path"
         />
       </ul>
-        <div v-else class="flex h-full items-center justify-center text-xs text-zinc-400">
-          No data yet
-        </div>
+      <div v-else class="flex h-full items-center justify-center text-xs text-zinc-400">
+        No data yet
+      </div>
     </div>
   </div>
 </template>

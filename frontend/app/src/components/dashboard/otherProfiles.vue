@@ -15,9 +15,15 @@ const props = defineProps({
       rank: '4,432',
       level: '42',
       points: '2,500',
-      experience: '0',
+      experience: 0,
     }),
   },
+})
+
+const currentUsername = localStorage.getItem('username') // o desde tu store
+
+const isCurrentUser = computed(() => {
+  return props.user?.username === currentUsername
 })
 
 const selectedUser = ref(null)
@@ -49,11 +55,8 @@ const totalExperience = computed(() => {
 })
 
 const userlevel = computed(() => {
-  return Math.floor(
-    Math.log2(totalExperience.value / XP_BASE + 1),
-  ) + 1
+  return Math.floor(Math.log2(totalExperience.value / XP_BASE + 1)) + 1
 })
-
 
 function onClose() {
   emit('close')
@@ -221,34 +224,37 @@ watch(
             </p>
           </div>
         </div>
+<div
+  v-if="!isCurrentUser"
+  class="mt-5 flex items-center justify-end gap-2"
+>
+  <button
+    type="button"
+    :disabled="friendButtonDisabled"
+    :class="[
+      'flex h-full w-full items-center justify-center rounded-md px-4 py-2.5 text-xs font-semibold transition',
+      friendStatus === 'friend' || friendStatus === 'deleting'
+        ? 'bg-red-300 text-[#171715] hover:bg-red-200'
+        : friendStatus === 'deleteError' || friendStatus === 'addError'
+          ? 'bg-amber-200 text-[#171715] hover:bg-amber-100'
+          : 'bg-cyan-200 text-[#171715] hover:bg-cyan-50',
+      friendButtonDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+    ]"
+    @click="toggleFriend"
+  >
+    {{ friendButtonLabel }}
+  </button>
 
-        <div class="mt-5 flex items-center justify-end gap-2">
-          <button
-            type="button"
-            :disabled="friendButtonDisabled"
-            :class="[
-              'flex h-full w-full items-center justify-center  rounded-md px-4 py-2.5 text-xs font-semibold transition',
-              friendStatus === 'friend' || friendStatus === 'deleting'
-                ? 'bg-red-300 text-[#171715] hover:bg-red-200'
-                : friendStatus === 'deleteError' || friendStatus === 'addError'
-                  ? 'bg-amber-200 text-[#171715] hover:bg-amber-100'
-                  : 'bg-cyan-200 text-[#171715] hover:bg-cyan-50',
-              friendButtonDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
-            ]"
-            @click="toggleFriend"
-          >
-            {{ friendButtonLabel }}
-          </button>
-          <button
-            type="button"
-            class="flex items-center justify-center gap-2 rounded-md bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
-            @click="onChat"
-          >
-            <ChatIcon class="h-4 w-4 shrink-0" />
-
-            <span> Chat </span>
-          </button>
-        </div>
+  <button
+    type="button"
+    class="flex items-center justify-center gap-2 rounded-md bg-cyan-200 px-4 py-2.5 text-xs font-semibold text-[#171715] transition hover:bg-cyan-50"
+    @click="onChat"
+  >
+    <ChatIcon class="h-4 w-4 shrink-0" />
+    <span>Chat</span>
+  </button>
+</div>
+        
       </div>
     </div>
   </div>
