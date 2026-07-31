@@ -43,20 +43,32 @@ def _make_pairs(entries: list[SleepData]) -> list[tuple[SleepData, SleepData]]:
     Empareja entradas de dos en dos.
     """
     global today_battles
+
     counts = defaultdict(int)
     pairs: list[tuple[SleepData, SleepData]] = []
 
-    for i in range(0, len(entries) - 1) :
-        available = [e for e in entries if counts[e] < battles_per_interval and e.username != entries[i].username]
-        for j in range(0, len(available)) :
-            if (available[j].username in today_battles[entries[i].username]) :
-                continue
-            counts[entries[i]] += 1
-            counts[available[j]] += 1
-            today_battles[entries[i].username].add(available[j].username)
-            today_battles[available[j].username].add(entries[i].username)
-            pairs.append((entries[i], available[j]))
-            if (counts[entries[i]] >= 5) :
+    for i in range(len(entries)):
+        player = entries[i]
+
+        available = [
+            e for e in entries
+            if (
+                e.id != player.id
+                and counts[e.id] < battles_per_interval
+                and e.username not in today_battles[player.username]
+            )
+        ]
+
+        for opponent in available:
+            counts[player.id] += 1
+            counts[opponent.id] += 1
+
+            today_battles[player.username].add(opponent.username)
+            today_battles[opponent.username].add(player.username)
+
+            pairs.append((player, opponent))
+
+            if counts[player.id] >= battles_per_interval:
                 break
 
     return pairs
@@ -98,8 +110,8 @@ async def start_battle():
 
     for p1, p2 in pairs:
         print(f"🥊 {p1.username} vs {p2.username}")
-        begin_battle(p1.username, p2.username, True)
-        begin_battle(p2.username, p1.username, True)
+        await begin_battle(p1.username, p2.username, True)
+        await begin_battle(p2.username, p1.username, True)
 
 
 def _update_next_battle_time():

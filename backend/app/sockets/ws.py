@@ -6,9 +6,6 @@ from sqlmodel import Session, select
 
 from core.database import engine
 
-from services import getStats
-from models import User
-
 # Diccionarios globales para rastrear las conexiones
 connections: dict[WebSocket, str] = {}  # websocket -> username
 users: dict[str, WebSocket] = {}        # username -> websocket
@@ -60,6 +57,8 @@ def default_stats() -> dict:
     return {"hp": 600, "attack": 70, "attackSpeed": 1, "defense": 5}
 
 def compute_stats(player_username: str) -> dict:
+    from services import getStats
+    from models import User
     with Session(engine) as session:
         user = session.exec(select(User).where(User.username == player_username)).first()
     print(user.id)
