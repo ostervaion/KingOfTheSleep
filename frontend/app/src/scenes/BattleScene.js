@@ -150,7 +150,7 @@ export default class GameScene extends BaseScene {
       } else {
         this.resumeBattle()
       }
-    }) 
+    })
     this.stopHitWatch = watch(battleHit, (payload) => {
       console.log('HIT WATCH', this.scene.isActive())
       if (!payload) return
@@ -380,7 +380,12 @@ export default class GameScene extends BaseScene {
         this.moveSfx.stop()
         if (this.isReconnect) {
           sendPayload('game:ready')
-          // stay paused until server confirms via battle:opponent_reconnected
+          if (this.player1.hp <= 0) {
+            this.gameOver (this.player2)
+          }
+          if (this.player2.hp <= 0) {
+            this.gameOver (this.player1)
+          }
         } else {
           this.isGamePaused = false
         }

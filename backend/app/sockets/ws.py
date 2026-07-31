@@ -57,7 +57,7 @@ def unregister_connection(websocket: WebSocket):
 
 def compute_stats(score: float) -> dict:
     return {
-        "hp": round(5000 + score * 4),
+        "hp": round(600 + score * 4),
         "attack": 70 + score * 0.15,
         "attackSpeed": 1 + score * 0.01,
         "defense": 5 + score * 0.05,
