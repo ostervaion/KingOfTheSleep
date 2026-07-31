@@ -1,8 +1,8 @@
 import json
 import time
-from fastapi import WebSocket, WebSocketDisconnect
+from fastapi import WebSocket, WebSocketDisconnect, HTTPException
 from utils.security import verify_token
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from core.database import engine
 
@@ -55,12 +55,27 @@ def unregister_connection(websocket: WebSocket):
         pending_challenges.pop(username, None)
     return username
 
-def compute_stats(score: float) -> dict:
+
+def default_stats() -> dict:
+    return {"hp": 600, "attack": 70, "attackSpeed": 1, "defense": 5}
+
+def compute_stats(player_username: str) -> dict:
+    with Session(engine) as session:
+        user = session.exec(select(User).where(User.username == player_username)).first()
+    print(user.id)
+    if user is None:
+        return default_stats()
+
+    try:
+        stats = getStats(user.id)
+    except HTTPException:
+        return default_stats()
+
     return {
-        "hp": round(600 + score * 4),
-        "attack": 70 + score * 0.15,
-        "attackSpeed": 1 + score * 0.01,
-        "defense": 5 + score * 0.05,
+        "hp": max(1, round(stats["vitality"])),
+        "attack": stats["attack"],
+        "attackSpeed": max(0.1, stats["speed"]),
+        "defense": stats["defense"],
     }
 
 async def notify_pending_attackers(target_username: str):
@@ -232,20 +247,18 @@ async def websocket_endpoint(websocket: WebSocket):
                 pending_challenges.pop(attacker, None)
 
                 if accepted:
-                    attacker_stats = compute_stats(100)
-                    sender_stats = compute_stats(1)
+                    attacker_stats = compute_stats(attacker)
+                    sender_stats = compute_stats(sender)
 
                     battle = {
                         "players": {
                             attacker: {
                                 "username": attacker,
-                                "score": 100,
                                 "attackProgress": 0,
                                 **attacker_stats,
                             },
                             sender: {
                                 "username": sender,
-                                "score": 1,
                                 "attackProgress": 0,
                                 **sender_stats,
                             },
