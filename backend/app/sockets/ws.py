@@ -121,18 +121,18 @@ async def broadcast_all(payload: dict):
 
 async def begin_battle(sender, attacker) :
     pending_challenges.pop(attacker, None)
-
+    pending_challenges.pop(sender, None)
     attacker_stats = compute_stats(attacker)
     sender_stats = compute_stats(sender)
 
     battle = {
         "players": {
-            attacker: {
+            "attacker": {
                 "username": attacker,
                 "attackProgress": 0,
                 **attacker_stats,
             },
-            sender: {
+            "sender": {
                 "username": sender,
                 "attackProgress": 0,
                 **sender_stats,
@@ -146,11 +146,10 @@ async def begin_battle(sender, attacker) :
     active_battles[attacker] = battle
     active_battles[sender] = battle
 
-    if attacker in users:
-        await users[attacker].send_text(json.dumps({
-            "type": "battle:init",
-            "payload": {"battle": battle["players"]}
-        }))
+    await send_to_users([attacker, sender], {
+        "type": "battle:init",
+        "payload": {"battle": battle["players"]}
+    })
 
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()

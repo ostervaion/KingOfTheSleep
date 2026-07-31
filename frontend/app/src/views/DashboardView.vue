@@ -80,21 +80,20 @@ function handleDesktopChange(event) {
 
 onMounted(async () => {
   desktopMediaQuery.addEventListener('change', handleDesktopChange)
-  connect()
+  
   if (auth.tutorial) {
     await router.replace({
       name: 'dashboard-tour',
     })
     return
   }
-
+connect()
   await fetchDashboard()
-
 })
 
 onUnmounted(() => {
   desktopMediaQuery.removeEventListener('change', handleDesktopChange)
-
+  disconnect()
 })
 
 const mobileScroller = ref(null)

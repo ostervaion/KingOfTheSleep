@@ -17,7 +17,7 @@ const globalMessages = ref([])
 const myUsername = ref('')
 const battleResume = ref(null)
 const battleOpponentReconnected = ref(0)
-const battleInitData = ref(null)
+const battleInitData = ref([])
 
 // null, 'global' o el username del chat abierto.
 const activeChatTarget = ref(null)

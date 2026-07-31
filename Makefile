@@ -200,7 +200,7 @@ db-restore: guard-.env ## Restore database from ./db/backup.sql
 .PHONY: populate
 populate: ## Creates fake data for testing purposes
 	@echo -e "$(YELLOW)Populating database with users$(RESET)"
-	docker compose exec backend sh -c '. ../entrypoint.sh && python3 -m utils.seed_score_history'
+	$(COMPOSE) exec backend sh -c '. ../entrypoint.sh && python3 -m utils.seed_score_history'
 
 # ── Cleanup ──────────────────────────────────────────────────
 .PHONY: clean

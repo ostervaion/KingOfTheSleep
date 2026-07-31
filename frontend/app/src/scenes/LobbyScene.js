@@ -136,8 +136,21 @@ watch(gameEnemy, (enemy) => {
 
 // Accepter's path: fires once the server confirms and sends real player stats.
 watch(battleInitData, (battle) => {
-  if (!battle || !scene || !scene.pendingOpponent) return
-  const enemy = scene.pendingOpponent
+  let enemy = null
+  if (!battle || !scene ) return 
+  if (!scene.pendingOpponent){
+    user1 = battle["attacker"].username
+    user2 = battle["sender"].username
+    if (scene.myUsername == user1) {
+      enemy = user2  
+    }
+    else {
+      enemy = user1 
+    }
+  }
+  else {
+    enemy = scene.pendingOpponent
+  }
   scene.pendingOpponent = null
 
   console.log('[STATS] battleInitData (accepter):', battle)
@@ -146,7 +159,7 @@ watch(battleInitData, (battle) => {
     player: battle[myUsername.value],
     opponent: battle[enemy],
   })
-})
+},{ deep: true },)
 
 // Attacker's path: fires once the server confirms the challenge was accepted.
 watch(gameAccepted, (answer) => {

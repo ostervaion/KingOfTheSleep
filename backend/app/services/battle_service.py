@@ -94,7 +94,7 @@ def getStats(id: int):
     speed = user.efficiency * 0.1
     speed -= time_awake
     speed*=0.5
-    return {"vitality": vitality, "defense": defense, "attack": attack, "speed": speed}
+    return {"vitality": vitality, "defense": defense, "attack": attack, "speed": speed, "performance": user.performance}
 
 
 def getElo(id: int, session: Session) :
@@ -122,9 +122,10 @@ def gainExperience(id: int, session: Session) :
     session.commit()
     session.refresh(user)
 
-def editElo(id: int, raiting: int, session: Session) :
+def editElo(performance: int, id: int, raiting: int, session: Session) :
     elo = ScoreHistory(
         user_id = id, 
+        sleep_score = performance,
         elo_score = raiting
 	)
 
@@ -180,8 +181,8 @@ def record_combat(
         newRaitingA = ratingA + 10 * (sA - expectedA)
         newRaitingB = ratingB + 10 * (sB - expectedB)
 
-        editElo(idA, newRaitingA, session)
-        editElo(idB, newRaitingB, session)
+        editElo(userA["performance"], idA, newRaitingA, session)
+        editElo(userB["performance"], idB, newRaitingB, session)
 
         gainExperience(idA, session)
         gainExperience(idB, session)
