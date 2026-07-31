@@ -17,6 +17,7 @@ const globalMessages = ref([])
 const myUsername = ref('')
 const battleResume = ref(null)
 const battleOpponentReconnected = ref(0)
+const battleInitData = ref(null)
 
 // null, 'global' o el username del chat abierto.
 const activeChatTarget = ref(null)
@@ -274,7 +275,9 @@ export function useWebSocket() {
             battlePaused.value = false
             battleResume.value = null
             break
-
+          case 'battle:init':
+            battleInitData.value = payload.battle
+            break
           case 'battle:opponent_reconnected':
             console.log('[DEBUG] opponent_reconnected')
 
@@ -399,5 +402,6 @@ export function useWebSocket() {
     battleResume,
     battleHit,
     battleOpponentReconnected,
+    battleInitData,
   }
 }

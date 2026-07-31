@@ -49,11 +49,18 @@ def lobby_state(session, current_user_id: int, now: datetime) -> bool:
 
 def getStats(id: int):
     today = datetime.now(timezone.utc).date()
+    start_of_day = datetime.combine(
+        today,
+        datetime.min.time(),
+        tzinfo=timezone.utc,
+    )
+    end_of_day = start_of_day + timedelta(days=1)
 
     with Session(engine) as session :
         user = session.exec(select(SleepData).where(
             SleepData.user_id == id,
-            SleepData.created_at == today
+            SleepData.created_at >= start_of_day,
+            SleepData.created_at < end_of_day
         )).first()
     if user is None:
         raise HTTPException(status_code=404, detail="Sleep data not found")
@@ -77,6 +84,7 @@ def getStats(id: int):
     vitality = fullfillment * user.performance / 100
     vitality += sw * 0.25
     vitality += rem * 0.25
+    vitality*=10
 
     defense = sw * 0.1
     defense -= disturbances
@@ -85,7 +93,7 @@ def getStats(id: int):
 
     speed = user.efficiency * 0.1
     speed -= time_awake
-
+    speed*=0.5
     return {"vitality": vitality, "defense": defense, "attack": attack, "speed": speed}
 
 
