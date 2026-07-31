@@ -18,35 +18,46 @@ from utils.security import (
 router = APIRouter()
 
 
-@router.post("/protocol", response_model=list[UserProtocolPublic], status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/protocol",
+    response_model=list[UserProtocolPublic],
+    status_code=status.HTTP_201_CREATED,
+)
 def create_user_protocols(
-    selection: ProtocolSelection,
+    selection: ProtocolSelection | None = None,
     current_user: User = Depends(get_current_active_user),
     session=Depends(get_session),
 ):
-    if not selection.protocol_ids:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Protocols cant be empty",
-        )
+  
+    if selection is None or not selection.protocol_ids:
+        return []
 
-    # Deduplicamos por si el frontend envía ids repetidos
     protocol_ids = set(selection.protocol_ids)
 
     existing_protocols = session.exec(
-        select(Protocol).where(Protocol.id.in_(protocol_ids))
+        select(Protocol).where(
+            Protocol.id.in_(protocol_ids)
+        )
     ).all()
 
-    if len(existing_protocols) != len(protocol_ids):
-        found_ids = {p.id for p in existing_protocols}
-        missing = protocol_ids - found_ids
+    found_ids = {
+        protocol.id
+        for protocol in existing_protocols
+    }
+
+    missing_ids = protocol_ids - found_ids
+
+    if missing_ids:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Protocol not found: {sorted(missing)}",
+            detail=f"Protocol not found: {sorted(missing_ids)}",
         )
 
     new_user_protocols = [
-        UserProtocol(user_id=current_user.id, protocol_id=protocol_id)
+        UserProtocol(
+            user_id=current_user.id,
+            protocol_id=protocol_id,
+        )
         for protocol_id in protocol_ids
     ]
 
