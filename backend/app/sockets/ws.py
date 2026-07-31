@@ -74,6 +74,17 @@ async def notify_pending_attackers(target_username: str):
             except Exception:
                 pass
 
+async def send_to_users(usernames: list[str], payload: dict):
+    """Send a message to specific users by username, if they're connected."""
+    message = json.dumps(payload)
+    for username in usernames:
+        ws = users.get(username)
+        if ws:
+            try:
+                await ws.send_text(message)
+            except Exception:
+                pass
+
 async def broadcast_except(sender_ws: WebSocket, payload: dict):
     """Send a message to all connected users except the sender."""
     message = json.dumps(payload)
