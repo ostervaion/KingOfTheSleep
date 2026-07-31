@@ -72,10 +72,10 @@ def compute_stats(player_username: str) -> dict:
         return default_stats()
 
     return {
-        "hp": max(1, round(stats["vitality"])),
-        "attack": stats["attack"],
-        "attackSpeed": max(0.1, stats["speed"]),
-        "defense": stats["defense"],
+        "hp": max(1, round(abs(stats["vitality"]))),
+        "attack": abs(stats["attack"]),
+        "attackSpeed": max(0.1, abs(stats["speed"])),
+        "defense": abs(stats["defense"]),
     }
 
 async def notify_pending_attackers(target_username: str):
@@ -270,6 +270,11 @@ async def websocket_endpoint(websocket: WebSocket):
 
                     active_battles[attacker] = battle
                     active_battles[sender] = battle
+
+                    await send_to_users([attacker, sender], {
+                        "type": "battle:init",
+                        "payload": {"battle": battle["players"]}
+                    })
 
                 if attacker in users:
                     await users[attacker].send_text(json.dumps({

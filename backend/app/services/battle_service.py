@@ -93,7 +93,7 @@ def getStats(id: int):
 
     speed = user.efficiency * 0.1
     speed -= time_awake
-
+    speed*=0.5
     return {"vitality": vitality, "defense": defense, "attack": attack, "speed": speed}
 
 

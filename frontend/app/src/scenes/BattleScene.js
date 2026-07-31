@@ -97,26 +97,16 @@ export default class GameScene extends BaseScene {
 
     return bg
   }
-  createPlayers(scorePlayer1, scorePlayer2, usernamePlayer1, usernamePlayer2) {
+ createPlayers(usernamePlayer1, usernamePlayer2) {
     const centerX = this.cameras.main.midPoint.x
-
-    const createStats = (score) => ({
-      hp: 5000 + score * 4,
-      attack: 70 + score * 0.15,
-      attackSpeed: 1 + score * 0.01,
-      defense: 5 + score * 0.05,
-    })
-
-    const s1 = createStats(scorePlayer1)
-    const s2 = createStats(scorePlayer2)
 
     this.player1 = new Character(
       usernamePlayer1,
-      this.playerData.hp ?? Math.round(s1.hp),
-      Math.round(s1.attack),
-      s1.attackSpeed,
-      Math.round(s1.defense),
-      scorePlayer1,
+      this.playerData.hp,
+      this.playerData.attack,
+      this.playerData.attackSpeed,
+      this.playerData.defense,
+      0,
       this,
       -centerX * 2,
       300,
@@ -125,20 +115,20 @@ export default class GameScene extends BaseScene {
 
     this.player2 = new Character(
       usernamePlayer2,
-      this.opponentData.hp ?? Math.round(s2.hp),
-      Math.round(s2.attack),
-      s2.attackSpeed,
-      Math.round(s2.defense),
-      scorePlayer2,
+      this.opponentData.hp,
+      this.opponentData.attack,
+      this.opponentData.attackSpeed,
+      this.opponentData.defense,
+      0,
       this,
       centerX * 2,
       300,
       false,
     )
-    this.player1MaxHp = Math.round(s1.hp)
-    this.player2MaxHp = Math.round(s2.hp)
+    this.player1MaxHp = this.playerData.hp
+    this.player2MaxHp = this.opponentData.hp
     this.player2.sprite.setFlipX(true)
-  }
+}
   create() {
     this.isGameOver = false
     scene = this
@@ -267,12 +257,10 @@ export default class GameScene extends BaseScene {
     const gap = 100
     const margin = 20
     this.showBackgroundAt(600, 500, 1.5)
-    this.createPlayers(
-      this.playerData.score,
-      this.opponentData.score,
-      this.playerData.username,
-      this.opponentData.username,
-    )
+this.createPlayers(
+  this.playerData.username,
+  this.opponentData.username,
+)
     this.player2.sprite.setFlipX(true)
 
     this.player1Icon = this.add.image(margin + 24, 40, 'icon1')

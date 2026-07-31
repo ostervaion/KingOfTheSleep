@@ -17,6 +17,7 @@ const globalMessages = ref([])
 const myUsername = ref('')
 const battleResume = ref(null)
 const battleOpponentReconnected = ref(0)
+const battleInitData = ref(null)
 
 // Chat actualmente abierto por el usuario: null (cerrado), 'global', o un username.
 // Se usa para no marcar como "no leído" lo que ya se está viendo.
@@ -177,6 +178,9 @@ export function useWebSocket() {
             battlePaused.value = false
             battleResume.value = null
             break
+          case 'battle:init':
+            battleInitData.value = payload.battle
+            break
           case 'battle:opponent_reconnected':
             console.log(
               '[DEBUG] llegó opponent_reconnected, battlePaused antes:',
@@ -266,5 +270,6 @@ export function useWebSocket() {
     battleResume,
     battleHit,
     battleOpponentReconnected,
+    battleInitData,
   }
 }

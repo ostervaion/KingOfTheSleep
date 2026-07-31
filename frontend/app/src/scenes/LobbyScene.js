@@ -3,8 +3,16 @@ import BaseScene from './BaseScene'
 import { watch } from 'vue'
 import { useWebSocket } from '@/composables/useWebSocket'
 
-const { myUsername, lobbyPlayers, gameError, gameEnemy, gameAccepted, sendPayload, battleResume } =
-  useWebSocket()
+const {
+  myUsername,
+  lobbyPlayers,
+  gameError,
+  gameEnemy,
+  gameAccepted,
+  sendPayload,
+  battleResume,
+  battleInitData,
+} = useWebSocket()
 
 const WORLD_WIDTH = 4000
 const WORLD_HEIGHT = 4000
@@ -106,17 +114,8 @@ watch(gameEnemy, (enemy) => {
     waitingResponse = false
     scene.closePopup()
     sendPayload('game:disconnect')
-    console.log('Batalla por invitacion')
-    scene.switchScene('GameScene', {
-      player: {
-        username: myUsername.value,
-        score: 1,
-      },
-      opponent: {
-        username: enemy,
-        score: 100,
-      },
-    })
+    // Don't switch scenes yet — wait for battle:init to arrive with real stats.
+    scene.pendingOpponent = enemy
   })
 
   declineBtn.on('pointerdown', (pointer, localX, localY, event) => {
@@ -135,6 +134,21 @@ watch(gameEnemy, (enemy) => {
   scene.popup.setDepth(1000)
 })
 
+// Accepter's path: fires once the server confirms and sends real player stats.
+watch(battleInitData, (battle) => {
+  if (!battle || !scene || !scene.pendingOpponent) return
+  const enemy = scene.pendingOpponent
+  scene.pendingOpponent = null
+
+  console.log('[STATS] battleInitData (accepter):', battle)
+
+  scene.switchScene('GameScene', {
+    player: battle[myUsername.value],
+    opponent: battle[enemy],
+  })
+})
+
+// Attacker's path: fires once the server confirms the challenge was accepted.
 watch(gameAccepted, (answer) => {
   if (answer) {
     console.log('Accepted battle')
@@ -142,16 +156,17 @@ watch(gameAccepted, (answer) => {
     waitingResponse = false
     scene.closePopup()
     sendPayload('game:disconnect')
-    console.log('Batalla por invitacion 2')
+
+    const battle = battleInitData.value
+    console.log('[STATS] battleInitData (attacker):', battle)
+    if (!battle) {
+      console.warn('gameAccepted fired but battleInitData is still null')
+      return
+    }
+
     scene.switchScene('GameScene', {
-      player: {
-        username: myUsername.value,
-        score: 100,
-      },
-      opponent: {
-        username: scene.attackTarget,
-        score: 1,
-      },
+      player: battle[myUsername.value],
+      opponent: battle[scene.attackTarget],
     })
   }
 })
@@ -169,6 +184,7 @@ export default class LobbyScene extends BaseScene {
   create() {
     scene = this
     this.players = {}
+    this.pendingOpponent = null
     this.bg = this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, 'lobbyBG')
     this.bg.setOrigin(0, 0)
     this.bg.setDepth(-1)
