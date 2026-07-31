@@ -120,7 +120,39 @@ async def broadcast_all(payload: dict):
         except Exception:
             pass
 
+async def begin_battle(sender, attacker, accepted) :
+    pending_challenges.pop(attacker, None)
 
+    if accepted:
+        attacker_stats = compute_stats(attacker)
+        sender_stats = compute_stats(sender)
+
+        battle = {
+            "players": {
+                attacker: {
+                    "username": attacker,
+                    "attackProgress": 0,
+                    **attacker_stats,
+                },
+                sender: {
+                    "username": sender,
+                    "attackProgress": 0,
+                    **sender_stats,
+                },
+            },
+            "paused": False,
+            "started": True,
+            "last_attack": {},
+        }
+
+        active_battles[attacker] = battle
+        active_battles[sender] = battle
+
+    if attacker in users:
+        await users[attacker].send_text(json.dumps({
+            "type": "game:answer",
+            "response": accepted
+        }))
 
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -241,42 +273,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     await websocket.send_text(json.dumps({"type": "game:error"}))
                 continue
             if msg_type == 'game:response':
-                attacker = data.get("target")
-                accepted = data.get("accepted")
-
-                pending_challenges.pop(attacker, None)
-
-                if accepted:
-                    attacker_stats = compute_stats(attacker)
-                    sender_stats = compute_stats(sender)
-
-                    battle = {
-                        "players": {
-                            attacker: {
-                                "username": attacker,
-                                "attackProgress": 0,
-                                **attacker_stats,
-                            },
-                            sender: {
-                                "username": sender,
-                                "attackProgress": 0,
-                                **sender_stats,
-                            },
-                        },
-                        "paused": False,
-                        "started": True,
-                        "last_attack": {},
-                    }
-
-                    active_battles[attacker] = battle
-                    active_battles[sender] = battle
-
-                if attacker in users:
-                    await users[attacker].send_text(json.dumps({
-                        "type": "game:answer",
-                        "response": accepted
-                    }))
-
+                begin_battle(sender, data.get("target"), data.get("accepted"))
                 continue
             if msg_type == 'battle:end':
 

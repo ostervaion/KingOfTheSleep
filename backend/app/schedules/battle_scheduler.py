@@ -5,6 +5,7 @@ from sqlmodel import select
 from collections import defaultdict
 from sqlmodel import Session, select
 from core.database import engine
+from sockets import begin_battle
 
 
 # Variables globales para configuración del scheduler
@@ -97,6 +98,8 @@ async def start_battle():
 
     for p1, p2 in pairs:
         print(f"🥊 {p1.username} vs {p2.username}")
+        begin_battle(p1.username, p2.username, True)
+        begin_battle(p2.username, p1.username, True)
 
 
 def _update_next_battle_time():
