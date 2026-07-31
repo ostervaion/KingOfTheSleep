@@ -1,4 +1,4 @@
-﻿This project has been created as part of the 42 curriculum by eloymart, juetxeba, martimar, anagomez, imugica-.
+﻿This project has been created as part of the 42 curriculum by *eloymart, juetxeba, martimar, anagomez, imugica-*.
 
 # 1. Description
 
@@ -31,8 +31,54 @@ The application includes the following key features:
 
 The project combines health tracking, gamification, social interaction and real-time web technologies to create a different approach to sleep improvement. Rather than treating sleep as an isolated personal metric, King of the Sleep turns it into a shared competitive experience.
 
-# 2. Instructions: 
-Juetxeba , Eloy 
+# 2. Instructions:
+Follow the steps below to set up the project using the repository's `Makefile`.
+
+> **Note:** All `make` commands must be executed from the root of the repository, where the `Makefile` is located.
+
+1. Create the secrets by running:
+
+   ```bash
+   make init-secrets
+   ```
+
+   This command creates a `secrets/` directory containing three files that must be configured by the user:
+   - postgres_user
+   - postgres_password
+   - secret_key
+
+2. Edit each file inside the `secrets/` directory and provide the corresponding values.
+
+3. Create the environment file by running:
+
+   ```bash
+   make env
+   ```
+
+   This command creates a `.env` file by copying `.env.example`.
+
+   > **Note:** The generated file contains default values. It is strongly recommended to review and modify these values before continuing.
+
+4. Build the Docker images and start the application containers by running:
+
+   ```bash
+   make prod-up-build
+   ```
+
+5. Populate the application with initial data by running:
+
+   ```bash
+   make populate
+   ```
+
+6. Open the application's landing page in your default web browser by running:
+
+   ```bash
+   make open-https
+   ```
+
+7. When your browser displays a security warning because of the self-signed SSL certificate, accept the risk and continue to access the application.
+
 # 3. Resources: 
 
 # 4. Team Information
@@ -141,14 +187,22 @@ SQLModel was selected as the project’s ORM because it provides a simple, type-
 
 ## 6.3 Database:
 
- 1. Database : PostgreSQL.
+### 1. Database : PostgreSQL.
  
  PostgreSQL was chosen as the project’s database because it is reliable, open-source, and well suited for applications that require structured data and complex relationships. It provides strong data integrity, support for transactions, good performance, and advanced SQL features. Its compatibility with SQLModel and SQLAlchemy also allows it to integrate smoothly with the FastAPI backend, making the database layer easier to maintain and scale.
 
  
 ## 6.4 Other technology:
 
-Docker, seguridad etc
+### 1. Docker and Docker Compose
+
+Docker was chosen because the team already had prior experience with it, making it a good opportunity to further develop our expertise. In addition, Docker is an industry standard with extensive community support and documentation. It provides an efficient way to develop, deploy, and connect multiple services across different environments, making it well suited for a microservice-based architecture such as ours.
+
+### 2. Caddy
+
+Caddy was chosen because it is a modern web server written in Go that emphasizes simplicity and ease of configuration. It provides automatic HTTPS support, straightforward deployment, and requires minimal configuration compared to many alternatives.
+
+Another advantage of Caddy is its plugin system, which allows developers to easily extend its functionality. In this project, the Coraza Web Application Firewall (WAF) plugin was integrated to improve the security of the application's endpoints by providing protection against common web attacks.
 
 # 7. Database Schema:
 
@@ -159,6 +213,7 @@ Docker, seguridad etc
 # 10. Individual Contributions:
 
 ## 10.1 Eloymart
+
 1.  **Initial Setup:** I installed and tested Vue.js and established its initial connection with FastAPI. I also contributed to the design and architectural decisions of the application.
     
 2.  **Login and Registration:** I implemented the complete JWT-based authentication system across both the frontend and backend. This includes user registration, login, token storage and authentication checks.
@@ -239,7 +294,7 @@ I also created and integrated the game's visual assets, including character anim
 
 These assets were integrated into Phaser to provide a cohesive and polished visual experience during battles, complementing the gameplay mechanics with responsive animations and effects.
 
-## 10.3 anagomez
+## 10.4 anagomez
 
 1. **Multiplayer lobby:** Through the already built web-socket I stablished the communication bewteen the online user's avatars in order for them to be able to explore the lobby and meet in real time. Every player has their own avatar, represented by a sheep. The sheep's movements are shared with every online user, they then represent said movement with a slight tilt as a moving indicator.
 
@@ -250,3 +305,25 @@ These assets were integrated into Phaser to provide a cohesive and polished visu
 4. **Mathematical model:** The comparisons are completely objective, based on different mathematical equations with real data entered by the user.
 
 The main challenge was the communication through web socket, as I had never used them before
+
+## 10.5 Juetxeba
+
+1. **Architecture Design and Implementation:** Designed and implemented the Docker-based microservice architecture, integrating the Database (PostgreSQL), Backend (FastAPI), Frontend (Vue), and Server (Caddy), while configuring the required communication between all services.
+
+2. **Development Utilities:** Designed and implemented multiple `Makefile` commands that abstracted the complexity of the development environment, minimizing the interaction required from team members and simplifying development, debugging, and deployment tasks.
+
+3. **Database Design:** Contributed to the design and implementation of the database schema, including tables, relationships, and data organization.
+
+4. **Backend Development:** Developed and optimized multiple API endpoints with a focus on reducing unnecessary traffic between the backend and the database. Also contributed to data generation systems and restructured the backend project organization.
+
+5. **Security:** Integrated a Web Application Firewall (WAF) into the Caddy server and implemented Docker secrets for sensitive information such as the application secret key, database username, and database password.
+
+6. **Production Deployment:** Developed an environment management system that allows users to prepare either the development or production environment using simple `Makefile` commands.
+
+7. **Frontend Development:** Connected backend endpoints to several frontend components and proposed optimizations that reduced unnecessary database requests.
+
+8. **Project Management:** Coordinated the team's work throughout the project, maintaining an organized development workflow and ensuring clear communication of objectives, especially during high-pressure stages of development.
+
+One of the main challenges arose at the beginning of the project when the technology stack was still being defined and the final project requirements were uncertain. The architecture therefore needed to be flexible enough to accommodate future features without requiring structural changes.
+
+To address this, I designed a modular Docker architecture based on shared volumes. This approach allowed the backend and frontend containers to share the project files while automatically reloading whenever changes were made, providing a reactive development environment for all team members. Additionally, the frontend dependencies (`node_modules`) were also managed through shared volumes, allowing new packages to be installed without rebuilding the container, significantly improving the development workflow and making the architecture scalable as the project evolved.

@@ -113,10 +113,7 @@ function updateActiveMobilePage() {
 
 <template>
   <!-- Solo se monta la versión móvil/tablet cuando la pantalla es menor de lg. -->
-  <div
-    v-if="!isDesktop"
-    class="relative flex h-dvh flex-col overflow-hidden text-(--text)"
-  >
+  <div v-if="!isDesktop" class="relative flex h-dvh flex-col overflow-hidden text-(--text)">
     <div id="next-battle-mobile" class="shrink-0 px-4 pt-4">
       <NextBattle :next-battle="dashboard?.nextBattle" class="w-full" />
     </div>
@@ -128,11 +125,7 @@ function updateActiveMobilePage() {
     >
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
         <div class="grid h-full min-h-0 grid-rows-[1fr_auto] gap-4">
-          <Battle
-            id="battle-mobile"
-            :lobby="dashboard?.lobby"
-            class="h-full min-h-0"
-          />
+          <Battle id="battle-mobile" :lobby="dashboard?.lobby" class="h-full min-h-0" />
 
           <div id="today-stats-mobile">
             <TodayStats :today-stats="dashboard?.todayStats || []" class="min-h-0" />
@@ -207,11 +200,7 @@ function updateActiveMobilePage() {
       class="mx-auto grid min-h-0 min-w-0 w-full flex-1 grid-cols-[1fr_1.2fr_1.2fr] items-stretch gap-4"
     >
       <section class="flex min-h-0 flex-col gap-4">
-        <SleepDataForm
-          v-if="!dashboard?.lobby"
-          class="min-h-0 flex-1"
-          @saved="fetchDashboard"
-        />
+        <SleepDataForm v-if="!dashboard?.lobby" class="min-h-0 flex-1" @saved="fetchDashboard" />
 
         <div v-else id="battle" class="min-h-0 flex-1 overflow-hidden">
           <Battle class="h-full w-full" :lobby="dashboard.lobby" />

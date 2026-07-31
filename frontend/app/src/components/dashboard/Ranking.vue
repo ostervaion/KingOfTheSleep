@@ -139,43 +139,27 @@ function handleDialogClose() {
   >
     <div class="px-6 pb-4 pt-4">
       <div class="flex items-center justify-between py-0.75">
-        <div
-          class="rounded-md border border-cyan-200 px-1.5 py-0.5 leading-none text-gray-800"
-        >
+        <div class="rounded-md border border-cyan-200 px-1.5 py-0.5 leading-none text-gray-800">
           <h2 class="text-heading text-xs font-medium text-cyan-200">Rankings</h2>
         </div>
 
         <div class="hidden rounded-full bg-(--kots-background-color) px-1.25 py-0.75">
-          <button
-            type="button"
-            :class="buttonClass('today')"
-            @click="updateButtonColor('today')"
-          >
+          <button type="button" :class="buttonClass('today')" @click="updateButtonColor('today')">
             today
           </button>
 
-          <button
-            type="button"
-            :class="buttonClass('week')"
-            @click="updateButtonColor('week')"
-          >
+          <button type="button" :class="buttonClass('week')" @click="updateButtonColor('week')">
             week
           </button>
 
-          <button
-            type="button"
-            :class="buttonClass('global')"
-            @click="updateButtonColor('global')"
-          >
+          <button type="button" :class="buttonClass('global')" @click="updateButtonColor('global')">
             global
           </button>
         </div>
       </div>
     </div>
 
-    <div
-      class="grid grid-cols-[40px_minmax(0,1fr)_100px_100px] px-6 pb-2 text-xs text-zinc-400"
-    >
+    <div class="grid grid-cols-[40px_minmax(0,1fr)_100px_100px] px-6 pb-2 text-xs text-zinc-400">
       <div>#</div>
       <div>player</div>
       <div class="text-right">points</div>
@@ -252,10 +236,7 @@ function handleDialogClose() {
         </li>
       </ul>
 
-      <div
-        v-else
-        class="flex h-full items-center justify-center text-xs text-zinc-400"
-      >
+      <div v-else class="flex h-full items-center justify-center text-xs text-zinc-400">
         No data yet
       </div>
     </div>
@@ -272,11 +253,7 @@ function handleDialogClose() {
     @cancel.prevent="closeProfile"
     @click.self="closeProfile"
   >
-    <OtherProfiles
-      v-if="selectedUser"
-      :user="selectedUser"
-      @close="closeProfile"
-    />
+    <OtherProfiles v-if="selectedUser" :user="selectedUser" @close="closeProfile" />
   </dialog>
 </template>
 
