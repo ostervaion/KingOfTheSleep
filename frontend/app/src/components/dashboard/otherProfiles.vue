@@ -49,11 +49,8 @@ const totalExperience = computed(() => {
 })
 
 const userlevel = computed(() => {
-  return Math.floor(
-    Math.log2(totalExperience.value / XP_BASE + 1),
-  ) + 1
+  return Math.floor(Math.log2(totalExperience.value / XP_BASE + 1)) + 1
 })
-
 
 function onClose() {
   emit('close')

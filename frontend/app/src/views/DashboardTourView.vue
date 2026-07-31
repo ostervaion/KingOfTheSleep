@@ -289,14 +289,14 @@ function updateActiveMobilePage() {
       <!-- Page 1: Lobby/Sleep form + TodayStats -->
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
         <div class="grid h-full min-h-0 grid-rows-[1fr_auto] gap-4">
-         <!-- <Battle
+          <!-- <Battle
             v-if="!showSleepFormTour"
             id="battle-mobile"
             class="h-full min-h-0"
             :lobby="dashboard?.lobby"
           /> -->
 
-          <SleepDataForm  id="sleep-form-mobile" class="h-full min-h-0" />
+          <SleepDataForm id="sleep-form-mobile" class="h-full min-h-0" />
 
           <div id="today-stats-mobile">
             <TodayStats :today-stats="dashboard?.todayStats || {}" class="min-h-0" />
@@ -381,7 +381,7 @@ function updateActiveMobilePage() {
           :lobby="dashboard?.lobby"
         /> -->
 
-        <SleepDataForm  id="sleep-form" class="min-h-0 flex-1" />
+        <SleepDataForm id="sleep-form" class="min-h-0 flex-1" />
 
         <div id="today-stats" class="shrink-0">
           <TodayStats :today-stats="dashboard?.todayStats || {}" />

@@ -381,10 +381,10 @@ export default class GameScene extends BaseScene {
         if (this.isReconnect) {
           sendPayload('game:ready')
           if (this.player1.hp <= 0) {
-            this.gameOver (this.player2)
+            this.gameOver(this.player2)
           }
           if (this.player2.hp <= 0) {
-            this.gameOver (this.player1)
+            this.gameOver(this.player1)
           }
         } else {
           this.isGamePaused = false

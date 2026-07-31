@@ -66,7 +66,7 @@ function closeDialog() {
         </span>
       </div>
 
-      <div class=" text-xs text-right md:text-sm text-heading">
+      <div class="text-xs text-right md:text-sm text-heading">
         {{ props.points }}
       </div>
 
