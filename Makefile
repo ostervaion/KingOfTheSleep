@@ -218,7 +218,7 @@ prune: ## Remove ALL unused Docker resources system-wide (use with care)
 .PHONY: open-https
 open-https: guard-.env ## Opens the browser into the vite main page through caddy https
 	@echo -e "$(YELLOW)Starting vite in browser$(RESET)"
-	xdg-open http://localhost:$${HTTPS_PORT}/
+	xdg-open https://localhost:$${HTTPS_PORT}/
 
 .PHONY: open-http
 open-http: guard-.env ## Opens the browser into the vite main page through caddy http
@@ -250,7 +250,7 @@ prod-down-volumes: ## Stop containers AND remove volumes for production (destruc
 .PHONY: admin
 admin: ## Creates users admin role
 	@echo -e "$(YELLOW)Creating admin user$(RESET)"
-	docker compose exec backend python3 -m utils.create_admin
+	$(COMPOSE) exec backend python3 -m utils.create_admin
 
 .PHONY: init-secrets
 init-secrets: ## Creates de necessary secret files, but empty 
