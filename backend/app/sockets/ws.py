@@ -255,11 +255,13 @@ async def websocket_endpoint(websocket: WebSocket):
                             attacker: {
                                 "username": attacker,
                                 "attackProgress": 0,
+                                "maxHp": attacker_stats["hp"],
                                 **attacker_stats,
                             },
                             sender: {
                                 "username": sender,
                                 "attackProgress": 0,
+                                "maxHp": sender_stats["hp"],
                                 **sender_stats,
                             },
                         },
