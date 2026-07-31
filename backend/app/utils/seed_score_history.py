@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from random import choice, randint, random, sample, seed
 
 from core.database import engine
-from models import CombatHistory, Protocol, ScoreHistory, SleepData, User, UserProtocol
+from models import CombatHistory, Protocol, ScoreHistory, SleepData, User, UserProtocol, UserProfile
 from services import recalculate_protocol_stats
 from sqlmodel import Session, select
 from utils.security import hash_password
@@ -210,6 +210,56 @@ def _seed_combat_history(session: Session, battles_per_user: int = 4) -> None:
         f"{battles_per_user} por usuario ({len(all_users)} usuarios)!"
     )
 
+def _seed_user_profiles(session: Session, users: list[User]) -> None:
+    """
+    Crea un UserProfile para cada usuario de la lista que aún no tenga uno.
+    Al ser una relación 1-a-1 (user_id es unique), evitamos duplicados
+    comprobando primero cuáles ya existen.
+    """
+    if not users:
+        return
+    """
+    avatar_options = [
+        "avatars/game/default_1.png",
+        "avatars/game/default_2.png",
+        "avatars/game/default_3.png",
+        None,
+    ]
+    user_avatar_options = [
+        "avatars/user/default_1.png",
+        "avatars/user/default_2.png",
+        None,
+    ]
+    """
+    user_ids = [u.id for u in users]
+    existing_profile_user_ids = {
+        up.user_id
+        for up in session.exec(
+            select(UserProfile).where(UserProfile.user_id.in_(user_ids))
+        ).all()
+    }
+
+    new_profiles = []
+    for user in users:
+        if user.id in existing_profile_user_ids:
+            continue
+
+        new_profiles.append(
+            UserProfile(
+                user_id=user.id,
+                #game_avatar_path=choice(avatar_options),
+                #user_avatar_path=choice(user_avatar_options),
+                public=choice([True, True, True, False]),  # mayoría públicos
+                exp=randint(0, 5000),
+            )
+        )
+
+    if new_profiles:
+        session.add_all(new_profiles)
+        session.commit()
+        print(f"Se han generado {len(new_profiles)} perfiles de usuario (UserProfile).")
+    else:
+        print("Todos los usuarios ya tenían UserProfile asignado.")
 
 def seed_score_history(backfill_existing: bool = True):
     with Session(engine) as session:
@@ -243,6 +293,7 @@ def seed_score_history(backfill_existing: bool = True):
                 )
         session.commit()
 
+        _seed_user_profiles(session, nuevos_usuarios)
         print(f"Generando datos de sueño (SleepData) para los {len(nuevos_usuarios)} nuevos usuarios...")
         _seed_sleep_data(session, nuevos_usuarios, now)
 
