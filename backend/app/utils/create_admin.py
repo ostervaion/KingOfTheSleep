@@ -1,50 +1,77 @@
 from datetime import datetime, timezone
 
-from core.database import engine
-
-engine.echo = False
-
-from models import User
 from sqlmodel import Session, select
+
+from core.database import engine
+from models import User, UserProfile
 from utils.security import hash_password
 
 
+engine.echo = False
+
+
 def _next_admin_username(session: Session) -> str:
-    existing = session.exec(select(User)).all()
-    existing_usernames = {u.username for u in existing}
+    existing_users = session.exec(select(User)).all()
+    existing_usernames = {
+        user.username
+        for user in existing_users
+    }
 
-    n = 1
-    while f"admin_{n}" in existing_usernames:
-        n += 1
+    number = 1
 
-    return f"admin_{n}"
+    while f"admin_{number}" in existing_usernames:
+        number += 1
+
+    return f"admin_{number}"
 
 
 def create_admin_user():
     with Session(engine) as session:
-        username = _next_admin_username(session)
+        try:
+            username = _next_admin_username(session)
 
-        timestamp = int(datetime.now(timezone.utc).timestamp())
-        plain_password = f"admin_{timestamp}"
+            timestamp = int(
+                datetime.now(timezone.utc).timestamp()
+            )
 
-        new_admin = User(
-            username=username,
-            password=hash_password(plain_password),
-            email=f"{username}@example.com",
-            role="admin",
-            active=True,
-        )
+            plain_password = f"admin_{timestamp}"
 
-        session.add(new_admin)
-        session.commit()
-        session.refresh(new_admin)
+            new_admin = User(
+                username=username,
+                password=hash_password(plain_password),
+                email=f"{username}@example.com",
+                role="admin",
+                active=True,
+            )
 
-        print("Admin user created successfully:")
-        print(f"  username: {new_admin.username}")
-        print(f"  password: {plain_password}")
-        print(f"  id:       {new_admin.id}")
+            session.add(new_admin)
+            session.flush()
 
-        return new_admin.username, plain_password
+            admin_profile = UserProfile(
+                user_id=new_admin.id,
+                exp=0,
+                public=True,
+            )
+
+            session.add(admin_profile)
+
+            # Guarda usuario y perfil juntos.
+            session.commit()
+
+            session.refresh(new_admin)
+            session.refresh(admin_profile)
+
+            print("Admin user created successfully:")
+            print(f"  username: {new_admin.username}")
+            print(f"  password: {plain_password}")
+            print(f"  id:       {new_admin.id}")
+            print(f"  exp:      {admin_profile.exp}")
+
+            return new_admin.username, plain_password
+
+        except Exception:
+            session.rollback()
+            raise
 
 
 if __name__ == "__main__":

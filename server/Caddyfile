@@ -1,34 +1,26 @@
-# ──────────────────────────────────────────────────────────────
-#  Caddyfile
-#  Listens on :80 (Caddy auto-redirects to HTTPS in production;
-#  for local dev the HTTP-only block below is more convenient).
-# ──────────────────────────────────────────────────────────────
 {
-    # 1. Tell Caddy where the WAF middleware sits in the execution chain
     order coraza_waf first
+    order rate_limit before reverse_proxy
 }
 
 localhost, 127.0.0.1 {
-    # ── API → FastAPI backend ──────────────────────────────────
     tls internal
-    handle /api/* {
-        # 2. Enable Coraza with the OWASP Core Ruleset (CRS) preloaded HERE WILL ONLY WORK FOR THE BACKEND API
-        coraza_waf {
-            load_owasp_crs
-            directives `
-                Include @coraza.conf-recommended
-                Include @crs-setup.conf.example
-                Include @owasp_crs/*.conf
-                SecRuleEngine On
-            `
-        }
+
+    # WebSocket: /api/ws → backend:8000/ws
+    handle /api/ws {
         uri strip_prefix /api
         reverse_proxy backend:8000
     }
 
-    # ── Frontend → Vue dev server (development) ───────────────
-    #    Switch to `frontend:80` for the production nginx stage.
-    handle {
+    # API REST
+    handle /api/* {
+        rate_limit {
+            zone api_zone {
+                key {remote_host}
+                events 30
+                window 1m
+            }
+        }
         coraza_waf {
             load_owasp_crs
             directives `
@@ -38,29 +30,37 @@ localhost, 127.0.0.1 {
                 SecRuleEngine On
             `
         }
+
+        uri strip_prefix /api
+        reverse_proxy backend:8000
+    }
+
+    # Frontend
+    handle {
+        rate_limit {
+            zone static_zone {
+                key {remote_host}
+                events 100
+                window 1m
+            }
+        }
+        coraza_waf {
+            load_owasp_crs
+            directives `
+                Include @coraza.conf-recommended
+                Include @crs-setup.conf.example
+                Include @owasp_crs/*.conf
+                SecRuleEngine On
+            `
+        }
+
         root * /dist
         try_files {path} /index.html
         file_server
     }
 
-    # ── Logging ───────────────────────────────────────────────
     log {
         output stdout
         format console
     }
 }
-
-#:80 {
-#    redir https://{host}{uri} permanent
-#}
-
-# ── Production HTTPS example (uncomment & set your domain) ───
-# yourdomain.com {
-#     handle /api/* {
-#         uri strip_prefix /api
-#         reverse_proxy backend:8000
-#     }
-#     handle {
-#         reverse_proxy frontend:80
-#     }
-# }
