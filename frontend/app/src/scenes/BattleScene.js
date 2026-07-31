@@ -97,7 +97,7 @@ export default class GameScene extends BaseScene {
 
     return bg
   }
- createPlayers(usernamePlayer1, usernamePlayer2) {
+  createPlayers(usernamePlayer1, usernamePlayer2) {
     const centerX = this.cameras.main.midPoint.x
 
     this.player1 = new Character(
@@ -125,10 +125,10 @@ export default class GameScene extends BaseScene {
       300,
       false,
     )
-    this.player1MaxHp = this.playerData.hp
-    this.player2MaxHp = this.opponentData.hp
+    this.player1MaxHp = this.playerData.maxHp ?? this.playerData.hp
+    this.player2MaxHp = this.opponentData.maxHp ?? this.opponentData.hp
     this.player2.sprite.setFlipX(true)
-}
+  }
   create() {
     this.isGameOver = false
     scene = this
@@ -257,10 +257,7 @@ export default class GameScene extends BaseScene {
     const gap = 100
     const margin = 20
     this.showBackgroundAt(600, 500, 1.5)
-this.createPlayers(
-  this.playerData.username,
-  this.opponentData.username,
-)
+    this.createPlayers(this.playerData.username, this.opponentData.username)
     this.player2.sprite.setFlipX(true)
 
     this.player1Icon = this.add.image(margin + 24, 40, 'icon1')

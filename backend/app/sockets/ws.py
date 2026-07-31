@@ -6,9 +6,6 @@ from sqlmodel import Session, select
 
 from core.database import engine
 
-from services import getStats
-from models import User
-
 # Diccionarios globales para rastrear las conexiones
 connections: dict[WebSocket, str] = {}  # websocket -> username
 users: dict[str, WebSocket] = {}        # username -> websocket
@@ -60,6 +57,8 @@ def default_stats() -> dict:
     return {"hp": 600, "attack": 70, "attackSpeed": 1, "defense": 5}
 
 def compute_stats(player_username: str) -> dict:
+    from services import getStats
+    from models import User
     with Session(engine) as session:
         user = session.exec(select(User).where(User.username == player_username)).first()
     print(user.id)
@@ -120,7 +119,38 @@ async def broadcast_all(payload: dict):
         except Exception:
             pass
 
+async def begin_battle(sender, attacker) :
+    pending_challenges.pop(attacker, None)
 
+    attacker_stats = compute_stats(attacker)
+    sender_stats = compute_stats(sender)
+
+    battle = {
+        "players": {
+            attacker: {
+                "username": attacker,
+                "attackProgress": 0,
+                **attacker_stats,
+            },
+            sender: {
+                "username": sender,
+                "attackProgress": 0,
+                **sender_stats,
+            },
+        },
+        "paused": False,
+        "started": True,
+        "last_attack": {},
+    }
+
+    active_battles[attacker] = battle
+    active_battles[sender] = battle
+
+    if attacker in users:
+        await users[attacker].send_text(json.dumps({
+            "type": "battle:init",
+            "payload": {"battle": battle["players"]}
+        }))
 
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -255,11 +285,13 @@ async def websocket_endpoint(websocket: WebSocket):
                             attacker: {
                                 "username": attacker,
                                 "attackProgress": 0,
+                                "maxHp": attacker_stats["hp"],
                                 **attacker_stats,
                             },
                             sender: {
                                 "username": sender,
                                 "attackProgress": 0,
+                                "maxHp": sender_stats["hp"],
                                 **sender_stats,
                             },
                         },

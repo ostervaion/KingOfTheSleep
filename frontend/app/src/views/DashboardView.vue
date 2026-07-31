@@ -125,7 +125,9 @@ function updateActiveMobilePage() {
     >
       <section class="h-full min-w-full snap-start snap-always px-4 py-4 pb-6">
         <div class="grid h-full min-h-0 grid-rows-[1fr_auto] gap-4">
-          <Battle id="battle-mobile" :lobby="dashboard?.lobby" class="h-full min-h-0" />
+          <SleepDataForm v-if="!dashboard?.lobby" class="min-h-0" @saved="fetchDashboard" />
+
+          <Battle v-else id="battle-mobile" :lobby="dashboard.lobby" class="h-full min-h-0" />
 
           <div id="today-stats-mobile">
             <TodayStats :today-stats="dashboard?.todayStats || []" class="min-h-0" />

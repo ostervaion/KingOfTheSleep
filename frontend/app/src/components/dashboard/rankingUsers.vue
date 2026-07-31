@@ -49,7 +49,7 @@ function closeDialog() {
     class="cursor-pointer transition odd:bg-white/[0.015] even:bg-transparent hover:bg-white/[0.04]"
     @click="openDialog"
   >
-    <div class="grid grid-cols-[40px_1fr_100px_100px] items-center px-6 py-1.5">
+    <div class="grid grid-cols-[40px_1fr_70px_70px] items-center px-6 py-1.5">
       <div class="text-sm text-heading">
         {{ props.ranking }}
       </div>
@@ -61,16 +61,16 @@ function closeDialog() {
           :alt="`${props.name} profile picture`"
         />
 
-        <span class="text-sm text-heading">
+        <span class="text-xs text-heading md:text-sm">
           {{ props.name }}
         </span>
       </div>
 
-      <div class="text-right text-sm text-heading">
+      <div class="text-xs text-right md:text-sm text-heading">
         {{ props.points }}
       </div>
 
-      <div class="text-right text-sm font-medium" :class="trendClass">
+      <div class="text-right text-xs font-medium md:text-sm" :class="trendClass">
         <span v-if="props.trend === 'up'">↑</span>
         <span v-else-if="props.trend === 'down'">↓</span>
         <span v-else>→</span>

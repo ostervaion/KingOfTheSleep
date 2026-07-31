@@ -97,11 +97,13 @@ def getStats(id: int):
     return {"vitality": vitality, "defense": defense, "attack": attack, "speed": speed}
 
 
-def getElo(id: int) :
-    with Session(engine) :
-        user = Session.exec(select(ScoreHistory).where(
-            ScoreHistory.user_id == id
-        )).last()
+def getElo(id: int, session: Session) :
+    user = session.exec(select(ScoreHistory).where(
+        ScoreHistory.user_id == id
+    ).order_by(
+        ScoreHistory.created_at.desc(),
+        ScoreHistory.id.desc(),
+    )).first()
 
     if user is None :
         return 400
@@ -111,9 +113,10 @@ def getElo(id: int) :
 def gainExperience(id: int, session: Session) :
     user = session.exec(select(UserProfile).where(
         UserProfile.user_id == id
-    ))
+    )).first()
     if user is None :
         return
+    print(user)
     user.exp += 10
     session.add(user)
     session.commit()
@@ -163,8 +166,8 @@ def record_combat(
         session.commit()
         session.refresh(combat)
 
-        ratingA = getElo(idA)
-        ratingB = getElo(idB)
+        ratingA = getElo(idA, session)
+        ratingB = getElo(idB, session)
 
         expectedA = 1 / (1 + pow(10, (ratingB - ratingA) / 400))
         expectedB = 1 / (1 + pow(10, (ratingA - ratingB) / 400))
