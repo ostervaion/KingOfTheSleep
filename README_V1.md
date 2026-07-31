@@ -238,3 +238,15 @@ Upon reconnection, the player is returned directly to the battle with their late
 I also created and integrated the game's visual assets, including character animations, backgrounds, user interface elements, icons, particle textures, combat effects, and scene transitions.
 
 These assets were integrated into Phaser to provide a cohesive and polished visual experience during battles, complementing the gameplay mechanics with responsive animations and effects.
+
+## 10.3 anagomez
+
+1. **Multiplayer lobby:** Through the already built web-socket I stablished the communication bewteen the online user's avatars in order for them to be able to explore the lobby and meet in real time. Every player has their own avatar, represented by a sheep. The sheep's movements are shared with every online user, they then represent said movement with a slight tilt as a moving indicator.
+
+2. **Between users challenges:** Users preent in the loobby are able to challenge eachother and start a battle, which pulls their real data from the server and begins a new battle bewteen them. Challenged users are also able to decline a battle.
+
+3. **Matchmaking:** Other than the manual challenging, the server pairs up the users with data entries of the day and compares them in order to build up a ranking for the day based on real data.
+
+4. **Mathematical model:** The comparisons are completely objective, based on different mathematical equations with real data entered by the user.
+
+The main challenge was the communication through web socket, as I had never used them before
