@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
+
 export default class Character {
-  constructor(name, hp, attack, attackSpeed, defense, score, scene, x, y) {
+  constructor(name, hp, attack, attackSpeed, defense, score, scene, x, y, isLocal = false) {
     this.name = name
     this.hp = hp
     this.attack = attack
@@ -8,16 +9,16 @@ export default class Character {
     this.defense = defense
     this.score = score
 
-    this.scene = scene // <-- add this
+    this.scene = scene
+    this.isLocal = isLocal // true = soy yo mismo en este cliente; false = es el rival
 
     this.target = null
     this.lastAttackTime = 0
     this.attackProgress = 0
+    this.isAttacking = false
 
     this.sprite = scene.add.sprite(x, y, 'playerIdle')
-
     this.sprite.setScale(3)
-
     this.sprite.play('idle')
   }
 
@@ -28,6 +29,14 @@ export default class Character {
   update(delta) {
     if (!this.target || this.hp <= 0) return
 
+    if (!this.isLocal) {
+      // Personaje remoto: solo animamos la barra de ataque para que se vea
+      // fluida, pero el golpe real solo ocurre cuando llega la confirmación
+      // del servidor via receiveAttack(). Nunca decidimos un ataque aquí.
+      this.attackProgress = Math.min(1, this.attackProgress + (delta / 1000) * this.attackSpeed)
+      return
+    }
+
     this.attackProgress += (delta / 1000) * this.attackSpeed
 
     if (this.attackProgress >= 1) {
@@ -36,9 +45,24 @@ export default class Character {
     }
   }
 
+  // Solo se llama para el personaje LOCAL (isLocal === true).
+  // Ya NO calculamos ni aplicamos daño aquí: solo avisamos la intención
+  // de atacar. El servidor decide el daño real y nos lo devuelve por
+  // 'battle:hit', que GameScene enruta a receiveAttack().
   attackTarget() {
-    if (this.target.hp == 0) return
-    const damage = Math.max(1, this.attack - this.target.defense)
+    console.log('ATTACK TARGET')
+    if (!this.target || this.target.hp <= 0) return
+    this.scene.reportAttack(this.target.name)
+  }
+
+  // Único punto de entrada para aplicar un golpe. Se llama tanto para
+  // confirmar mis propios ataques como para reflejar los del rival,
+  // siempre con daño/hp ya validados por el servidor.
+  receiveAttack(damage, hp) {
+    this.attackProgress = 0
+
+    if (!this.target || this.target.hp <= 0) return
+
     this.isAttacking = true
     this.sprite.setTexture('playerAttack')
     this.sprite.play('attack')
@@ -49,7 +73,10 @@ export default class Character {
       this.isAttacking = false
     })
 
-    this.target.hp -= damage
+    // Preferimos el hp que confirma el servidor; si no viniera, restamos
+    // localmente como respaldo.
+    this.target.hp = hp !== undefined && hp !== null ? hp : Math.max(0, this.target.hp - damage)
+
     if (!this.target.isAttacking) {
       this.target.sprite.stop()
       this.target.sprite.play('hit')
@@ -61,6 +88,7 @@ export default class Character {
         this.target.sprite.play('dead')
       }
     })
+
     this.scene.sound.play('attackSfx', {
       volume: 0.7,
       rate: Phaser.Math.FloatBetween(0.7, 2.5),
@@ -74,6 +102,7 @@ export default class Character {
     this.scene.time.delayedCall(100, () => {
       this.target.sprite.clearTint()
     })
+
     if (this.target.hp <= 0) {
       this.target.hp = 0
       this.scene.lastHitSfx.play()

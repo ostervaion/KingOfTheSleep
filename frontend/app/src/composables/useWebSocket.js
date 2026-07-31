@@ -10,11 +10,13 @@ const gameError = ref(false)
 const gameEnemy = ref('')
 const gameAccepted = ref(false)
 const battlePaused = ref(false)
+const battleHit = ref(null)
 
 const chatMessages = ref([])
 const globalMessages = ref([])
 const myUsername = ref('')
 const battleResume = ref(null)
+const battleOpponentReconnected = ref(0)
 
 // null, 'global' o el username del chat abierto.
 const activeChatTarget = ref(null)
@@ -193,6 +195,22 @@ export function useWebSocket() {
             console.log('FETCH')
             break
 
+          case 'presence:update':
+            if (payload.online) {
+              onlineUsers.value.add(payload.username)
+            } else {
+              if (gameEnemy.value == payload.username) {
+                sendPayload('game:response', {
+                  accepted: false,
+                  target: payload.username,
+                })
+                gameEnemy.value = ''
+              }
+              onlineUsers.value.delete(payload.username)
+              delete lobbyPlayers.value[payload.username]
+            }
+            onlineUsers.value = new Set(onlineUsers.value)
+            break
           case 'sheep_move':
             if (!response.username) break
 
@@ -248,7 +266,10 @@ export function useWebSocket() {
             battlePaused.value = false
             battleResume.value = payload
             break
-
+          case 'battle:hit':
+            console.log('BATTLE HIT RECEIVED', payload)
+            battleHit.value = payload
+            break
           case 'battle:destroyed':
             battlePaused.value = false
             battleResume.value = null
@@ -258,6 +279,7 @@ export function useWebSocket() {
             console.log('[DEBUG] opponent_reconnected')
 
             battlePaused.value = false
+            battleOpponentReconnected.value++
             break
 
           default:
@@ -375,5 +397,7 @@ export function useWebSocket() {
 
     battlePaused,
     battleResume,
+    battleHit,
+    battleOpponentReconnected,
   }
 }

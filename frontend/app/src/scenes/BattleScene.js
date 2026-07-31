@@ -3,7 +3,7 @@ import Character from '../Character.js'
 import BaseScene from './BaseScene.js'
 import { watch } from 'vue'
 import { useWebSocket } from '@/composables/useWebSocket'
-const { battlePaused, sendPayload } = useWebSocket()
+const { battlePaused, sendPayload, battleHit, battleOpponentReconnected } = useWebSocket()
 let scene = null
 let isGamePaused = false
 
@@ -14,6 +14,7 @@ export default class GameScene extends BaseScene {
   init(data) {
     this.playerData = data.player
     this.opponentData = data.opponent
+    this.isReconnect = !!data.reconnect
   }
   preload() {
     this.load.audio('moveSfx', 'gameAssets/move.ogg')
@@ -100,7 +101,7 @@ export default class GameScene extends BaseScene {
     const centerX = this.cameras.main.midPoint.x
 
     const createStats = (score) => ({
-      hp: 100 + score * 4,
+      hp: 5000 + score * 4,
       attack: 70 + score * 0.15,
       attackSpeed: 1 + score * 0.01,
       defense: 5 + score * 0.05,
@@ -111,7 +112,7 @@ export default class GameScene extends BaseScene {
 
     this.player1 = new Character(
       usernamePlayer1,
-      Math.round(s1.hp),
+      this.playerData.hp ?? Math.round(s1.hp),
       Math.round(s1.attack),
       s1.attackSpeed,
       Math.round(s1.defense),
@@ -119,11 +120,12 @@ export default class GameScene extends BaseScene {
       this,
       -centerX * 2,
       300,
+      true,
     )
 
     this.player2 = new Character(
       usernamePlayer2,
-      Math.round(s2.hp),
+      this.opponentData.hp ?? Math.round(s2.hp),
       Math.round(s2.attack),
       s2.attackSpeed,
       Math.round(s2.defense),
@@ -131,13 +133,16 @@ export default class GameScene extends BaseScene {
       this,
       centerX * 2,
       300,
+      false,
     )
-
+    this.player1MaxHp = Math.round(s1.hp)
+    this.player2MaxHp = Math.round(s2.hp)
     this.player2.sprite.setFlipX(true)
   }
   create() {
     this.isGameOver = false
     scene = this
+    this.isGamePaused = this.isReconnect
     this.stopWatch = watch(battlePaused, (paused) => {
       console.log('[DEBUG] watcher disparado, paused =', paused)
       if (paused) {
@@ -145,6 +150,21 @@ export default class GameScene extends BaseScene {
       } else {
         this.resumeBattle()
       }
+    })
+    this.stopHitWatch = watch(battleHit, (payload) => {
+      console.log('HIT WATCH', this.scene.isActive())
+      if (!payload) return
+      const attackerChar = this.player1.name === payload.attacker ? this.player1 : this.player2
+      attackerChar.receiveAttack(payload.damage, payload.targetHp)
+      battleHit.value = null
+    })
+    this.stopReconnectWatch = watch(battleOpponentReconnected, () => {
+      this.resumeBattle()
+    })
+    this.events.once(Phaser.Scenes.Events.DESTROY, () => {
+      this.stopWatch?.()
+      this.stopHitWatch?.()
+      this.stopReconnectWatch?.()
     })
     this.input.mouse.disableContextMenu()
     this.attackSfx = this.sound.add('attackSfx')
@@ -264,12 +284,9 @@ export default class GameScene extends BaseScene {
     this.player1Bar = this.add.graphics()
     this.player2Bar = this.add.graphics()
 
-    this.player1MaxHp = this.player1.hp
-    this.player2MaxHp = this.player2.hp
-
     this.player1HpBar = this.add.graphics()
     this.player2HpBar = this.add.graphics()
-
+    this.drawBars()
     this.player1NameText = this.add
       .text(margin, 75, this.player1.name, {
         fontSize: '16px',
@@ -361,6 +378,17 @@ export default class GameScene extends BaseScene {
         this.player1.setTarget(this.player2)
         this.player2.setTarget(this.player1)
         this.moveSfx.stop()
+        if (this.isReconnect) {
+          sendPayload('game:ready')
+          if (this.player1.hp <= 0) {
+            this.gameOver (this.player2)
+          }
+          if (this.player2.hp <= 0) {
+            this.gameOver (this.player1)
+          }
+        } else {
+          this.isGamePaused = false
+        }
       },
     })
     this.input.on('pointerdown', (pointer) => {
@@ -373,6 +401,10 @@ export default class GameScene extends BaseScene {
   spawnHitParticles(x, y) {
     const range = 20
     this.hitParticles.emitParticleAt(x, y + Phaser.Math.Between(-range, range))
+  }
+  reportAttack(targetName) {
+    console.log('SENDING ATTACK', targetName)
+    sendPayload('game:attack_action', { target: targetName })
   }
 
   spawnJewelRain() {
@@ -518,16 +550,25 @@ export default class GameScene extends BaseScene {
   }
 
   update(time, delta) {
-    if (this.isGamePaused || this.isGameOver || this.player1.hp <= 0) return
+    if (this.isGameOver) return
+
+    // Always keep the UI in sync, even while paused/reconnecting
+    this.drawBars()
+
+    if (this.isGamePaused || this.player1.hp <= 0) return
 
     this.player1.update(delta)
     this.player2.update(delta)
 
+    this.player1NameText.setPosition(20, 75)
+    this.player2NameText.setPosition(this.scale.width - 20, 75)
+  }
+
+  drawBars() {
     const screenW = this.scale.width
     const margin = 20
     const hpBarWidth = 140
     const atkBarWidth = 96
-
     const hpY = 86
     const atkY = 110
 
@@ -539,8 +580,5 @@ export default class GameScene extends BaseScene {
 
     const player2AtkX = screenW - margin - atkBarWidth - 12
     this.drawAttackBar(this.player2Bar, player2AtkX, atkY, this.player2.attackProgress, true)
-
-    this.player1NameText.setPosition(margin, 75)
-    this.player2NameText.setPosition(screenW - margin, 75)
   }
 }
