@@ -145,13 +145,13 @@ async def begin_battle(sender, attacker):
         "last_attack": {},
     }
 
-    active_battles[attacker] = battle
-    active_battles[sender] = battle
-
-    await send_to_users([attacker, sender], {
-        "type": "battle:init",
-        "payload": {"battle": battle["players"]}
-    })
+    if attacker in users and sender in users:
+        active_battles[attacker] = battle
+        active_battles[sender] = battle
+        await send_to_users([attacker, sender], {
+            "type": "battle:init",
+            "payload": {"battle": battle["players"]}
+        })
 
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
