@@ -174,7 +174,7 @@ def _seed_combat_history(session: Session, battles_per_user: int = 4) -> None:
         for _ in range(battles_per_user):
             opponent = choice(opponents_pool)
 
-                    if random() < 0.5:
+            if random() < 0.5:
                 winner, loser = user, opponent
             else:
                 winner, loser = opponent, user
