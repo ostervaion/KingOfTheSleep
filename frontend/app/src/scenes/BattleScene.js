@@ -66,7 +66,6 @@ export default class GameScene extends BaseScene {
     }
   }
   pauseBattle() {
-    console.log('pauseText exists?', !!this.pauseText)
     if (this.isGameOver || this.isGamePaused) {
       return
     }
@@ -130,11 +129,15 @@ export default class GameScene extends BaseScene {
     this.player2.sprite.setFlipX(true)
   }
   create() {
+    if (this.sound.context.state === 'suspended') {
+      this.input.once('pointerdown', async () => {
+        await this.sound.context.resume()
+      })
+    }
     this.isGameOver = false
     scene = this
     this.isGamePaused = this.isReconnect
     this.stopWatch = watch(battlePaused, (paused) => {
-      console.log('[DEBUG] watcher disparado, paused =', paused)
       if (paused) {
         this.pauseBattle()
       } else {
@@ -142,7 +145,6 @@ export default class GameScene extends BaseScene {
       }
     })
     this.stopHitWatch = watch(battleHit, (payload) => {
-      console.log('HIT WATCH', this.scene.isActive())
       if (!payload) return
       const attackerChar = this.player1.name === payload.attacker ? this.player1 : this.player2
       attackerChar.receiveAttack(payload.damage, payload.targetHp)
@@ -318,8 +320,8 @@ export default class GameScene extends BaseScene {
     this.player1.sprite.play('run')
     this.player2.sprite.play('run')
     this.moveSfx.play({
-      loop: true,
-      rate: 2,
+    loop: true,
+    rate: 2,
     })
 
     this.tweens.add({
@@ -388,7 +390,6 @@ export default class GameScene extends BaseScene {
     this.hitParticles.emitParticleAt(x, y + Phaser.Math.Between(-range, range))
   }
   reportAttack(targetName) {
-    console.log('SENDING ATTACK', targetName)
     sendPayload('game:attack_action', { target: targetName })
   }
 

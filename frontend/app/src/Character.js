@@ -50,7 +50,6 @@ export default class Character {
   // de atacar. El servidor decide el daño real y nos lo devuelve por
   // 'battle:hit', que GameScene enruta a receiveAttack().
   attackTarget() {
-    console.log('ATTACK TARGET')
     if (!this.target || this.target.hp <= 0) return
     this.scene.reportAttack(this.target.name)
   }

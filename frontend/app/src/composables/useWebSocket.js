@@ -268,7 +268,6 @@ export function useWebSocket() {
             battleResume.value = payload
             break
           case 'battle:hit':
-            console.log('BATTLE HIT RECEIVED', payload)
             battleHit.value = payload
             break
           case 'battle:destroyed':

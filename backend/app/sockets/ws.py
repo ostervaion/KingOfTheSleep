@@ -119,7 +119,7 @@ async def broadcast_all(payload: dict):
         except Exception:
             pass
 
-async def begin_battle(sender, attacker) :
+async def begin_battle(sender, attacker):
     pending_challenges.pop(attacker, None)
     pending_challenges.pop(sender, None)
     attacker_stats = compute_stats(attacker)
@@ -127,14 +127,16 @@ async def begin_battle(sender, attacker) :
 
     battle = {
         "players": {
-            "attacker": {
+            attacker: {
                 "username": attacker,
                 "attackProgress": 0,
+                "maxHp": attacker_stats["hp"],
                 **attacker_stats,
             },
-            "sender": {
+            sender: {
                 "username": sender,
                 "attackProgress": 0,
+                "maxHp": sender_stats["hp"],
                 **sender_stats,
             },
         },

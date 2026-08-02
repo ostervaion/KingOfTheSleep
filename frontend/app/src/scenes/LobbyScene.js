@@ -25,7 +25,6 @@ watch(
     if (!scene) return
     for (const username of Object.keys(scene.players)) {
       if (!(username in players)) {
-        console.log('sheep logged out', username)
         scene.players[username].sprite.destroy()
         scene.players[username].label.destroy()
         delete scene.players[username]
@@ -37,7 +36,6 @@ watch(
 
 watch(gameError, (stat) => {
   if (scene.popup) scene.closePopup()
-  console.log('declined or offline')
   const width = 160
   const height = 70
 
@@ -107,7 +105,6 @@ watch(gameEnemy, (enemy) => {
     .setInteractive()
 
   acceptBtn.on('pointerdown', (pointer, localX, localY, event) => {
-    console.log('Accepted battle')
     if (event) event.stopPropagation()
     gameEnemy.value = ''
     sendPayload('game:response', { accepted: true, target: enemy })
@@ -119,7 +116,6 @@ watch(gameEnemy, (enemy) => {
   })
 
   declineBtn.on('pointerdown', (pointer, localX, localY, event) => {
-    console.log('Declined battle')
     if (event) event.stopPropagation()
     gameEnemy.value = ''
     sendPayload('game:response', { accepted: false, target: enemy })
@@ -135,43 +131,38 @@ watch(gameEnemy, (enemy) => {
 })
 
 // Accepter's path: fires once the server confirms and sends real player stats.
-watch(battleInitData, (battle) => {
-  let enemy = null
-  if (!battle || !scene ) return 
-  if (!scene.pendingOpponent){
-    user1 = battle["attacker"].username
-    user2 = battle["sender"].username
-    if (scene.myUsername == user1) {
-      enemy = user2  
-    }
-    else {
-      enemy = user1 
-    }
-  }
-  else {
-    enemy = scene.pendingOpponent
-  }
-  scene.pendingOpponent = null
+watch(
+  battleInitData,
+  (battle) => {
+    if (!battle || !scene) return
 
-  console.log('[STATS] battleInitData (accepter):', battle)
+    let enemy
 
-  scene.switchScene('GameScene', {
-    player: battle[myUsername.value],
-    opponent: battle[enemy],
-  })
-},{ deep: true },)
+    if (scene.pendingOpponent) {
+      enemy = scene.pendingOpponent
+    } else {
+      enemy = Object.keys(battle).find((username) => username !== myUsername.value)
+    }
+
+    scene.pendingOpponent = null
+
+    scene.switchScene('GameScene', {
+      player: battle[myUsername.value],
+      opponent: battle[enemy],
+    })
+  },
+  { deep: true },
+)
 
 // Attacker's path: fires once the server confirms the challenge was accepted.
 watch(gameAccepted, (answer) => {
   if (answer) {
-    console.log('Accepted battle')
     gameAccepted.value = false
     waitingResponse = false
     scene.closePopup()
     sendPayload('game:disconnect')
 
     const battle = battleInitData.value
-    console.log('[STATS] battleInitData (attacker):', battle)
     if (!battle) {
       console.warn('gameAccepted fired but battleInitData is still null')
       return
@@ -268,7 +259,6 @@ export default class LobbyScene extends BaseScene {
         //this.switchScene('GameScene')
       } else {
         this.target.set(pointer.worldX, pointer.worldY)
-        console.log('sending', this.target)
         sendPayload('lobby:move', {
           x: Math.round(this.target.x),
           y: Math.round(this.target.y),
@@ -291,12 +281,13 @@ export default class LobbyScene extends BaseScene {
   }
 
   spawnPlayers(players) {
+    if (!this.sys.isActive()) return
+    if (!this.physics?.add) return
     for (const [username, [x, y]] of Object.entries(players)) {
       if (username == myUsername.value) continue
 
       const existing = this.players[username]
       if (!existing || !existing.sprite || !existing.sprite.active) {
-        console.log('new sheep', username)
         this.players[username] = {
           sprite: this.physics.add.sprite(x, y, 'sheep').setScale(0.05).setInteractive(),
           label: this.add
@@ -310,12 +301,10 @@ export default class LobbyScene extends BaseScene {
         }
         this.players[username].sprite.on('pointerdown', (pointer, localX, localY, event) => {
           if (this.popup) return
-          console.log('Sheep clicked: ', username)
           event.stopPropagation()
           this.showConfirmPopup(username)
         })
       } else {
-        console.log('sheep move', username, existing.target)
         existing.target.set(x, y)
       }
     }
@@ -383,10 +372,8 @@ export default class LobbyScene extends BaseScene {
       .setInteractive()
 
     confirmBtn.on('pointerdown', (pointer, localX, localY, event) => {
-      console.log('Going into battle')
       if (event) event.stopPropagation()
       waitingResponse = true
-      console.log('confirmed action against', username)
       this.attackTarget = username
       sendPayload('game:attack', { user: username })
 
@@ -394,7 +381,6 @@ export default class LobbyScene extends BaseScene {
     })
 
     cancelBtn.on('pointerdown', (pointer, localX, localY, event) => {
-      console.log('Battle cancelled')
       if (event) event.stopPropagation()
       this.closePopup()
     })
