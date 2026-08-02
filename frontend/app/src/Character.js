@@ -76,11 +76,7 @@ export default class Character {
       }
     })
 
-    this.scene.sound.play('attackSfx', {
-      volume: 0.7,
-      rate: Phaser.Math.FloatBetween(0.7, 2.5),
-    })
-
+    // hit effect at target position
     this.scene.spawnHitParticles(this.target.sprite.x, this.target.sprite.y)
     this.scene.cameras.main.shake(100, 0.005)
     this.target.sprite.setTint(0xff0000)
@@ -91,7 +87,6 @@ export default class Character {
 
     if (this.target.hp <= 0) {
       this.target.hp = 0
-      this.scene.lastHitSfx.play()
       this.scene.anims.globalTimeScale = 0.2
       this.scene.time.delayedCall(2100, () => {
         this.target.sprite.setVisible(false)

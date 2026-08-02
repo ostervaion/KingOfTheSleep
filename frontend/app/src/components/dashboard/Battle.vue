@@ -42,6 +42,9 @@ onMounted(() => {
         debug: false,
       },
     },
+    audio: {
+      noAudio: true,
+    },
     scene: [LobbyScene, GameScene],
   })
 })

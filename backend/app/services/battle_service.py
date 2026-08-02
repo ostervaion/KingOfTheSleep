@@ -109,14 +109,14 @@ def getElo(id: int, session: Session) :
 
     return(user.elo_score)
 
-def gainExperience(id: int, session: Session) :
+def gainExperience(id: int, session: Session, amount: int) :
     user = session.exec(select(UserProfile).where(
         UserProfile.user_id == id
     )).first()
     if user is None :
         return
     print(user)
-    user.exp += 10
+    user.exp += amount
     session.add(user)
     session.commit()
     session.refresh(user)
@@ -183,6 +183,10 @@ def record_combat(
         editElo(userA["performance"], idA, newRaitingA, session)
         editElo(userB["performance"], idB, newRaitingB, session)
 
-        gainExperience(idA, session)
-        gainExperience(idB, session)
+        if idA == winner:
+            gainExperience(idA, session, amount=40)
+            gainExperience(idB, session, amount=10)
+        else:
+            gainExperience(idA, session, amount=10)
+            gainExperience(idB, session, amount=40)
 
