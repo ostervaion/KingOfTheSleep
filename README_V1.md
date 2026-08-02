@@ -71,7 +71,7 @@ Follow the steps below to set up the project using the repository's `Makefile`.
    make populate
    ```
 
-6. Open the application's landing page in your default web browser by running:
+6. Open the application's landing page in your default web browser by running (linux only):
 
    ```bash
    make open-https
@@ -101,7 +101,8 @@ These are real references and official documentation links for the technologies 
 - Docker Compose documentation: https://docs.docker.com/compose/
 - Caddy documentation: https://caddyserver.com/docs/
 - MDN WebSockets API: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
-
+- Coraza WAF: https://www.coraza.io/docs/tutorials/introduction/
+- OWASP Core Ruleset: https://coreruleset.org/docs/1-getting-started/1-1-crs-installation/
 # 4. Team Information
 
 All team members participated as developers while also taking responsibility for specific product, management and technical areas.
@@ -270,10 +271,10 @@ The following table summarises the features implemented in the final application
 
 # 9. Modules:
 
-## 1. Use a framework for both the frontend and backend (Major)
+## 1. Use a framework for both the frontend and backend (Major - All)
 We used different frameworks for the project: Vue.js for the frontend and Tailwind CSS for styling, while the backend is built with FastAPI.
 
-## 2. Implement real-time features using WebSockets or similar technology. (Major)
+## 2. Implement real-time features using WebSockets or similar technology. (Major - eloymart, imugica-, anagomez)
 We used WebSockets throughout the project for several core features:
 - Global chat, allowing users to communicate with everyone.
 - Private chat, enabling one-to-one conversations.
@@ -283,41 +284,46 @@ We used WebSockets throughout the project for several core features:
 - The game itself, synchronizing combat actions and states.
 - The online user list, showing which users are currently connected.
 
-## 3. Allow users to interact with other users (Major)
+## 3. Allow users to interact with other users (Major - eloymart, martimar)
 Users can interact with one another through private and group chats, add or remove friends, and view each other’s connection status. They can also access another user’s profile, statistics, and relevant sleep information when they have battled that person. To access these features, users can click on a player in the ranking.
 
-## 4. A public API to interact with the database with a secured API key, rate limiting, documentation, and at least 5 endpoints (Major)
+## 4. A public API to interact with the database with a secured API key, rate limiting, documentation, and at least 5 endpoints (Major - eloymart)
 We built a public API that allows users to create API keys to view, update, or delete their own data. After logging in, users can access /public_api to generate a unique API key, give it a name, and manage it. The same page also includes an API playground where users can test the endpoints in real time. The API provides five different endpoints (PATCH, PUT, DELETE, and GET) and its documentation is available at /api_docs.
 
-## 5. Use an ORM for the database (Minor)
+## 5. Use an ORM for the database (Minor - eloymart, juetxeba)
 We use SQLModel as our ORM, combining Pydantic and SQLAlchemy to provide a simple and expressive way to manage the database.
 
-## 6. Support for additional browsers (Minor)
+## 6. Support for additional browsers (Minor - All)
 The project has been tested in multiple browsers, including Brave, Mozilla Firefox, Safari, and Google Chrome.
 
-## 7. Standard user management and authentication (Major)
+## 7. Standard user management and authentication (Major - eloymart)
 Users can update their profile information, such as email and password, and upload an avatar to the server through the profile settings page. The friends system also lets them see each other’s online status and receive chat notifications when a friend is online.
 
-## 8. Game statistics and match history (Major)
+## 8. Game statistics and match history (Major - All)
 The app includes a complete statistics system. From the dashboard, users can view rankings, wins and losses, level, Elo, and match history. Scheduled battles (excluding lobby battles) are stored and can be reviewed in detail from the “See all” section in the Today Stats module. Achievements linked to experience are visible on the dashboard above the level bar, and ranking positions and progress changes can be consulted at any time.
 
-## 9. Advanced permissions system (Major)
+## 9. Advanced permissions system (Major - eloymart)
 By default, all users are regular users. A user can create an admin account with the make admin command, which prints the admin username and password in the console. After logging in, the admin can access /admin, where they can manage users through a full CRUD interface. This view is only available to administrators. The admin panel can also be used to schedule extra battles for debugging and testing purposes.
 
-## 10. User activity analytics and insights dashboard (Minor)
+## 10. User activity analytics and insights dashboard (Minor - martimar)
 Users can access their recorded activity data, including their daily sleep entries, and review analytics and progress across different areas such as sleep protocol impact, combat history, and experience-based achievements.
 
-## 11. Implement a complete web-based game where users can play against each other (Major)
+## 11. Implement a complete web-based game where users can play against each other (Major - anagomez, imugica-)
 The game is composed of several areas:
 - The lobby, where online users can see one another in real time and challenge each other to battles.
 - Real-time combat, where users are matched based on the statistics generated that day and fight synchronously in an autobattle experience.
 - Backend-scheduled battles, where automated battles are generated regularly in the backend so the game continues to evolve even when users are not directly interacting with the frontend.
 
-## 12. Remote players (Major)
+## 12. Remote players (Major - anagomez, imugica-)
 The lobby and gameplay are fully online and synchronized. Presence and game state are managed in real time, allowing users to connect and reconnect smoothly from different locations.
 
-## 13. A gamification system to reward users for their actions (Minor)
+## 13. A gamification system to reward users for their actions (Minor - martimar)
 The app includes achievements, complete leaderboards, experience points, levels, and a visual progression system in the user profile that reflects progress after each battle round.
+
+## 14. Optional module, development utils (Minor - juetxeba)
+This module focuses on making the development workspace easier to use, building on the project's existing integrations to streamline the development process. A Makefile system lets developers interact with the container setup without needing to run Docker commands directly. The developer build supports live reloading (FastAPI's --reload flag on the backend and Vite on the frontend) so changes appear immediately without rebuilding images, thanks to a shared volume system. The Makefile also includes populate and admin commands for generating test data.
+
+The main challenges were designing a system usable without prior knowledge of containers, and doing so while accounting for Python's learning curve. Overall, this module supports manual testing and a smoother development workflow.
 
 # 10. Individual Contributions:
 
