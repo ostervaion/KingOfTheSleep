@@ -210,6 +210,33 @@ Another advantage of Caddy is its plugin system, which allows developers to easi
 
 # 9. Modules:
 
+## 1. Use a framework for both the frontend and backend (Major)
+
+## 2. Implement real-time features using WebSockets or similar technology. (Major)
+
+## 3. Allow users to interact with other users (Major)
+
+## 4. A public API to interact with the database with a secured API key, rate limiting, documentation, and at least 5 endpoints (Major)
+
+## 5. Use an ORM for the database (Minor)
+
+## 6. Support for additional browsers (Minor)
+
+## 7. Standard user management and authentication (Major)
+
+## 8. Game statistics and match history (Major)
+
+## 9. Advanced permissions system (Major)
+
+## 10. User activity analytics and insights dashboard (Minor)
+
+## 11. Implement a complete web-based game where users can play against each other (Major)
+
+## 12. Remote players (Major)
+
+## 13. A gamification system to reward users for their actions (Minor)
+
+
 # 10. Individual Contributions:
 
 ## 10.1 Eloymart
@@ -304,7 +331,7 @@ These assets were integrated into Phaser to provide a cohesive and polished visu
 
 4. **Mathematical model:** The comparisons are completely objective, based on different mathematical equations with real data entered by the user.
 
-The main challenge was the communication through web socket, as I had never used them before
+The main challenge was the communication through web socket, as I had never used them before.
 
 ## 10.5 Juetxeba
 
