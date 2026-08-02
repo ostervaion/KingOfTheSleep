@@ -79,7 +79,28 @@ Follow the steps below to set up the project using the repository's `Makefile`.
 
 7. When your browser displays a security warning because of the self-signed SSL certificate, accept the risk and continue to access the application.
 
-# 3. Resources: 
+# 3. Resources:
+
+These are real references and official documentation links for the technologies used in this project:
+
+## Frontend
+- Vue 3 documentation: https://vuejs.org/guide/introduction.html
+- Vite documentation: https://vite.dev/guide/
+- Pinia documentation: https://pinia.vuejs.org/
+- Tailwind CSS documentation: https://tailwindcss.com/docs/installation
+- Axios documentation: https://axios-http.com/docs/intro
+- Phaser 3 documentation: https://phaser.io/docs/3.80.0/index
+
+## Backend and data
+- FastAPI documentation: https://fastapi.tiangolo.com/
+- SQLModel documentation: https://sqlmodel.tiangolo.com/
+- PostgreSQL documentation: https://www.postgresql.org/docs/
+- PyJWT documentation: https://pyjwt.readthedocs.io/en/stable/
+
+## Infrastructure and real-time
+- Docker Compose documentation: https://docs.docker.com/compose/
+- Caddy documentation: https://caddyserver.com/docs/
+- MDN WebSockets API: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
 
 # 4. Team Information
 
@@ -205,37 +226,60 @@ Caddy was chosen because it is a modern web server written in Go that emphasizes
 Another advantage of Caddy is its plugin system, which allows developers to easily extend its functionality. In this project, the Coraza Web Application Firewall (WAF) plugin was integrated to improve the security of the application's endpoints by providing protection against common web attacks.
 
 # 7. Database Schema:
+![Image of Schema DB.](/KOTS_DB_SCHEMA.jpeg)
 
 # 8. Features List:
 
 # 9. Modules:
 
 ## 1. Use a framework for both the frontend and backend (Major)
+We used different frameworks for the project: Vue.js for the frontend and Tailwind CSS for styling, while the backend is built with FastAPI.
 
 ## 2. Implement real-time features using WebSockets or similar technology. (Major)
+We used WebSockets throughout the project for several core features:
+- Global chat, allowing users to communicate with everyone.
+- Private chat, enabling one-to-one conversations.
+- Chat notifications, indicating unread messages.
+- Dashboard updates, triggering refreshes when new data is available.
+- The lobby, where online users can be seen in real time and challenged to battles.
+- The game itself, synchronizing combat actions and states.
+- The online user list, showing which users are currently connected.
 
 ## 3. Allow users to interact with other users (Major)
+Users can interact with one another through private and group chats, add or remove friends, and view each other’s connection status. They can also access another user’s profile, statistics, and relevant sleep information when they have battled that person. To access these features, users can click on a player in the ranking.
 
 ## 4. A public API to interact with the database with a secured API key, rate limiting, documentation, and at least 5 endpoints (Major)
+We built a public API that allows users to create API keys to view, update, or delete their own data. After logging in, users can access /public_api to generate a unique API key, give it a name, and manage it. The same page also includes an API playground where users can test the endpoints in real time. The API provides five different endpoints (PATCH, PUT, DELETE, and GET) and its documentation is available at /api_docs.
 
 ## 5. Use an ORM for the database (Minor)
+We use SQLModel as our ORM, combining Pydantic and SQLAlchemy to provide a simple and expressive way to manage the database.
 
 ## 6. Support for additional browsers (Minor)
+The project has been tested in multiple browsers, including Brave, Mozilla Firefox, Safari, and Google Chrome.
 
 ## 7. Standard user management and authentication (Major)
+Users can update their profile information, such as email and password, and upload an avatar to the server through the profile settings page. The friends system also lets them see each other’s online status and receive chat notifications when a friend is online.
 
 ## 8. Game statistics and match history (Major)
+The app includes a complete statistics system. From the dashboard, users can view rankings, wins and losses, level, Elo, and match history. Scheduled battles (excluding lobby battles) are stored and can be reviewed in detail from the “See all” section in the Today Stats module. Achievements linked to experience are visible on the dashboard above the level bar, and ranking positions and progress changes can be consulted at any time.
 
 ## 9. Advanced permissions system (Major)
+By default, all users are regular users. A user can create an admin account with the make admin command, which prints the admin username and password in the console. After logging in, the admin can access /admin, where they can manage users through a full CRUD interface. This view is only available to administrators. The admin panel can also be used to schedule extra battles for debugging and testing purposes.
 
 ## 10. User activity analytics and insights dashboard (Minor)
+Users can access their recorded activity data, including their daily sleep entries, and review analytics and progress across different areas such as sleep protocol impact, combat history, and experience-based achievements.
 
 ## 11. Implement a complete web-based game where users can play against each other (Major)
+The game is composed of several areas:
+- The lobby, where online users can see one another in real time and challenge each other to battles.
+- Real-time combat, where users are matched based on the statistics generated that day and fight synchronously in an autobattle experience.
+- Backend-scheduled battles, where automated battles are generated regularly in the backend so the game continues to evolve even when users are not directly interacting with the frontend.
 
 ## 12. Remote players (Major)
+The lobby and gameplay are fully online and synchronized. Presence and game state are managed in real time, allowing users to connect and reconnect smoothly from different locations.
 
 ## 13. A gamification system to reward users for their actions (Minor)
-
+The app includes achievements, complete leaderboards, experience points, levels, and a visual progression system in the user profile that reflects progress after each battle round.
 
 # 10. Individual Contributions:
 

@@ -83,6 +83,26 @@ make up-build
 
 ---
 
+## Resources
+
+These are real references and official documentation links for the technologies used in this project:
+
+- Vue 3 documentation: https://vuejs.org/guide/introduction.html
+- Vite documentation: https://vite.dev/guide/
+- Pinia documentation: https://pinia.vuejs.org/
+- Tailwind CSS documentation: https://tailwindcss.com/docs/installation
+- Axios documentation: https://axios-http.com/docs/intro
+- Phaser 3 documentation: https://phaser.io/docs/3.80.0/index
+- FastAPI documentation: https://fastapi.tiangolo.com/
+- SQLModel documentation: https://sqlmodel.tiangolo.com/
+- PostgreSQL documentation: https://www.postgresql.org/docs/
+- PyJWT documentation: https://pyjwt.readthedocs.io/en/stable/
+- Docker Compose documentation: https://docs.docker.com/compose/
+- Caddy documentation: https://caddyserver.com/docs/
+- MDN WebSockets API: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
+
+---
+
 ## Production switch
 
 1. In `.env` set `FRONTEND_BUILD_TARGET=production`.
