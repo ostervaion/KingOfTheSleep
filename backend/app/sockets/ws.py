@@ -6,7 +6,8 @@ from sqlmodel import Session, select
 
 from core.database import engine
 
-connections: dict[WebSocket, str] = {}
+# Diccionarios globales para rastrear las conexiones
+connections: dict[WebSocket, str] = {}  # websocket -> username
 users: dict[str, WebSocket] = {}        # username -> websocket
 game_positions: dict[str, tuple[int, int]] = {}
 pending_challenges: dict[str, str] = {}  # attacker_username -> target_username (awaiting response)
@@ -203,6 +204,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         "payload": {"online": list(users.keys())}
                     }))
                 except Exception:
+                    # Si el token es inválido o expiró
                     await websocket.send_text(json.dumps({
                         "type": "auth:fail", 
                         "payload": "Invalid or expired token"
@@ -285,11 +287,13 @@ async def websocket_endpoint(websocket: WebSocket):
                                 "username": attacker,
                                 "attackProgress": 0,
                                 "maxHp": attacker_stats["hp"],
+                                **attacker_stats,
                             },
                             sender: {
                                 "username": sender,
                                 "attackProgress": 0,
                                 "maxHp": sender_stats["hp"],
+                                **sender_stats,
                             },
                         },
                         "paused": False,
@@ -336,11 +340,14 @@ async def websocket_endpoint(websocket: WebSocket):
 
                 opponent_name = next((p for p in battle["players"] if p != sender), None)
 
+                # only resume once the OTHER player is actually connected
                 if opponent_name in users:
                     battle["paused"] = False
                     battle["last_attack"] = {}
 
+                    # tell the reconnecting client it can start
                     await websocket.send_text(json.dumps({"type": "battle:opponent_reconnected"}))
+                    # tell the other client too, in case they were paused/waiting
                     await users[opponent_name].send_text(json.dumps({"type": "battle:opponent_reconnected"}))
                 continue
             if msg_type == 'game:attack_action':
@@ -352,6 +359,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
                 players = battle["players"]
 
+                # El objetivo tiene que ser exactamente el rival real de ESTA batalla
                 opponent_of_sender = next((p for p in players if p != sender), None)
                 if target != opponent_of_sender:
                     continue
@@ -368,6 +376,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     print("[DEBUG] attack ignored because battle paused")
                     continue
 
+                # Rate limit: no se puede atacar más rápido de lo que attackSpeed permite
                 now = time.monotonic()
                 min_interval = 1.0 / attacker_stats["attackSpeed"]
                 last = battle.setdefault("last_attack", {}).get(sender, 0)
@@ -375,6 +384,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     continue
                 battle["last_attack"][sender] = now
 
+                # El daño se calcula SIEMPRE aquí, nunca se confía en lo que manda el cliente
                 damage = max(1, round(attacker_stats["attack"] - target_stats["defense"]))
                 target_stats["hp"] = max(0, target_stats["hp"] - damage)
 
@@ -388,6 +398,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     }
                 })
 
+                # Se lo mandamos a AMBOS jugadores, incluido el propio atacante
                 for name in (sender, target):
                     if name in users:
                         try:

@@ -7,8 +7,8 @@ class APIKey(SQLModel, table=True):
     __tablename__ = "api_keys"
 
     id: int | None = Field(default=None, primary_key=True)
-    name: str = Field(nullable=False)
-    key_prefix: str = Field(index=True, nullable=False)
+    name: str = Field(nullable=False)  # etiqueta descriptiva, ej "bot de Telegram"
+    key_prefix: str = Field(index=True, nullable=False)  # primeros chars, visibles en listados
     key_hash: str = Field(index=True, unique=True, nullable=False)
     owner_id: int | None = Field(default=None, foreign_key="users.id", index=True)
     active: bool = Field(default=True, nullable=False)

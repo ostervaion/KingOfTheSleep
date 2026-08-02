@@ -36,6 +36,8 @@ def delete_user(username: str, current_user=Depends(get_current_active_user), se
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
+    # Borramos primero todo lo que depende del usuario, si no la FK constraint
+    # hace que el delete del User falle (por eso no funcionaba antes).
     profile = session.exec(select(UserProfile).where(UserProfile.user_id == user.id)).first()
     if profile is not None:
         session.delete(profile)
@@ -76,5 +78,5 @@ def delete_user(username: str, current_user=Depends(get_current_active_user), se
         session.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Cant delete this user.",
+            detail="No se pudo eliminar el usuario",
         )

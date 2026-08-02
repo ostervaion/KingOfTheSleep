@@ -2,11 +2,19 @@ from pydantic import BaseModel
 from datetime import datetime
 from sqlmodel import SQLModel
  
+
+
+
 class ProtocolImpactRead(BaseModel):
-    id: int
-    name: str
-    percentage: float
-    daysUsed: int
+    """
+    DTO for the Protocol Impact widget.
+    Not tied to any single table — computed by combining
+    UserProtocol (usage dates) + ScoreHistory (sleep scores).
+    """
+    id: int          # protocol_id
+    name: str        # protocol name
+    percentage: float  # % impact vs baseline, computed server-side
+    daysUsed: int      # count of days this protocol was used
 
 
     
@@ -14,7 +22,7 @@ class RankedProtocolData(BaseModel):
 
     ranking: int
     protocol: str
-    usage: int
+    usage: int  #should this be a float?
     winrate: float
 
 class RankedProtocolsRead(BaseModel):

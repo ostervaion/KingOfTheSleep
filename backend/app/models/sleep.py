@@ -1,6 +1,10 @@
 from datetime import datetime
+
 from sqlmodel import Field, SQLModel
 
+
+# Información RAW (sin tocar) del JSON (futura API woop). Actualmente un formulario.
+# Faltaria implementar el prtocolo usado pero en principio usaremos otra tabla.
 class SleepData(SQLModel, table=True):
     __tablename__ = "sleep_data"
 

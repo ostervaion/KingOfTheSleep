@@ -1,6 +1,9 @@
 from datetime import datetime
+
 from sqlmodel import Field, SQLModel
 
+
+# Tabla para gestionar el historico de batallas de forma sencilla e intuitiva.
 class CombatHistory(SQLModel, table=True):
     __tablename__ = "combat_history"
     id: int | None = Field(default=None, primary_key=True)

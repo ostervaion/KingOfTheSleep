@@ -7,6 +7,7 @@ from models import (
     SleepData,
 )
 
+
 def build_sleep_score(session, current_user_id: int, now: datetime):
     seven_days_ago = now - timedelta(days=7)
     records = session.exec(

@@ -1,5 +1,7 @@
 from sqlmodel import select
+
 from models import UserProfile
+
 
 def get_experience(session, current_user_id: int):
     user = session.exec(
