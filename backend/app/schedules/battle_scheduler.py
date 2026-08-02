@@ -6,6 +6,7 @@ from collections import defaultdict
 from sqlmodel import Session, select
 from core.database import engine
 from sockets import begin_battle
+from sockets.ws import broadcast_fetch
 
 
 # Variables globales para configuración del scheduler
@@ -73,7 +74,6 @@ def _make_pairs(entries: list[SleepData]) -> list[tuple[SleepData, SleepData]]:
 
     return pairs
 
-
 async def start_battle():
     global today
 
@@ -91,6 +91,7 @@ async def start_battle():
         today_battles.clear()
         today = key
 
+    # Mantener la sesión abierta o extraer los datos limpios en memoria
     with Session(engine) as session:
         sleepers = session.exec(
             select(SleepData).where(
@@ -99,20 +100,35 @@ async def start_battle():
             )
         ).all()
 
-    if len(sleepers) < 2:
-        print(
-            f"⚠️ Matchmaking {key}: "
-            f"only {len(sleepers)} entries, not enough"
-        )
-        return
+        if len(sleepers) < 2:
+            print(f"⚠️ Matchmaking {key}: only {len(sleepers)} entries, not enough")
+            return
 
-    pairs = _make_pairs(sleepers)
+        pairs = _make_pairs(sleepers)
 
+    # Importación dentro o fuera de la función
     from services import record_combat
+
     for p1, p2 in pairs:
         print(f"🥊 {p1.username} vs {p2.username}")
-        record_combat(p1.user_id, p2.user_id)
-        await begin_battle(p1.username, p2.username)
+        try:
+            # Ejecutar la persistencia de combate
+            record_combat(p1.user_id, p2.user_id)
+            
+            # Emitir por WebSocket de manera asíncrona
+            await begin_battle(p1.username, p2.username)
+        except Exception as e:
+            print(f"❌ Error durante el combate {p1.username} vs {p2.username}: {e}")
+
+    # Transmitir actualización global
+    try:
+        if asyncio.iscoroutinefunction(broadcast_fetch):
+            await broadcast_fetch()
+        else:
+            broadcast_fetch()
+    except Exception as e:
+        print(f"❌ Error en broadcast_fetch: {e}")
+
 
 
 def _update_next_battle_time():
