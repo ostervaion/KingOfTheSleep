@@ -230,6 +230,44 @@ Another advantage of Caddy is its plugin system, which allows developers to easi
 
 # 8. Features List:
 
+The following table summarises the features implemented in the final application, the team members who worked on each one and their main functionality. When a feature involved several layers of the project, all principal contributors are listed.
+
+| Implemented feature | Team member(s) | Functionality |
+|---|---|---|
+| **User registration and login** | **eloymart** | Allows users to create an account and log in through the Vue interface. The FastAPI backend validates the submitted data, hashes passwords and issues JWT bearer tokens for authenticated requests. |
+| **Authentication state and protected routes** | **eloymart** | Stores the authenticated session in the Pinia store, attaches the bearer token to API requests and prevents unauthenticated users from opening protected frontend views. |
+| **Profile management** | **eloymart, martimar** | Lets users view and update their account information, change their email or password and manage their profile from the dashboard interface. |
+| **Profile avatar uploads** | **eloymart, martimar** | Allows users to upload a personal image, stores the avatar on the backend and displays it in profiles, rankings and other dashboard sections. |
+| **Sleep-data entry** | **eloymart, martimar** | Provides a form for recording daily sleep metrics such as time in bed, sleep phases, disturbances, performance, consistency and efficiency. The submitted data is stored in PostgreSQL and used by the dashboard and game systems. |
+| **Centralised dashboard data loading** | **eloymart, martimar, juetxeba** | Retrieves the information required by the dashboard in a central request and distributes it to its components, reducing duplicated requests and keeping the displayed data consistent. |
+| **Weekly sleep-score visualisation** | **martimar, eloymart** | Displays recent sleep performance in a Chart.js graph, including daily values, current results and comparisons across the week. |
+| **Player ranking and Elo progression** | **eloymart, martimar, juetxeba** | Builds a leaderboard from the latest player scores and shows ranking position, Elo points, position changes, avatar and experience. |
+| **Sleep protocols** | **juetxeba, eloymart, martimar** | Lets users select the protocols followed during the day and displays their estimated impact. It also calculates global protocol usage and win-rate rankings. |
+| **Today's statistics and battle history** | **juetxeba, martimar, eloymart** | Shows daily wins and losses and provides a detailed history of scheduled battles, including opponents, result, avatars, protocols and sleep statistics. |
+| **Experience, levels and achievements** | **martimar, eloymart, juetxeba** | Rewards participation with experience points, calculates the user's level and displays progression and achievement badges in the profile and ranking interfaces. |
+| **Real-time WebSocket connection system** | **eloymart, anagomez, imugica-** | Authenticates connected users and carries presence updates, chats, lobby movement, battle events, reconnection state and dashboard-refresh notifications in real time. |
+| **Private chat** | **eloymart** | Enables direct real-time messages between two users and organises them into individual conversations with unread-message indicators. |
+| **Global chat** | **eloymart** | Provides a shared real-time chat room in which all connected users can communicate. |
+| **Friends and online presence** | **eloymart** | Allows users to add or remove friends, view their friend list, see who is currently online and open related social interactions. |
+| **Multiplayer lobby** | **anagomez, imugica-** | Places connected players in a shared Phaser arena, represents each user with a character and synchronises movement and disconnection events between clients. |
+| **Player-to-player challenges** | **anagomez, eloymart, imugica-** | Lets a player challenge another connected user from the lobby. The recipient can accept or decline, after which the server starts or cancels the battle flow. |
+| **Real-time combat system** | **imugica-, anagomez** | Runs two-player battles using health, attack, defence and attack-speed statistics derived from sleep data. The server validates attacks and synchronises damage and health updates between both players. |
+| **Combat animations, audio and visual effects** | **imugica-** | Adds character animations, health and attack-progress bars, sound effects, hit particles, death animations, victory effects, battle backgrounds and scene transitions to the Phaser game. |
+| **Battle reconnection and resume** | **imugica-** | Pauses an active battle when a player disconnects and restores the player, current health and battle state when they reconnect. |
+| **Automatic matchmaking and scheduled battles** | **anagomez, juetxeba, imugica-** | Matches users who submitted sleep data, calculates combat results from their real metrics, records scheduled battles and allows the battle interval or extra battles to be managed. |
+| **Administrator panel and permissions** | **eloymart, juetxeba** | Provides administrator-only user management, including viewing, editing, activating, deactivating and deleting accounts, as well as controls for battle scheduling. Admin accounts can be created through a Makefile command. |
+| **API-key management** | **eloymart** | Allows authenticated users to generate named API keys, view their prefixes and usage information, and revoke keys that are no longer required. |
+| **Secured public sleep-data API** | **eloymart** | Exposes five API-key-protected operations for listing, retrieving, creating, updating and deleting only the sleep records owned by the API-key holder. |
+| **Public API documentation and playground** | **eloymart** | Documents the available endpoints, headers and payloads and provides an interactive page where users can generate a key and test public API requests. |
+| **Guided onboarding and dashboard tour** | **martimar, eloymart** | Introduces new users to the dashboard through a welcome flow and Driver.js tour, using demonstration data to explain rankings, battles, sleep scores and protocols. |
+| **Landing page, navigation and legal pages** | **martimar, eloymart** | Provides the public landing experience, application navigation, login and registration entry points, and dedicated privacy-policy and terms-of-use pages. |
+| **Responsive desktop and mobile interface** | **martimar** | Adapts the landing page, dashboard, forms, dialogs, navigation and game-related interfaces for different screen sizes and supported browsers. |
+| **PostgreSQL data model and ORM integration** | **juetxeba, eloymart** | Stores users, profiles, friendships, sleep entries, protocols, rankings, API keys and combat history through SQLModel relationships and backend queries. |
+| **Initial data and administration utilities** | **juetxeba, eloymart** | Provides commands and scripts for creating an administrator, populating development data, seeding protocol records and preparing the application for testing. |
+| **Docker-based development and production environments** | **juetxeba** | Packages PostgreSQL, FastAPI, Vue and Caddy as connected services and provides separate development and production configurations. |
+| **Makefile workflow** | **juetxeba** | Supplies simplified commands for environment preparation, builds, startup, shutdown, logs, database operations, population, administrator creation and browser access. |
+| **Caddy reverse proxy and application protection** | **juetxeba** | Routes frontend, REST API and WebSocket traffic, provides HTTPS for the configured environment and integrates rate limiting, Coraza WAF rules and Docker-managed secrets. |
+
 # 9. Modules:
 
 ## 1. Use a framework for both the frontend and backend (Major)
