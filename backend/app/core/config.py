@@ -4,7 +4,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pwdlib import PasswordHash
 
-# Load variables from .env into os.environ
 load_dotenv()
 
 POSTGRES_USER=os.getenv("POSTGRES_USER")

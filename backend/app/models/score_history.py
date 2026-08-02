@@ -1,11 +1,7 @@
 from datetime import datetime
-
 from sqlmodel import Field, SQLModel
 
 
-# Historico de puntuaciones en bruto
-# Pendiente el calculo de ELO (MUGI?? PASA LA FORMULA YA PLS)
-# La tabla por arquitectura puede estar sin elo_score hasta que se actualice.
 class ScoreHistory(SQLModel, table=True):
     __tablename__ = "score_history"
     id: int | None = Field(default=None, primary_key=True)

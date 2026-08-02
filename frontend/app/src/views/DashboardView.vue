@@ -21,7 +21,6 @@ const auth = useAuthStore()
 const dashboard = ref(null)
 const { connect, disconnect, updateDashboard } = useWebSocket()
 
-// Evita varias llamadas simultáneas a /dashboard.
 let dashboardLoading = false
 let dashboardRefreshQueued = false
 
@@ -48,14 +47,10 @@ async function fetchDashboard() {
           : [],
       },
     }
-
-    console.log('Dashboard updated')
   } catch (error) {
-    console.error('Error cargando dashboard:', error)
   } finally {
     dashboardLoading = false
 
-    // Si llegó otra actualización durante la petición, ejecuta solo una más.
     if (dashboardRefreshQueued) {
       dashboardRefreshQueued = false
       void fetchDashboard()
@@ -66,7 +61,6 @@ async function fetchDashboard() {
 watch(updateDashboard, (shouldUpdate) => {
   if (!shouldUpdate) return
 
-  // Se resetea antes de pedir los datos para no crear un bucle reactivo.
   updateDashboard.value = false
   void fetchDashboard()
 })
@@ -80,14 +74,14 @@ function handleDesktopChange(event) {
 
 onMounted(async () => {
   desktopMediaQuery.addEventListener('change', handleDesktopChange)
-  
+
   if (auth.tutorial) {
     await router.replace({
       name: 'dashboard-tour',
     })
     return
   }
-connect()
+  connect()
   await fetchDashboard()
 })
 

@@ -59,14 +59,12 @@ def update_profile(
     current_user: User = Depends(get_current_active_user),
     session=Depends(get_session),
 ):
-    # Email: solo tocamos si viene y es distinto al actual
     if payload.email and payload.email != current_user.email:
         existing_email = session.exec(select(User).where(User.email == payload.email)).first()
         if existing_email and existing_email.id != current_user.id:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
         current_user.email = payload.email
 
-    # Password: si viene new_password, exigimos current_password y la validamos
     if payload.new_password:
         if not payload.current_password:
             raise HTTPException(

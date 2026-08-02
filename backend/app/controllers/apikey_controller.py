@@ -16,8 +16,6 @@ def create_api_key(
     current_user: User = Depends(get_current_active_user),
     session: Session = Depends(get_session),
 ):
-    """Genera una API key nueva para el usuario logueado. Guarda `api_key`
-    en tu cliente: no se puede volver a consultar en texto plano."""
     raw_key, prefix, key_hash = generate_api_key()
 
     new_key = APIKey(
@@ -38,7 +36,6 @@ def list_api_keys(
     current_user: User = Depends(get_current_active_user),
     session: Session = Depends(get_session),
 ):
-    """Lista tus API keys (nunca se devuelve la key en sí, solo el prefijo)."""
     return session.exec(select(APIKey).where(APIKey.owner_id == current_user.id)).all()
 
 
@@ -48,7 +45,6 @@ def revoke_api_key(
     current_user: User = Depends(get_current_active_user),
     session: Session = Depends(get_session),
 ):
-    """Revoca (desactiva) una de tus API keys."""
     api_key = session.get(APIKey, key_id)
     if api_key is None or api_key.owner_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API key no encontrada")

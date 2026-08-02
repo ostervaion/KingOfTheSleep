@@ -47,7 +47,6 @@ async function checkAdminAccess() {
     const { data } = await api.get('/me')
     isAdmin.value = data.role === 'admin'
   } catch (error) {
-    console.error(error)
     isAdmin.value = false
   } finally {
     checkingAccess.value = false
@@ -59,7 +58,6 @@ async function loadUsers() {
     const { data } = await api.get('/all_users')
     users.value = Array.isArray(data) ? data : []
   } catch (error) {
-    console.error(error)
   }
 }
 
@@ -68,7 +66,6 @@ async function deleteUser(username) {
     await api.delete(`/users/${username}`)
     await loadUsers()
   } catch (error) {
-    console.error(error)
   }
 }
 
@@ -112,7 +109,6 @@ async function saveEditUser() {
     closeEditUser()
   } catch (error) {
     editError.value = error.response?.data?.detail || 'Could not save the changes.'
-    console.error(error)
   } finally {
     editLoading.value = false
   }
@@ -130,7 +126,6 @@ async function fetchBattleInfo() {
     battleInfo.value = infoResponse.data
     battleQueue.value = queueResponse.data.battles || []
   } catch (error) {
-    console.error('Could not load battle information:', error)
   }
 }
 
@@ -154,7 +149,6 @@ async function scheduleExtraBattle() {
     await fetchBattleInfo()
   } catch (error) {
     errorMessage.value = error.response?.data?.detail || 'Could not schedule the battle.'
-    console.error(error)
   } finally {
     battleLoading.value = false
   }
@@ -179,7 +173,6 @@ async function changeBattleInterval() {
     await fetchBattleInfo()
   } catch (error) {
     errorMessage.value = error.response?.data?.detail || 'Could not update the interval.'
-    console.error(error)
   } finally {
     intervalLoading.value = false
   }

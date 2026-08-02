@@ -88,8 +88,6 @@ async function checkFriendship() {
 
     friendStatus.value = usernames.includes(props.user.username) ? 'friend' : 'notFriend'
   } catch (err) {
-    console.error('No se pudo comprobar la lista de amigos:', err)
-
     friendStatus.value = 'notFriend'
   }
 }
@@ -109,7 +107,6 @@ async function addFriend() {
     }
 
     friendStatus.value = 'addError'
-    console.error('Error al añadir amigo:', err)
   }
 }
 
@@ -129,7 +126,6 @@ async function deleteFriend() {
     }
 
     friendStatus.value = 'deleteError'
-    console.error('Error al eliminar amigo:', err)
   }
 }
 

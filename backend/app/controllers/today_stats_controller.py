@@ -30,8 +30,6 @@ def _today_battles(session, actual_user_id: int, now: datetime):
     enemy_user = aliased(User, name="enemy_user_name")
     enemy_profile = aliased(UserProfile, name="enemy_avatar")
     enemy_sleep = aliased(SleepData, name="enemy_sleep")
-    #enemy_Protocols = aliased(UserProtocol, name="enemy_Protocols")
-
     enemy_id = case(
         (CombatHistory.winner_user_id == actual_user_id, CombatHistory.loser_user_id),
         else_=CombatHistory.winner_user_id,
@@ -64,7 +62,6 @@ def _today_battles(session, actual_user_id: int, now: datetime):
         )
         .order_by(CombatHistory.id.desc())
     ).all()
-     # --- NEW: fetch protocols used today by every enemy in this batch ---
     enemy_ids = {b.enemy_id for b in battles}
 
     protocols_by_user = defaultdict(list)
@@ -79,7 +76,6 @@ def _today_battles(session, actual_user_id: int, now: datetime):
         ).all()
         for user_id, protocol_name in protocol_rows:
             protocols_by_user[user_id].append(protocol_name)
-    # ----------------------------------------------------------------
     result = {
         "me": {
             "name": me.username,

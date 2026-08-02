@@ -55,7 +55,6 @@ def create_admin_user():
 
             session.add(admin_profile)
 
-            # Guarda usuario y perfil juntos.
             session.commit()
 
             session.refresh(new_admin)

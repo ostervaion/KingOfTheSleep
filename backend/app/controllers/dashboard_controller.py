@@ -61,8 +61,6 @@ async def dashboard(
 ):
     now = datetime.now(timezone.utc)
     user_id = current_user.id
-
-    # Ejecuta juntas todas las operaciones síncronas de base de datos.
     ranking, current_user_ranking, current_user_prev_pos = build_ranking(
         session,
         user_id,
@@ -73,8 +71,6 @@ async def dashboard(
     experience = get_experience(session, user_id)
     today_stats_var = today_stats(session, user_id, now)
     protocols = protocol_stats(session)
-
-    # Devuelve la conexión al pool antes de realizar cualquier await.
     session.close()
 
     next_battle = await build_battle_countdown(

@@ -38,8 +38,6 @@ class UserPublic(SQLModel):
     active: bool
     email: EmailStr
 
-# Payload para el PATCH de /profile. Todos los campos son opcionales:
-# el usuario puede mandar solo el email, solo el password, o ambos.
 class UserUpdate(SQLModel):
     email: EmailStr | None = None
     current_password: str | None = None

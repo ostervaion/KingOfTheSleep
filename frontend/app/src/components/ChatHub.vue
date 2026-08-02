@@ -33,11 +33,8 @@ async function loadFriends() {
     const { data } = await api.get('/friends')
 
     friends.value = Array.isArray(data) ? data : []
-
-    console.log('Amigos actualizados:', friends.value)
   } catch (err) {
     friendsError.value = true
-    console.error('Error cargando amigos:', err)
   } finally {
     friendsLoading.value = false
   }

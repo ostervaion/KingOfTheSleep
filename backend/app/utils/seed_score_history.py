@@ -9,11 +9,7 @@ from utils.security import hash_password
 
 from core.config import PROTOCOL_NAMES
 
-# Fijamos la semilla para que los nombres aleatorios sigan un patrón predecible
 seed(42)
-
-
-# Mismos offsets (en días) usados para generar el ScoreHistory de cada usuario
 SCORE_OFFSETS = [0, 3, 6, 9, 12]
 
 def _ensure_users(session: Session, additional_count: int = 20) -> list[User]:
@@ -21,11 +17,9 @@ def _ensure_users(session: Session, additional_count: int = 20) -> list[User]:
     Busca los usuarios existentes y añade exactamente 'additional_count'
     usuarios nuevos más a la base de datos, garantizando que tengan ID único.
     """
-    # 1. Obtener los usuarios que YA existen actualmente en la base de datos
     existing_users = session.exec(select(User)).all()
     existing_usernames = {user.username for user in existing_users}
 
-    # 2. Calcular cuántos usuarios debe haber en total al terminar esta ejecución
     total_actual = len(existing_users)
     target_count = total_actual + additional_count
 
@@ -34,7 +28,6 @@ def _ensure_users(session: Session, additional_count: int = 20) -> list[User]:
 
     new_users_to_add = []
 
-    # Contador virtual para el sufijo numérico del nombre de usuario
     current_total_virtual = total_actual
 
     while len(existing_users) < target_count:
@@ -42,7 +35,6 @@ def _ensure_users(session: Session, additional_count: int = 20) -> list[User]:
         username = base_name.lower()
         password = username
 
-        # Si por casualidad el username ya existe, saltamos e incrementamos para evitar duplicados
         if username in existing_usernames:
             current_total_virtual += 1
             continue
@@ -60,14 +52,11 @@ def _ensure_users(session: Session, additional_count: int = 20) -> list[User]:
         existing_users.append(new_user)  # Lo sumamos al control del bucle
         current_total_virtual += 1
 
-    # Un único commit en lote para todos los usuarios nuevos creados en esta tanda
     if new_users_to_add:
         session.commit()
-        # Refrescamos los nuevos usuarios para que Postgres les asigne su ID real en memoria
         for user in new_users_to_add:
             session.refresh(user)
 
-    # Devolvemos ÚNICAMENTE los usuarios nuevos que se acaban de crear en esta tanda
     return new_users_to_add
 
 
@@ -185,8 +174,7 @@ def _seed_combat_history(session: Session, battles_per_user: int = 4) -> None:
         for _ in range(battles_per_user):
             opponent = choice(opponents_pool)
 
-            # 50/50 de que el usuario actual gane o pierda
-            if random() < 0.5:
+                    if random() < 0.5:
                 winner, loser = user, opponent
             else:
                 winner, loser = opponent, user
@@ -247,8 +235,6 @@ def _seed_user_profiles(session: Session, users: list[User]) -> None:
         new_profiles.append(
             UserProfile(
                 user_id=user.id,
-                #game_avatar_path=choice(avatar_options),
-                #user_avatar_path=choice(user_avatar_options),
                 public=choice([True, True, True, False]),  # mayoría públicos
                 exp=randint(0, 5000),
             )

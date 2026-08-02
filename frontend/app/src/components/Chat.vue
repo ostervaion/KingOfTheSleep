@@ -1,10 +1,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
-import { useWebSocket } from '@/composables/useWebSocket' // Importamos el nuevo composable unificado
+import { useWebSocket } from '@/composables/useWebSocket'
 
 const emit = defineEmits(['close'])
 const props = defineProps({
-  // Si scope es 'global' se ignora to_user y se usa el chat global
   scope: {
     type: String,
     default: 'private',
@@ -69,8 +68,6 @@ function handleSend() {
 }
 
 onMounted(() => {
-  // Avisamos al composable de qué chat estamos viendo, para que no cuente
-  // como "no leídos" los mensajes de esta conversación mientras está abierta.
   setActiveChat(isGlobal.value ? 'global' : props.to_user)
   scrollToBottom()
 })

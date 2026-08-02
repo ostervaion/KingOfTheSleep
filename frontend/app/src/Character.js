@@ -10,7 +10,7 @@ export default class Character {
     this.score = score
 
     this.scene = scene
-    this.isLocal = isLocal // true = soy yo mismo en este cliente; false = es el rival
+    this.isLocal = isLocal
 
     this.target = null
     this.lastAttackTime = 0
@@ -30,9 +30,6 @@ export default class Character {
     if (!this.target || this.hp <= 0) return
 
     if (!this.isLocal) {
-      // Personaje remoto: solo animamos la barra de ataque para que se vea
-      // fluida, pero el golpe real solo ocurre cuando llega la confirmación
-      // del servidor via receiveAttack(). Nunca decidimos un ataque aquí.
       this.attackProgress = Math.min(1, this.attackProgress + (delta / 1000) * this.attackSpeed)
       return
     }
@@ -45,18 +42,11 @@ export default class Character {
     }
   }
 
-  // Solo se llama para el personaje LOCAL (isLocal === true).
-  // Ya NO calculamos ni aplicamos daño aquí: solo avisamos la intención
-  // de atacar. El servidor decide el daño real y nos lo devuelve por
-  // 'battle:hit', que GameScene enruta a receiveAttack().
   attackTarget() {
     if (!this.target || this.target.hp <= 0) return
     this.scene.reportAttack(this.target.name)
   }
 
-  // Único punto de entrada para aplicar un golpe. Se llama tanto para
-  // confirmar mis propios ataques como para reflejar los del rival,
-  // siempre con daño/hp ya validados por el servidor.
   receiveAttack(damage, hp) {
     this.attackProgress = 0
 
@@ -72,8 +62,6 @@ export default class Character {
       this.isAttacking = false
     })
 
-    // Preferimos el hp que confirma el servidor; si no viniera, restamos
-    // localmente como respaldo.
     this.target.hp = hp !== undefined && hp !== null ? hp : Math.max(0, this.target.hp - damage)
 
     if (!this.target.isAttacking) {
@@ -93,7 +81,6 @@ export default class Character {
       rate: Phaser.Math.FloatBetween(0.7, 2.5),
     })
 
-    // hit effect at target position
     this.scene.spawnHitParticles(this.target.sprite.x, this.target.sprite.y)
     this.scene.cameras.main.shake(100, 0.005)
     this.target.sprite.setTint(0xff0000)
@@ -105,7 +92,6 @@ export default class Character {
     if (this.target.hp <= 0) {
       this.target.hp = 0
       this.scene.lastHitSfx.play()
-      // slow motion effect
       this.scene.anims.globalTimeScale = 0.2
       this.scene.time.delayedCall(2100, () => {
         this.target.sprite.setVisible(false)

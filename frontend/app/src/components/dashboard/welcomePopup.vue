@@ -52,7 +52,6 @@ function selectAvatar(index) {
   go(index)
 }
 
-/// Temporal, aqui falta guardar el valor
 function onContinue() {
   emit('close')
 }

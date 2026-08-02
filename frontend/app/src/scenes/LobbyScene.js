@@ -111,7 +111,6 @@ watch(gameEnemy, (enemy) => {
     waitingResponse = false
     scene.closePopup()
     sendPayload('game:disconnect')
-    // Don't switch scenes yet — wait for battle:init to arrive with real stats.
     scene.pendingOpponent = enemy
   })
 
@@ -130,7 +129,6 @@ watch(gameEnemy, (enemy) => {
   scene.popup.setDepth(1000)
 })
 
-// Accepter's path: fires once the server confirms and sends real player stats.
 watch(
   battleInitData,
   (battle) => {
@@ -154,7 +152,6 @@ watch(
   { deep: true },
 )
 
-// Attacker's path: fires once the server confirms the challenge was accepted.
 watch(gameAccepted, (answer) => {
   if (answer) {
     gameAccepted.value = false
@@ -256,7 +253,6 @@ export default class LobbyScene extends BaseScene {
       if (this.popup) return
       if (currentlyOver.length > 0) return
       if (pointer.rightButtonDown()) {
-        //this.switchScene('GameScene')
       } else {
         this.target.set(pointer.worldX, pointer.worldY)
         sendPayload('lobby:move', {

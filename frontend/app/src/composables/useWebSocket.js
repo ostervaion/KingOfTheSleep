@@ -19,10 +19,7 @@ const battleResume = ref(null)
 const battleOpponentReconnected = ref(0)
 const battleInitData = ref([])
 
-// null, 'global' o el username del chat abierto.
 const activeChatTarget = ref(null)
-
-// Contadores de mensajes no leídos.
 const unreadPrivate = ref({})
 const unreadGlobal = ref(0)
 
@@ -32,7 +29,6 @@ const totalUnread = computed(() => {
   return privateTotal + unreadGlobal.value
 })
 
-// Conversaciones privadas ordenadas por el último mensaje.
 const conversations = computed(() => {
   const map = new Map()
 
@@ -54,22 +50,13 @@ const conversations = computed(() => {
 })
 
 export function useWebSocket() {
-  /**
-   * En producción:
-   * https://localhost       -> wss://localhost/api/ws
-   *
-   * En desarrollo HTTP:
-   * http://localhost        -> ws://localhost/api/ws
-   *
-   * Caddy elimina /api y lo envía al backend como /ws.
-   */
+
   const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
 
   const API_WS_URL = `${wsProtocol}//${window.location.host}/api/ws`
 
   function connect() {
-    // Evita abrir conexiones duplicadas si ya está conectado
-    // o todavía está intentando conectar.
+
     if (
       ws.value &&
       (ws.value.readyState === WebSocket.OPEN || ws.value.readyState === WebSocket.CONNECTING)
@@ -77,24 +64,18 @@ export function useWebSocket() {
       return
     }
 
-    console.log('Conectando WebSocket a:', API_WS_URL)
-
     const socket = new WebSocket(API_WS_URL)
     ws.value = socket
 
     socket.onopen = () => {
-      // Evita modificar el estado con una conexión antigua.
+
       if (ws.value !== socket) return
 
       isConnected.value = true
 
-      console.log('WebSocket conectado:', API_WS_URL)
-
-      // Admite ambas claves por si el login usa una u otra.
       const token = localStorage.getItem('token') || localStorage.getItem('access_token')
 
       if (!token) {
-        console.error('No se encontró ningún token para autenticar el WebSocket')
         return
       }
 
@@ -116,15 +97,10 @@ export function useWebSocket() {
           case 'auth:success':
             isAuthenticated.value = true
             myUsername.value = payload.username
-
-            console.log('Autenticación exitosa como:', payload.username)
             break
 
           case 'auth:fail':
             isAuthenticated.value = false
-
-            console.error('Fallo en la autenticación:', payload)
-
             disconnect()
             break
 
@@ -149,7 +125,6 @@ export function useWebSocket() {
             break
 
           case 'error':
-            console.warn('Error recibido del servidor:', payload)
             break
 
           case 'presence:list':
@@ -162,12 +137,7 @@ export function useWebSocket() {
             if (payload.online) {
               onlineUsers.value.add(payload.username)
             } else {
-              /*
-               * Si el usuario que se desconecta era quien
-               * había enviado el desafío, se rechaza.
-               *
-               * Antes se utilizaba `enemy`, que no existía.
-               */
+              
               if (gameEnemy.value === payload.username) {
                 sendPayload('game:response', {
                   accepted: false,
@@ -182,10 +152,7 @@ export function useWebSocket() {
               delete lobbyPlayers.value[payload.username]
             }
 
-            // Nueva referencia para que Vue detecte el cambio.
             onlineUsers.value = new Set(onlineUsers.value)
-
-            // Nueva referencia para actualizar el lobby.
             lobbyPlayers.value = {
               ...lobbyPlayers.value,
             }
@@ -193,7 +160,6 @@ export function useWebSocket() {
 
           case 'fetch':
             updateDashboard.value = true
-            console.log('FETCH')
             break
 
           case 'presence:update':
@@ -238,8 +204,6 @@ export function useWebSocket() {
             break
 
           case 'game:answer':
-            console.log('game:answer', response)
-
             if (response.response) {
               gameAccepted.value = true
               gameError.value = false
@@ -278,40 +242,27 @@ export function useWebSocket() {
             battleInitData.value = payload.battle
             break
           case 'battle:opponent_reconnected':
-            console.log('[DEBUG] opponent_reconnected')
-
             battlePaused.value = false
             battleOpponentReconnected.value++
             break
 
           default:
-            console.log('Mensaje WebSocket no controlado:', response)
+            break
         }
       } catch (error) {
-        console.error('No se pudo procesar el mensaje WebSocket:', error, event.data)
       }
     }
 
-    socket.onerror = (error) => {
-      console.error('Error en el WebSocket:', error)
+    socket.onerror = () => {
     }
 
     socket.onclose = (event) => {
-      /*
-       * Si ya existe otro socket nuevo, no permitimos que
-       * el cierre de una conexión antigua borre su estado.
-       */
+      
       if (ws.value !== socket) return
 
       isConnected.value = false
       isAuthenticated.value = false
       ws.value = null
-
-      console.log('Conexión WebSocket cerrada:', {
-        code: event.code,
-        reason: event.reason,
-        clean: event.wasClean,
-      })
     }
   }
 
@@ -320,10 +271,7 @@ export function useWebSocket() {
 
     if (!socket) return
 
-    /*
-     * Solo se puede enviar close cuando está conectado
-     * o intentando conectar.
-     */
+    
     if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
       socket.close(1000, 'Cierre controlado por el usuario')
     }
@@ -336,7 +284,6 @@ export function useWebSocket() {
     isAuthenticated.value = false
   }
 
-  // target: null, 'global' o un username.
   function setActiveChat(target) {
     activeChatTarget.value = target
 
@@ -357,8 +304,6 @@ export function useWebSocket() {
 
   function sendPayload(type, data = {}) {
     if (!ws.value || ws.value.readyState !== WebSocket.OPEN) {
-      console.warn('No se puede enviar el mensaje: el WebSocket está cerrado')
-
       return false
     }
 

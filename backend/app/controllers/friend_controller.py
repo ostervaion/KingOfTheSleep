@@ -55,7 +55,6 @@ def add_friend(
     if existing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Ya sois amigos")
  
-    # Creamos la relación en los dos sentidos para que sea simétrica de inmediato
     session.add(Friend(user_id=current_user.id, friend_id=friend_user.id))
     session.add(Friend(user_id=friend_user.id, friend_id=current_user.id))
     session.commit()
@@ -82,7 +81,6 @@ def delete_friend(
             detail="Usuario no encontrado",
         )
 
-    # Relación: usuario actual -> amigo
     friendship = session.exec(
         select(Friend).where(
             Friend.user_id == current_user.id,
@@ -90,7 +88,6 @@ def delete_friend(
         )
     ).first()
 
-    # Relación inversa: amigo -> usuario actual
     reverse_friendship = session.exec(
         select(Friend).where(
             Friend.user_id == friend_user.id,

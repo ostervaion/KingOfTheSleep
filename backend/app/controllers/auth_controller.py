@@ -66,9 +66,6 @@ def register(
         )
 
         session.add(new_user)
-
-        # Envía el INSERT sin confirmar la transacción.
-        # Así PostgreSQL genera new_user.id.
         session.flush()
 
         new_profile = UserProfile(
@@ -79,7 +76,6 @@ def register(
 
         session.add(new_profile)
 
-        # Usuario y perfil se guardan juntos.
         session.commit()
         session.refresh(new_user)
 

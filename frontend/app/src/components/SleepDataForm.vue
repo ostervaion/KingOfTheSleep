@@ -19,7 +19,6 @@ import StrainIcon from '@/assets/strain.svg'
 import NapIcon from '@/assets/lamb_battle.svg'
 import RespiratoryRateIcon from '@/assets/lamb_battle.svg'
 
-// step: 1 = sleep data, 2 = protocol selection
 const step = ref(1)
 const currentSection = ref(0)
 
@@ -126,7 +125,6 @@ function previousSection() {
   }
 }
 
-// Lista fija de protocolos, con los ids reales de la tabla `protocols`
 const protocolOptions = [
   { id: 1, label: 'Temperature Cycling' },
   { id: 2, label: 'Light Management' },

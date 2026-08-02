@@ -70,8 +70,6 @@ async function loadUser() {
 
     previewSrc.value = resolveAvatarSrc(avatarPath)
   } catch (error) {
-    console.error('Error cargando usuario:', error.response?.data ?? error)
-
     loadUserError.value = error.response?.data?.detail || 'Failed to load user information'
   } finally {
     isLoadingUser.value = false
@@ -143,8 +141,6 @@ async function onFileSelected(event) {
 
     emit('avatar-updated', avatarSrc)
   } catch (error) {
-    console.error('Error subiendo avatar:', error.response?.data ?? error)
-
     uploadError.value = error.response?.data?.detail || error.message || 'Failed to upload image'
 
     previewSrc.value = previousPreview
@@ -186,8 +182,6 @@ async function confirmDeleteAccount() {
     authStore.logout()
     await router.push('/')
   } catch (error) {
-    console.error('Error eliminando cuenta:', error.response?.data ?? error)
-
     deleteError.value = error.response?.data?.detail || 'Failed to delete account'
   } finally {
     isDeleting.value = false
@@ -237,7 +231,6 @@ async function onSaveChanges() {
     payload.new_password = form.value.newPassword
   }
 
-  // No hay nada que modificar
   if (Object.keys(payload).length === 0) {
     saveSuccess.value = true
     return
@@ -267,8 +260,6 @@ async function onSaveChanges() {
     emit('profile-updated', user.value)
     emit('save', user.value)
   } catch (error) {
-    console.error('Error guardando perfil:', error.response?.status, error.response?.data ?? error)
-
     saveError.value = error.response?.data?.detail || 'Failed to save changes'
   } finally {
     isSaving.value = false

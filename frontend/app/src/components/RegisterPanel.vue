@@ -66,8 +66,6 @@ async function register() {
 
     emit('login')
   } catch (error) {
-    console.error('Registration error:', error)
-
     const detail = error.response?.data?.detail
 
     message.value = Array.isArray(detail)

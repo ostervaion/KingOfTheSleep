@@ -219,19 +219,16 @@ export default class GameScene extends BaseScene {
         repeat: 0,
       })
     }
-    /////////////cloud logic///////////////////////////
     const screenW = this.scale.width
     const screenH = this.scale.height
     const overlap = 100
 
-    // Left cloud
     const leftCloud = this.add
       .image(screenW / 4 + overlap / 2, screenH / 2, 'clouds')
       .setDisplaySize(screenW / 2 + overlap, screenH)
       .setFlipX(true)
       .setDepth(100)
 
-    // Right cloud
     const rightCloud = this.add
       .image((screenW * 3) / 4 - overlap / 2, screenH / 2, 'clouds')
       .setDisplaySize(screenW / 2 + overlap, screenH)
@@ -254,7 +251,6 @@ export default class GameScene extends BaseScene {
         rightCloud.destroy()
       },
     })
-    //////////cloud logic ends//////////////////////////////
     const centerX = this.cameras.main.midPoint.x
     const gap = 100
     const margin = 20
@@ -320,8 +316,8 @@ export default class GameScene extends BaseScene {
     this.player1.sprite.play('run')
     this.player2.sprite.play('run')
     this.moveSfx.play({
-    loop: true,
-    rate: 2,
+      loop: true,
+      rate: 2,
     })
 
     this.tweens.add({
@@ -435,15 +431,12 @@ export default class GameScene extends BaseScene {
 
     graphics.clear()
 
-    // Border
     graphics.fillStyle(0xffffff)
     graphics.fillRoundedRect(x, y, width, height, radius)
 
-    // Background
     graphics.fillStyle(0xff1900)
     graphics.fillRoundedRect(x + 2, y + 2, width - 4, height - 4, radius)
 
-    // Health
     graphics.fillStyle(0x08ff29)
 
     const hpWidth = (width - 4) * hpPercent
@@ -538,7 +531,6 @@ export default class GameScene extends BaseScene {
   update(time, delta) {
     if (this.isGameOver) return
 
-    // Always keep the UI in sync, even while paused/reconnecting
     this.drawBars()
 
     if (this.isGamePaused || this.player1.hp <= 0) return

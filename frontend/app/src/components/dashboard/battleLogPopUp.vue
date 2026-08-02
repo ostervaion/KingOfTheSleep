@@ -1,12 +1,16 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import BattleLogsCard from '@/components/dashboard/battleLogsCard.vue'
 import BoxingGlove from '@/assets/boxing-glove.svg'
 import TriangleUp from '@/assets/triangle-up.svg'
 import TriangleDown from '@/assets/triangle-down.svg'
 import api from '@/api/api'
+import { useAuthStore } from '@/stores/auth'
 
 const emit = defineEmits(['close'])
+const router = useRouter()
+const authStore = useAuthStore()
 
 const battleLogs = ref([])
 const me = ref(null)
@@ -20,8 +24,6 @@ async function loadLogs() {
   try {
     const { data } = await api.get('/battleData')
 
-    console.log('Battle data:', data)
-
     me.value = data.me ?? null
 
     battleLogs.value = Array.isArray(data.battles)
@@ -33,7 +35,6 @@ async function loadLogs() {
           enemy_username: battle.enemy_username,
           enemy_avatar: battle.enemy_avatar,
 
-          // Se mantiene null cuando el enemigo no tiene estadísticas.
           enemy_stats: battle.enemy_stats
             ? {
                 username: battle.enemy_stats.username,
@@ -58,9 +59,15 @@ async function loadLogs() {
         }))
       : []
   } catch (error) {
-    console.error('Error loading battle logs:', error)
+    const status = error?.response?.status
 
-    loadError.value = error.response?.data?.detail || error.message || 'Could not load battle logs'
+    if (status === 401 || status === 403) {
+      authStore.logout()
+      router.push({ name: 'home' })
+      loadError.value = 'Your session has expired or you are not authorized to view this content.'
+    } else {
+      loadError.value = error?.response?.data?.detail || error?.message || 'Could not load battle logs'
+    }
 
     battleLogs.value = []
     me.value = null

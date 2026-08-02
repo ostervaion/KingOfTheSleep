@@ -1,9 +1,6 @@
-
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
-
-# Tabla User basica almacenamos datos basico y contraseña Hasheada
 class User(SQLModel, table=True):
     __tablename__ = "users"
 

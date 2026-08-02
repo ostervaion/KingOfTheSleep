@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-
 from sqlalchemy import func
 from sqlmodel import select, Session
 from math import exp, ceil
