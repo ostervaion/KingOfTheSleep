@@ -46,7 +46,7 @@ async function scrollToBottom() {
 
 function handleSend() {
   if (!isConnected.value || !isAuthenticated.value) {
-    console.warn('El chat no está listo o no estás autenticado')
+    console.log('El chat not ready')
     return
   }
   if (!messageText.value.trim()) return
@@ -125,7 +125,7 @@ onUnmounted(() => {
           Waiting messages...
         </p>
 
-        <!-- Iteramos sobre los mensajes filtrados para esta conversación -->
+        
         <div
           v-for="(msg, index) in conversationMessages"
           :key="index"
@@ -157,12 +157,18 @@ onUnmounted(() => {
         <input
           v-model="messageText"
           type="text"
-          :disabled="!isConnected || !isAuthenticated"
+          :disabled="(!isTargetOnline || !isAuthenticated) && !isGlobal"
           class="min-w-0 flex-1 rounded-lg border border-transparent bg-[var(--kots-background-color)] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-neutral-600 focus:border-cyan-200/60 disabled:cursor-not-allowed disabled:opacity-50"
           :placeholder="isConnected && isAuthenticated ? 'Write a message...' : 'Conecting...'"
           @keyup.enter="handleSend"
         />
-        <button
+        <button v-if="isGlobal"
+          @click="handleSend"
+          class="rounded-md bg-cyan-200 px-4 py-2 text-sm font-medium text-[#171715] transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:bg-(--kots-background-color) disabled:text-neutral-600"
+        >
+          ➤
+        </button>
+                <button v-else
           @click="handleSend"
           :disabled="!isTargetOnline || !isAuthenticated || props.to_user == myUsername"
           class="rounded-md bg-cyan-200 px-4 py-2 text-sm font-medium text-[#171715] transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:bg-(--kots-background-color) disabled:text-neutral-600"
