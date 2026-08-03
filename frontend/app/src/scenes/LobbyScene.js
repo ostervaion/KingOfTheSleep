@@ -48,7 +48,7 @@ watch(gameError, (stat) => {
       align: 'center',
     })
     .setOrigin(0.5)
-	const prompt2 = scene.add
+  const prompt2 = scene.add
     .text(0, -5, `right click to go back to lobby`, {
       fontSize: '14px',
       fontFamily: 'monospace',
@@ -66,7 +66,7 @@ watch(gameError, (stat) => {
 
   scene.input.once('pointerdown', () => scene.closePopup())
   waitingResponse = false
-  gameError.value = null
+  gameError.value = false
 })
 
 watch(gameEnemy, (enemy) => {
