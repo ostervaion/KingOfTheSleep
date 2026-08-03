@@ -48,6 +48,13 @@ watch(gameError, (stat) => {
       align: 'center',
     })
     .setOrigin(0.5)
+    .text(0, -18, `click to go back to lobby`, {
+      fontSize: '14px',
+      fontFamily: 'monospace',
+      color: '#000000',
+      align: 'center',
+    })
+    .setOrigin(1.5)
 
   const cx = scene.cameras.main.width / 2
   const cy = scene.cameras.main.height / 2

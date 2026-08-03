@@ -33,7 +33,7 @@ PROTOCOL_NAMES = [
 ]
 
 DAY_NAMES = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
-UPLOAD_BASE_DIR = Path(__file__).resolve().parent.parent / "uploads" #maybe is only one parent, it was changed due to file moved to core
+UPLOAD_BASE_DIR = Path(__file__).resolve().parent.parent / "uploads" 
 AVATAR_DIR = UPLOAD_BASE_DIR / "avatars"
 AVATAR_DIR.mkdir(parents=True, exist_ok=True)
 DEFAULT_SCORE = 70

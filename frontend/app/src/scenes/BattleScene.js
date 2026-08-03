@@ -514,7 +514,7 @@ export default class GameScene extends BaseScene {
       duration: 500,
       ease: 'Back.Out',
     })
-      this.tweens.add({
+    this.tweens.add({
       targets: bottomText2,
       x: midX,
       duration: 500,

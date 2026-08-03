@@ -34,7 +34,7 @@ def admin_update_user(
 
     user = get_user_by_username(session, username)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     if payload.username and payload.username != user.username:
         existing_username = session.exec(select(User).where(User.username == payload.username)).first()
@@ -75,7 +75,7 @@ async def schedule_extra_battle_endpoint(
     _require_admin(current_user)
 
     if request.minutes_from_now <= 0:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="minutes_from_now debe ser mayor a 0")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="minutes_from_now must be > 0")
 
     return await schedule_extra_battle(request.minutes_from_now)
 
