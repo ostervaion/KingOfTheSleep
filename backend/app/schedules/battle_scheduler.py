@@ -40,9 +40,6 @@ today = None
 battles_per_interval = 5
 
 def _make_pairs(entries: list[SleepData]) -> list[tuple[SleepData, SleepData]]:
-    """
-    Empareja entradas de dos en dos.
-    """
     global today_battles
 
     counts = defaultdict(int)
@@ -57,6 +54,7 @@ def _make_pairs(entries: list[SleepData]) -> list[tuple[SleepData, SleepData]]:
                 e.id != player.id
                 and counts[e.id] < battles_per_interval
                 and e.username not in today_battles[player.username]
+                and player.username not in today_battles[e.username]
             )
         ]
 

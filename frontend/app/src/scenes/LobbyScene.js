@@ -48,11 +48,19 @@ watch(gameError, (stat) => {
       align: 'center',
     })
     .setOrigin(0.5)
+	const prompt2 = scene.add
+    .text(0, -5, `right click to go back to lobby`, {
+      fontSize: '14px',
+      fontFamily: 'monospace',
+      color: '#000000',
+      align: 'center',
+    })
+    .setOrigin(0.5)
 
   const cx = scene.cameras.main.width / 2
   const cy = scene.cameras.main.height / 2
 
-  scene.popup = scene.add.container(cx, cy, [bg, prompt])
+  scene.popup = scene.add.container(cx, cy, [bg, prompt, prompt2])
   scene.popup.setDepth(1000)
   scene.popup.setScrollFactor(0)
 
