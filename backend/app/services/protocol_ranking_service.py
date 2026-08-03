@@ -19,7 +19,7 @@ def protocol_stats(session) -> RankedProtocolsRead:
         .limit(7)
     ).all()
 
-	# Map top protocols with rankings 1 to N
+
     winner_protocols = [
         RankedProtocolData(
             ranking=idx + 1,
@@ -30,7 +30,7 @@ def protocol_stats(session) -> RankedProtocolsRead:
         for idx, p in enumerate(top)
     ]
     
-    # Map bottom protocols with rankings 1 to N
+
     loser_protocols = [
         RankedProtocolData(
             ranking=idx + 1,
@@ -48,7 +48,7 @@ def protocol_stats(session) -> RankedProtocolsRead:
 
 def	recalculate_protocol_stats(session: Session) -> None:
 
-# Usos y victorias por protocolo, para los ganadores
+
     winner_stats = session.exec(
         select(
             UserProtocol.protocol_id,
@@ -62,7 +62,7 @@ def	recalculate_protocol_stats(session: Session) -> None:
         .group_by(UserProtocol.protocol_id)
     ).all()
 
-    # Usos por protocolo, para los perdedores (no suman victorias)
+
     loser_stats = session.exec(
         select(
             UserProtocol.protocol_id,

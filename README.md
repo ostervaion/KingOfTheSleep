@@ -71,7 +71,7 @@ Follow the steps below to set up the project using the repository's `Makefile`.
    make populate
    ```
 
-6. Open the application's landing page in your default web browser by running:
+6. Open the application's landing page in your default web browser by running (linux only):
 
    ```bash
    make open-https
@@ -84,8 +84,31 @@ Follow the steps below to set up the project using the repository's `Makefile`.
 - For testing purposes, you can create an administrator account by running **make admin**. The generated username and password will be displayed in the terminal. This account grants access to the /admin panel, where you can manage screen timings, edit or delete users, and perform other administrative tasks. Without an administrator account, you will not be able to access this route.
 - To work with the API, you must be logged in with a user account. Once authenticated, visit /public_api, where you will find an API key generator and key management interface. It also includes a playground for testing your API keys. Additional API documentation is available at /api_docs.
 
-# 3. Resources: 
 
+# 3. Resources:
+
+These are real references and official documentation links for the technologies used in this project:
+
+## Frontend
+- Vue 3 documentation: https://vuejs.org/guide/introduction.html
+- Vite documentation: https://vite.dev/guide/
+- Pinia documentation: https://pinia.vuejs.org/
+- Tailwind CSS documentation: https://tailwindcss.com/docs/installation
+- Axios documentation: https://axios-http.com/docs/intro
+- Phaser 3 documentation: https://phaser.io/docs/3.80.0/index
+
+## Backend and data
+- FastAPI documentation: https://fastapi.tiangolo.com/
+- SQLModel documentation: https://sqlmodel.tiangolo.com/
+- PostgreSQL documentation: https://www.postgresql.org/docs/
+- PyJWT documentation: https://pyjwt.readthedocs.io/en/stable/
+
+## Infrastructure and real-time
+- Docker Compose documentation: https://docs.docker.com/compose/
+- Caddy documentation: https://caddyserver.com/docs/
+- MDN WebSockets API: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
+- Coraza WAF: https://www.coraza.io/docs/tutorials/introduction/
+- OWASP Core Ruleset: https://coreruleset.org/docs/1-getting-started/1-1-crs-installation/
 # 4. Team Information
 
 All team members participated as developers while also taking responsibility for specific product, management and technical areas.
@@ -210,10 +233,103 @@ Caddy was chosen because it is a modern web server written in Go that emphasizes
 Another advantage of Caddy is its plugin system, which allows developers to easily extend its functionality. In this project, the Coraza Web Application Firewall (WAF) plugin was integrated to improve the security of the application's endpoints by providing protection against common web attacks.
 
 # 7. Database Schema:
+![Image of Schema DB.](/KOTS_DB_SCHEMA.jpeg)
 
 # 8. Features List:
 
+The following table summarises the features implemented in the final application, the team members who worked on each one and their main functionality. When a feature involved several layers of the project, all principal contributors are listed.
+
+| Implemented feature | Team member(s) | Functionality |
+|---|---|---|
+| **User registration and login** | **eloymart** | Allows users to create an account and log in through the Vue interface. The FastAPI backend validates the submitted data, hashes passwords and issues JWT bearer tokens for authenticated requests. |
+| **Authentication state and protected routes** | **eloymart** | Stores the authenticated session in the Pinia store, attaches the bearer token to API requests and prevents unauthenticated users from opening protected frontend views. |
+| **Profile management** | **eloymart, martimar** | Lets users view and update their account information, change their email or password and manage their profile from the dashboard interface. |
+| **Profile avatar uploads** | **eloymart, martimar** | Allows users to upload a personal image, stores the avatar on the backend and displays it in profiles, rankings and other dashboard sections. |
+| **Sleep-data entry** | **eloymart, martimar** | Provides a form for recording daily sleep metrics such as time in bed, sleep phases, disturbances, performance, consistency and efficiency. The submitted data is stored in PostgreSQL and used by the dashboard and game systems. |
+| **Centralised dashboard data loading** | **eloymart, martimar, juetxeba** | Retrieves the information required by the dashboard in a central request and distributes it to its components, reducing duplicated requests and keeping the displayed data consistent. |
+| **Weekly sleep-score visualisation** | **martimar, eloymart** | Displays recent sleep performance in a Chart.js graph, including daily values, current results and comparisons across the week. |
+| **Player ranking and Elo progression** | **eloymart, martimar, juetxeba** | Builds a leaderboard from the latest player scores and shows ranking position, Elo points, position changes, avatar and experience. |
+| **Sleep protocols** | **juetxeba, eloymart, martimar** | Lets users select the protocols followed during the day and displays their estimated impact. It also calculates global protocol usage and win-rate rankings. |
+| **Today's statistics and battle history** | **juetxeba, martimar, eloymart** | Shows daily wins and losses and provides a detailed history of scheduled battles, including opponents, result, avatars, protocols and sleep statistics. |
+| **Experience, levels and achievements** | **martimar, eloymart, juetxeba** | Rewards participation with experience points, calculates the user's level and displays progression and achievement badges in the profile and ranking interfaces. |
+| **Real-time WebSocket connection system** | **eloymart, anagomez, imugica-** | Authenticates connected users and carries presence updates, chats, lobby movement, battle events, reconnection state and dashboard-refresh notifications in real time. |
+| **Private chat** | **eloymart** | Enables direct real-time messages between two users and organises them into individual conversations with unread-message indicators. |
+| **Global chat** | **eloymart** | Provides a shared real-time chat room in which all connected users can communicate. |
+| **Friends and online presence** | **eloymart** | Allows users to add or remove friends, view their friend list, see who is currently online and open related social interactions. |
+| **Multiplayer lobby** | **anagomez, imugica-** | Places connected players in a shared Phaser arena, represents each user with a character and synchronises movement and disconnection events between clients. |
+| **Player-to-player challenges** | **anagomez, eloymart, imugica-** | Lets a player challenge another connected user from the lobby. The recipient can accept or decline, after which the server starts or cancels the battle flow. |
+| **Real-time combat system** | **imugica-, anagomez** | Runs two-player battles using health, attack, defence and attack-speed statistics derived from sleep data. The server validates attacks and synchronises damage and health updates between both players. |
+| **Combat animations, audio and visual effects** | **imugica-** | Adds character animations, health and attack-progress bars, sound effects, hit particles, death animations, victory effects, battle backgrounds and scene transitions to the Phaser game. |
+| **Battle reconnection and resume** | **imugica-** | Pauses an active battle when a player disconnects and restores the player, current health and battle state when they reconnect. |
+| **Automatic matchmaking and scheduled battles** | **anagomez, juetxeba, imugica-** | Matches users who submitted sleep data, calculates combat results from their real metrics, records scheduled battles and allows the battle interval or extra battles to be managed. |
+| **Administrator panel and permissions** | **eloymart, juetxeba** | Provides administrator-only user management, including viewing, editing, activating, deactivating and deleting accounts, as well as controls for battle scheduling. Admin accounts can be created through a Makefile command. |
+| **API-key management** | **eloymart** | Allows authenticated users to generate named API keys, view their prefixes and usage information, and revoke keys that are no longer required. |
+| **Secured public sleep-data API** | **eloymart** | Exposes five API-key-protected operations for listing, retrieving, creating, updating and deleting only the sleep records owned by the API-key holder. |
+| **Public API documentation and playground** | **eloymart** | Documents the available endpoints, headers and payloads and provides an interactive page where users can generate a key and test public API requests. |
+| **Guided onboarding and dashboard tour** | **martimar, eloymart** | Introduces new users to the dashboard through a welcome flow and Driver.js tour, using demonstration data to explain rankings, battles, sleep scores and protocols. |
+| **Landing page, navigation and legal pages** | **martimar, eloymart** | Provides the public landing experience, application navigation, login and registration entry points, and dedicated privacy-policy and terms-of-use pages. |
+| **Responsive desktop and mobile interface** | **martimar** | Adapts the landing page, dashboard, forms, dialogs, navigation and game-related interfaces for different screen sizes and supported browsers. |
+| **PostgreSQL data model and ORM integration** | **juetxeba, eloymart** | Stores users, profiles, friendships, sleep entries, protocols, rankings, API keys and combat history through SQLModel relationships and backend queries. |
+| **Initial data and administration utilities** | **juetxeba, eloymart** | Provides commands and scripts for creating an administrator, populating development data, seeding protocol records and preparing the application for testing. |
+| **Docker-based development and production environments** | **juetxeba** | Packages PostgreSQL, FastAPI, Vue and Caddy as connected services and provides separate development and production configurations. |
+| **Makefile workflow** | **juetxeba** | Supplies simplified commands for environment preparation, builds, startup, shutdown, logs, database operations, population, administrator creation and browser access. |
+| **Caddy reverse proxy and application protection** | **juetxeba** | Routes frontend, REST API and WebSocket traffic, provides HTTPS for the configured environment and integrates rate limiting, Coraza WAF rules and Docker-managed secrets. |
+
 # 9. Modules:
+
+## 1. Use a framework for both the frontend and backend (Major - All)
+We used different frameworks for the project: Vue.js for the frontend and Tailwind CSS for styling, while the backend is built with FastAPI.
+
+## 2. Implement real-time features using WebSockets or similar technology. (Major - eloymart, imugica-, anagomez)
+We used WebSockets throughout the project for several core features:
+- Global chat, allowing users to communicate with everyone.
+- Private chat, enabling one-to-one conversations.
+- Chat notifications, indicating unread messages.
+- Dashboard updates, triggering refreshes when new data is available.
+- The lobby, where online users can be seen in real time and challenged to battles.
+- The game itself, synchronizing combat actions and states.
+- The online user list, showing which users are currently connected.
+
+## 3. Allow users to interact with other users (Major - eloymart, martimar)
+Users can interact with one another through private and group chats, add or remove friends, and view each other’s connection status. They can also access another user’s profile, statistics, and relevant sleep information when they have battled that person. To access these features, users can click on a player in the ranking.
+
+## 4. A public API to interact with the database with a secured API key, rate limiting, documentation, and at least 5 endpoints (Major - eloymart)
+We built a public API that allows users to create API keys to view, update, or delete their own data. After logging in, users can access /public_api to generate a unique API key, give it a name, and manage it. The same page also includes an API playground where users can test the endpoints in real time. The API provides five different endpoints (PATCH, PUT, DELETE, and GET) and its documentation is available at /api_docs.
+
+## 5. Use an ORM for the database (Minor - eloymart, juetxeba)
+We use SQLModel as our ORM, combining Pydantic and SQLAlchemy to provide a simple and expressive way to manage the database.
+
+## 6. Support for additional browsers (Minor - All)
+The project has been tested in multiple browsers, including Brave, Mozilla Firefox, Safari, and Google Chrome.
+
+## 7. Standard user management and authentication (Major - eloymart)
+Users can update their profile information, such as email and password, and upload an avatar to the server through the profile settings page. The friends system also lets them see each other’s online status and receive chat notifications when a friend is online.
+
+## 8. Game statistics and match history (Major - All)
+The app includes a complete statistics system. From the dashboard, users can view rankings, wins and losses, level, Elo, and match history. Scheduled battles (excluding lobby battles) are stored and can be reviewed in detail from the “See all” section in the Today Stats module. Achievements linked to experience are visible on the dashboard above the level bar, and ranking positions and progress changes can be consulted at any time.
+
+## 9. Advanced permissions system (Major - eloymart)
+By default, all users are regular users. A user can create an admin account with the make admin command, which prints the admin username and password in the console. After logging in, the admin can access /admin, where they can manage users through a full CRUD interface. This view is only available to administrators. The admin panel can also be used to schedule extra battles for debugging and testing purposes.
+
+## 10. User activity analytics and insights dashboard (Minor - martimar)
+Users can access their recorded activity data, including their daily sleep entries, and review analytics and progress across different areas such as sleep protocol impact, combat history, and experience-based achievements.
+
+## 11. Implement a complete web-based game where users can play against each other (Major - anagomez, imugica-)
+The game is composed of several areas:
+- The lobby, where online users can see one another in real time and challenge each other to battles.
+- Real-time combat, where users are matched based on the statistics generated that day and fight synchronously in an autobattle experience.
+- Backend-scheduled battles, where automated battles are generated regularly in the backend so the game continues to evolve even when users are not directly interacting with the frontend.
+
+## 12. Remote players (Major - anagomez, imugica-)
+The lobby and gameplay are fully online and synchronized. Presence and game state are managed in real time, allowing users to connect and reconnect smoothly from different locations.
+
+## 13. A gamification system to reward users for their actions (Minor - martimar)
+The app includes achievements, complete leaderboards, experience points, levels, and a visual progression system in the user profile that reflects progress after each battle round.
+
+## 14. Optional module, development utils (Minor - juetxeba)
+This module focuses on making the development workspace easier to use, building on the project's existing integrations to streamline the development process. A Makefile system lets developers interact with the container setup without needing to run Docker commands directly. The developer build supports live reloading (FastAPI's --reload flag on the backend and Vite on the frontend) so changes appear immediately without rebuilding images, thanks to a shared volume system. The Makefile also includes populate and admin commands for generating test data.
+
+The main challenges were designing a system usable without prior knowledge of containers, and doing so while accounting for Python's learning curve. Overall, this module supports manual testing and a smoother development workflow.
 
 # 10. Individual Contributions:
 
@@ -309,7 +425,7 @@ These assets were integrated into Phaser to provide a cohesive and polished visu
 
 4. **Mathematical model:** The comparisons are completely objective, based on different mathematical equations with real data entered by the user.
 
-The main challenge was the communication through web socket, as I had never used them before
+The main challenge was the communication through web socket, as I had never used them before.
 
 ## 10.5 Juetxeba
 

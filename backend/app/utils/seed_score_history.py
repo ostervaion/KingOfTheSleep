@@ -9,23 +9,20 @@ from utils.security import hash_password
 
 from core.config import PROTOCOL_NAMES
 
-# Fijamos la semilla para que los nombres aleatorios sigan un patrón predecible
+
 seed(42)
 
 
-# Mismos offsets (en días) usados para generar el ScoreHistory de cada usuario
+
 SCORE_OFFSETS = [0, 3, 6, 9, 12]
 
 def _ensure_users(session: Session, additional_count: int = 20) -> list[User]:
-    """
-    Busca los usuarios existentes y añade exactamente 'additional_count'
-    usuarios nuevos más a la base de datos, garantizando que tengan ID único.
-    """
-    # 1. Obtener los usuarios que YA existen actualmente en la base de datos
+
+
     existing_users = session.exec(select(User)).all()
     existing_usernames = {user.username for user in existing_users}
 
-    # 2. Calcular cuántos usuarios debe haber en total al terminar esta ejecución
+
     total_actual = len(existing_users)
     target_count = total_actual + additional_count
 
@@ -34,7 +31,7 @@ def _ensure_users(session: Session, additional_count: int = 20) -> list[User]:
 
     new_users_to_add = []
 
-    # Contador virtual para el sufijo numérico del nombre de usuario
+
     current_total_virtual = total_actual
 
     while len(existing_users) < target_count:
@@ -42,7 +39,7 @@ def _ensure_users(session: Session, additional_count: int = 20) -> list[User]:
         username = base_name.lower()
         password = username
 
-        # Si por casualidad el username ya existe, saltamos e incrementamos para evitar duplicados
+
         if username in existing_usernames:
             current_total_virtual += 1
             continue
@@ -57,22 +54,22 @@ def _ensure_users(session: Session, additional_count: int = 20) -> list[User]:
         session.add(new_user)
         new_users_to_add.append(new_user)
         existing_usernames.add(username)
-        existing_users.append(new_user)  # Lo sumamos al control del bucle
+        existing_users.append(new_user) 
         current_total_virtual += 1
 
-    # Un único commit en lote para todos los usuarios nuevos creados en esta tanda
+
     if new_users_to_add:
         session.commit()
-        # Refrescamos los nuevos usuarios para que Postgres les asigne su ID real en memoria
+
         for user in new_users_to_add:
             session.refresh(user)
 
-    # Devolvemos ÚNICAMENTE los usuarios nuevos que se acaban de crear en esta tanda
+
     return new_users_to_add
 
 
 def _ensure_protocols(session: Session) -> list[Protocol]:
-    """Crea el catálogo de protocolos si no existe todavía. Devuelve TODOS los protocolos."""
+
     existing = session.exec(select(Protocol)).all()
     existing_names = {p.name for p in existing}
 
@@ -92,12 +89,7 @@ def _ensure_protocols(session: Session) -> list[Protocol]:
 
 
 def _seed_user_protocols(session: Session, users: list[User], protocols: list[Protocol], now: datetime):
-    """
-    Para cada usuario dado, asigna un uso aleatorio de 2-4 protocolos,
-    con fechas que coincidan con el rango de sus ScoreHistory (offsets en SCORE_OFFSETS).
-    Deja intencionalmente al menos un día sin uso por protocolo, para poder
-    comparar "días usado" vs "días no usado" en el cálculo de impacto.
-    """
+
     if not protocols:
         return
 
@@ -118,11 +110,7 @@ def _seed_user_protocols(session: Session, users: list[User], protocols: list[Pr
     session.commit()
 
 def _seed_sleep_data(session: Session, users: list[User], now: datetime) -> None:
-    """
-    Genera un registro de SleepData por cada offset en SCORE_OFFSETS para
-    cada usuario dado, con valores aleatorios pero dentro de rangos realistas
-    (inspirados en métricas estilo Whoop).
-    """
+
     if not users:
         return
 
@@ -131,11 +119,11 @@ def _seed_sleep_data(session: Session, users: list[User], now: datetime) -> None
         for offset in SCORE_OFFSETS:
             created_at = now - timedelta(days=offset)
 
-            time_in_bed = round(randint(360, 540) / 60, 2)      # 6h-9h en horas
-            awake_time = round(randint(5, 45) / 60, 2)          # 5-45 min
-            light_sleep = round(randint(90, 240) / 60, 2)       # 1.5h-4h
-            slow_wave = round(randint(45, 120) / 60, 2)         # 45min-2h
-            rem = round(randint(45, 120) / 60, 2)                # 45min-2h
+            time_in_bed = round(randint(360, 540) / 60, 2)     
+            awake_time = round(randint(5, 45) / 60, 2)          
+            light_sleep = round(randint(90, 240) / 60, 2)       
+            slow_wave = round(randint(45, 120) / 60, 2)       
+            rem = round(randint(45, 120) / 60, 2)               
 
             new_records.append(
                 SleepData(
@@ -148,8 +136,8 @@ def _seed_sleep_data(session: Session, users: list[User], now: datetime) -> None
                     slow_wave=slow_wave,
                     rem=rem,
                     disturbance=randint(0, 8),
-                    baseline=round(randint(700, 900) / 100, 2),  # 7.0h-9.0h necesidad base
-                    debt=round(randint(0, 240) / 60, 2),          # 0h-4h de deuda
+                    baseline=round(randint(700, 900) / 100, 2),  
+                    debt=round(randint(0, 240) / 60, 2),         
                     strain=randint(0, 21),
                     nap=round(choice([0, 0, 0, randint(10, 45)]) / 60, 2),
                     respiratory_rate=randint(12, 18),
@@ -161,17 +149,13 @@ def _seed_sleep_data(session: Session, users: list[User], now: datetime) -> None
 
     session.add_all(new_records)
     session.commit()
-    print(f"Se han generado {len(new_records)} registros de SleepData.")
+    print(f"Generated {len(new_records)} SleepData.")
 
 def _seed_combat_history(session: Session, battles_per_user: int = 4) -> None:
-    """
-    Genera un mínimo de 'battles_per_user' registros de CombatHistory
-    POR CADA usuario existente en la base de datos, con fecha de hoy,
-    enfrentándolo contra rivales aleatorios.
-    """
+
     all_users = session.exec(select(User)).all()
     if len(all_users) < 2:
-        print("No hay suficientes usuarios para generar batallas.")
+        print("Not enougth users.")
         return
 
     today = datetime.now(timezone.utc).date()
@@ -185,7 +169,7 @@ def _seed_combat_history(session: Session, battles_per_user: int = 4) -> None:
         for _ in range(battles_per_user):
             opponent = choice(opponents_pool)
 
-            # 50/50 de que el usuario actual gane o pierda
+
             if random() < 0.5:
                 winner, loser = user, opponent
             else:
@@ -211,26 +195,10 @@ def _seed_combat_history(session: Session, battles_per_user: int = 4) -> None:
     )
 
 def _seed_user_profiles(session: Session, users: list[User]) -> None:
-    """
-    Crea un UserProfile para cada usuario de la lista que aún no tenga uno.
-    Al ser una relación 1-a-1 (user_id es unique), evitamos duplicados
-    comprobando primero cuáles ya existen.
-    """
+
     if not users:
         return
-    """
-    avatar_options = [
-        "avatars/game/default_1.png",
-        "avatars/game/default_2.png",
-        "avatars/game/default_3.png",
-        None,
-    ]
-    user_avatar_options = [
-        "avatars/user/default_1.png",
-        "avatars/user/default_2.png",
-        None,
-    ]
-    """
+
     user_ids = [u.id for u in users]
     existing_profile_user_ids = {
         up.user_id
@@ -247,9 +215,7 @@ def _seed_user_profiles(session: Session, users: list[User]) -> None:
         new_profiles.append(
             UserProfile(
                 user_id=user.id,
-                #game_avatar_path=choice(avatar_options),
-                #user_avatar_path=choice(user_avatar_options),
-                public=choice([True, True, True, False]),  # mayoría públicos
+                public=choice([True, True, True, False]), 
                 exp=randint(0, 5000),
             )
         )

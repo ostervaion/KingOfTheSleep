@@ -40,11 +40,11 @@ def add_friend(
     session=Depends(get_session),
 ):
     if username == current_user.username:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No puedes añadirte a ti mismo como amigo")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cant add yourself")
  
     friend_user = get_user_by_username(session, username)
     if friend_user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
  
     existing = session.exec(
         select(Friend).where(
@@ -53,14 +53,14 @@ def add_friend(
         )
     ).first()
     if existing:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Ya sois amigos")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Alredy friends")
  
-    # Creamos la relación en los dos sentidos para que sea simétrica de inmediato
+
     session.add(Friend(user_id=current_user.id, friend_id=friend_user.id))
     session.add(Friend(user_id=friend_user.id, friend_id=current_user.id))
     session.commit()
  
-    return {"message": f"{username} añadido como amigo"}
+    return {"message": f"{username} add as a friend"}
 
 @router.delete("/friends/{username}", status_code=status.HTTP_200_OK)
 def delete_friend(
@@ -71,7 +71,7 @@ def delete_friend(
     if username == current_user.username:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No puedes eliminarte a ti mismo",
+            detail="Cant remove yourself",
         )
 
     friend_user = get_user_by_username(session, username)
@@ -79,10 +79,10 @@ def delete_friend(
     if friend_user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuario no encontrado",
+            detail="User not found",
         )
 
-    # Relación: usuario actual -> amigo
+   
     friendship = session.exec(
         select(Friend).where(
             Friend.user_id == current_user.id,
@@ -90,7 +90,7 @@ def delete_friend(
         )
     ).first()
 
-    # Relación inversa: amigo -> usuario actual
+ 
     reverse_friendship = session.exec(
         select(Friend).where(
             Friend.user_id == friend_user.id,
@@ -112,4 +112,4 @@ def delete_friend(
 
     session.commit()
 
-    return {"message": f"{username} eliminado de tus amigos"}
+    return {"message": f"{username} removed from friends"}

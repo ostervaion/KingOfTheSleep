@@ -48,8 +48,7 @@ watch(gameError, (stat) => {
       align: 'center',
     })
     .setOrigin(0.5)
-  const prompt2 = scene.add
-    .text(0, -5, `right click to go back to lobby`, {
+    .text(0, -8, `right click to go back to lobby`, {
       fontSize: '14px',
       fontFamily: 'monospace',
       color: '#000000',
