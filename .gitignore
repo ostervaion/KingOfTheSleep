@@ -1,9 +1,11 @@
 # Environment
 .env
+secrets/
 
 # VS Code
 .vscode
 .devcontainer/
+
 # Python
 __pycache__/
 *.py[cod]
@@ -15,6 +17,7 @@ node_modules/
 dist/
 .vite/
 frontend/app/.pnpm-store/
+
 # Docker
 *.log
 
