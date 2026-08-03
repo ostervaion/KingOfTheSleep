@@ -530,11 +530,6 @@ function methodClass(method) {
       <section id="errors" class="section">
         <h2>Status codes & errors</h2>
 
-        <p class="section-intro">
-          The exact codes depend on the backend implementation. These are the typical statuses an
-          API like this returns.
-        </p>
-
         <div class="status-grid">
           <article class="info-card">
             <h3>Success responses</h3>
@@ -566,10 +561,6 @@ function methodClass(method) {
         </div>
       </section>
 
-      <footer class="footer">
-        Documentation generated from the endpoints used by the Public API Playground component.
-        Check the backend schemas to fill in exact types, ranges, units, and responses.
-      </footer>
     </main>
   </div>
 </template>

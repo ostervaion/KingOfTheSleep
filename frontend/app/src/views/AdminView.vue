@@ -207,9 +207,7 @@ onUnmounted(stopAutoRefresh)
     </div>
 
     <div v-else-if="!isAdmin" class="flex min-h-[60vh] items-center justify-center px-4">
-      <div
-        class="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-900 p-8 text-center"
-      >
+      <div class="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-900 p-8 text-center">
         <h1 class="mb-2 text-lg font-semibold">Access denied</h1>
         <p class="text-sm text-neutral-400">This page is only available to administrators.</p>
       </div>
@@ -218,58 +216,39 @@ onUnmounted(stopAutoRefresh)
     <main v-else class="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
       <Chat v-if="selectedUser" :to_user="selectedUser" @close="selectedUser = null" />
 
-      <div
-        v-if="editingUser"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
-        @click.self="closeEditUser"
-      >
-        <div
-          class="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-900 p-6 shadow-xl"
-        >
+      <div v-if="editingUser" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+        @click.self="closeEditUser">
+        <div class="w-full max-w-md rounded-lg border border-neutral-800 bg-neutral-900 p-6 shadow-xl">
           <h2 class="mb-5 text-lg font-semibold">Edit user</h2>
 
-          <div
-            v-if="editError"
-            class="mb-4 rounded-md border border-red-900 bg-red-950/40 px-3 py-2 text-sm text-red-300"
-          >
+          <div v-if="editError"
+            class="mb-4 rounded-md border border-red-900 bg-red-950/40 px-3 py-2 text-sm text-red-300">
             {{ editError }}
           </div>
 
           <div class="space-y-4">
             <div>
               <label class="mb-1 block text-sm text-neutral-300">Username</label>
-              <input
-                v-model="editForm.username"
-                type="text"
-                class="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none focus:border-neutral-400"
-              />
+              <input v-model="editForm.username" type="text"
+                class="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none focus:border-neutral-400" />
             </div>
 
             <div>
               <label class="mb-1 block text-sm text-neutral-300">Email</label>
-              <input
-                v-model="editForm.email"
-                type="email"
-                class="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none focus:border-neutral-400"
-              />
+              <input v-model="editForm.email" type="email"
+                class="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none focus:border-neutral-400" />
             </div>
 
             <div>
               <label class="mb-1 block text-sm text-neutral-300">New password</label>
-              <input
-                v-model="editForm.password"
-                type="password"
-                placeholder="Leave blank to keep the current password"
-                class="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-neutral-400"
-              />
+              <input v-model="editForm.password" type="password" placeholder="Leave blank to keep the current password"
+                class="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-neutral-400" />
             </div>
 
             <div>
               <label class="mb-1 block text-sm text-neutral-300">Role</label>
-              <select
-                v-model="editForm.role"
-                class="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none focus:border-neutral-400"
-              >
+              <select v-model="editForm.role"
+                class="w-full rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none focus:border-neutral-400">
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
               </select>
@@ -282,19 +261,14 @@ onUnmounted(stopAutoRefresh)
           </div>
 
           <div class="mt-6 flex gap-3">
-            <button
-              type="button"
-              :disabled="editLoading"
+            <button type="button" :disabled="editLoading"
               class="flex-1 rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50"
-              @click="saveEditUser"
-            >
+              @click="saveEditUser">
               {{ editLoading ? 'Saving...' : 'Save' }}
             </button>
-            <button
-              type="button"
+            <button type="button"
               class="flex-1 rounded-md border border-neutral-700 px-4 py-2 text-sm text-white hover:bg-neutral-800"
-              @click="closeEditUser"
-            >
+              @click="closeEditUser">
               Cancel
             </button>
           </div>
@@ -307,26 +281,20 @@ onUnmounted(stopAutoRefresh)
             <h1 class="text-xl font-semibold">Battle controls</h1>
             <p class="mt-1 text-sm text-neutral-400">Manage battle timing and review the queue.</p>
           </div>
-          <button
-            type="button"
+          <button type="button"
             class="rounded-md border border-neutral-700 px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white"
-            @click="fetchBattleInfo"
-          >
+            @click="fetchBattleInfo">
             Refresh
           </button>
         </div>
 
-        <div
-          v-if="errorMessage"
-          class="mb-4 rounded-md border border-red-900 bg-red-950/40 px-3 py-2 text-sm text-red-300"
-        >
+        <div v-if="errorMessage"
+          class="mb-4 rounded-md border border-red-900 bg-red-950/40 px-3 py-2 text-sm text-red-300">
           {{ errorMessage }}
         </div>
 
-        <div
-          v-if="successMessage"
-          class="mb-4 rounded-md border border-green-900 bg-green-950/40 px-3 py-2 text-sm text-green-300"
-        >
+        <div v-if="successMessage"
+          class="mb-4 rounded-md border border-green-900 bg-green-950/40 px-3 py-2 text-sm text-green-300">
           {{ successMessage }}
         </div>
 
@@ -342,9 +310,7 @@ onUnmounted(stopAutoRefresh)
             <div class="mt-2 space-y-1 text-sm">
               <p>
                 Interval:
-                <span class="text-neutral-300"
-                  >{{ battleInfo?.interval_minutes ?? '--' }} minutes</span
-                >
+                <span class="text-neutral-300">{{ battleInfo?.interval_minutes ?? '--' }} minutes</span>
               </p>
               <p>
                 Check frequency:
@@ -360,20 +326,12 @@ onUnmounted(stopAutoRefresh)
           <div class="rounded-md border border-neutral-800 p-4">
             <h2 class="mb-3 font-medium">Schedule an extra battle</h2>
             <div class="flex flex-col gap-2 sm:flex-row">
-              <input
-                v-model.number="newBattleMinutes"
-                type="number"
-                min="1"
-                max="10080"
-                placeholder="Minutes from now"
-                class="min-w-0 flex-1 rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-neutral-400"
-              />
-              <button
-                type="button"
-                :disabled="battleLoading"
+              <input v-model.number="newBattleMinutes" type="number" min="1" max="10080" step="1"
+                @keydown="preventDecimalKey" placeholder="Minutes from now"
+                class="min-w-0 flex-1 rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-neutral-400" />
+              <button type="button" :disabled="battleLoading"
                 class="rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50"
-                @click="scheduleExtraBattle"
-              >
+                @click="scheduleExtraBattle">
                 {{ battleLoading ? 'Scheduling...' : 'Schedule' }}
               </button>
             </div>
@@ -382,20 +340,12 @@ onUnmounted(stopAutoRefresh)
           <div class="rounded-md border border-neutral-800 p-4">
             <h2 class="mb-3 font-medium">Change battle interval</h2>
             <div class="flex flex-col gap-2 sm:flex-row">
-              <input
-                v-model.number="newIntervalMinutes"
-                type="number"
-                min="1"
-                max="10080"
+              <input v-model.number="newIntervalMinutes" type="number" min="1" max="10080"
                 placeholder="Minutes between battles"
-                class="min-w-0 flex-1 rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-neutral-400"
-              />
-              <button
-                type="button"
-                :disabled="intervalLoading"
+                class="min-w-0 flex-1 rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-neutral-400" />
+              <button type="button" :disabled="intervalLoading"
                 class="rounded-md bg-white px-4 py-2 text-sm font-medium text-black hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50"
-                @click="changeBattleInterval"
-              >
+                @click="changeBattleInterval">
                 {{ intervalLoading ? 'Updating...' : 'Update' }}
               </button>
             </div>
@@ -419,11 +369,8 @@ onUnmounted(stopAutoRefresh)
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="battle in battleQueue"
-                  :key="battle.id"
-                  class="border-b border-neutral-800 last:border-0 hover:bg-neutral-800/50"
-                >
+                <tr v-for="battle in battleQueue" :key="battle.id"
+                  class="border-b border-neutral-800 last:border-0 hover:bg-neutral-800/50">
                   <td class="px-3 py-3 text-neutral-400">#{{ battle.id }}</td>
                   <td class="px-3 py-3">
                     {{ new Date(battle.scheduled_time).toLocaleTimeString('en-GB') }}
@@ -451,11 +398,9 @@ onUnmounted(stopAutoRefresh)
             <h1 class="text-xl font-semibold">Users</h1>
             <p class="mt-1 text-sm text-neutral-400">Manage accounts and start admin chats.</p>
           </div>
-          <button
-            type="button"
+          <button type="button"
             class="rounded-md border border-neutral-700 px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white"
-            @click="loadUsers"
-          >
+            @click="loadUsers">
             Refresh
           </button>
         </div>
@@ -470,34 +415,25 @@ onUnmounted(stopAutoRefresh)
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="(user, index) in users"
-                :key="user.id || user.username"
-                class="border-b border-neutral-800 last:border-0 hover:bg-neutral-800/50"
-              >
+              <tr v-for="(user, index) in users" :key="user.id || user.username"
+                class="border-b border-neutral-800 last:border-0 hover:bg-neutral-800/50">
                 <td class="px-3 py-3 text-neutral-500">{{ index + 1 }}</td>
                 <td class="px-3 py-3 text-neutral-200">{{ user.username }}</td>
                 <td class="px-3 py-3">
                   <div class="flex flex-wrap gap-2">
-                    <button
-                      type="button"
+                    <button type="button"
                       class="rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-200 hover:bg-neutral-800"
-                      @click="selectedUser = user.username"
-                    >
+                      @click="selectedUser = user.username">
                       Chat
                     </button>
-                    <button
-                      type="button"
+                    <button type="button"
                       class="rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-200 hover:bg-neutral-800"
-                      @click="openEditUser(user)"
-                    >
+                      @click="openEditUser(user)">
                       Edit
                     </button>
-                    <button
-                      type="button"
+                    <button type="button"
                       class="rounded-md border border-red-900 px-3 py-1.5 text-sm text-red-300 hover:bg-red-950/40"
-                      @click="deleteUser(user.username)"
-                    >
+                      @click="deleteUser(user.username)">
                       Delete
                     </button>
                   </div>
