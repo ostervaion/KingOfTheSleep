@@ -48,13 +48,13 @@ watch(gameError, (stat) => {
       align: 'center',
     })
     .setOrigin(0.5)
-    .text(0, -18, `click to go back to lobby`, {
+    .text(0, -8, `right click to go back to lobby`, {
       fontSize: '14px',
       fontFamily: 'monospace',
       color: '#000000',
       align: 'center',
     })
-    .setOrigin(1.5)
+    .setOrigin(0.5)
 
   const cx = scene.cameras.main.width / 2
   const cy = scene.cameras.main.height / 2
@@ -65,7 +65,7 @@ watch(gameError, (stat) => {
 
   scene.input.once('pointerdown', () => scene.closePopup())
   waitingResponse = false
-  gameError.value = null
+  gameError.value = false
 })
 
 watch(gameEnemy, (enemy) => {
