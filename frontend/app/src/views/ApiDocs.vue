@@ -560,7 +560,6 @@ function methodClass(method) {
           </div>
         </div>
       </section>
-
     </main>
   </div>
 </template>

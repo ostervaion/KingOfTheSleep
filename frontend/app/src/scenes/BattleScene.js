@@ -492,16 +492,30 @@ export default class GameScene extends BaseScene {
       stroke: '#000000',
       strokeThickness: 6,
     })
+    const bottomText2 = this.add.text(this.scale.width + 200, 140, 'Right click to EXIT', {
+      fontSize: '20px',
+      color: '#fefefe',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 6,
+    })
 
     bottomText.setOrigin(0.5)
+    bottomText2.setOrigin(0.5)
     bottomText.setDepth(3)
-
+    bottomText2.setDepth(3)
     const flash = this.add.rectangle(midX, midY, this.scale.width, this.scale.height, 0xffffff, 1)
     flash.setAlpha(0)
     flash.setDepth(10)
 
     this.tweens.add({
       targets: topText,
+      x: midX,
+      duration: 500,
+      ease: 'Back.Out',
+    })
+      this.tweens.add({
+      targets: bottomText2,
       x: midX,
       duration: 500,
       ease: 'Back.Out',

@@ -66,7 +66,8 @@ async function loadLogs() {
       router.push({ name: 'home' })
       loadError.value = 'Your session has expired or you are not authorized to view this content.'
     } else {
-      loadError.value = error?.response?.data?.detail || error?.message || 'Could not load battle logs'
+      loadError.value =
+        error?.response?.data?.detail || error?.message || 'Could not load battle logs'
     }
 
     battleLogs.value = []

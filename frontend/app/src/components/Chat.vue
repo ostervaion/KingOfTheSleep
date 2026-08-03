@@ -125,7 +125,6 @@ onUnmounted(() => {
           Waiting messages...
         </p>
 
-        
         <div
           v-for="(msg, index) in conversationMessages"
           :key="index"
@@ -162,13 +161,15 @@ onUnmounted(() => {
           :placeholder="isConnected && isAuthenticated ? 'Write a message...' : 'Conecting...'"
           @keyup.enter="handleSend"
         />
-        <button v-if="isGlobal"
+        <button
+          v-if="isGlobal"
           @click="handleSend"
           class="rounded-md bg-cyan-200 px-4 py-2 text-sm font-medium text-[#171715] transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:bg-(--kots-background-color) disabled:text-neutral-600"
         >
           ➤
         </button>
-                <button v-else
+        <button
+          v-else
           @click="handleSend"
           :disabled="!isTargetOnline || !isAuthenticated || props.to_user == myUsername"
           class="rounded-md bg-cyan-200 px-4 py-2 text-sm font-medium text-[#171715] transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:bg-(--kots-background-color) disabled:text-neutral-600"

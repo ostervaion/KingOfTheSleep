@@ -50,13 +50,11 @@ const conversations = computed(() => {
 })
 
 export function useWebSocket() {
-
   const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
 
   const API_WS_URL = `${wsProtocol}//${window.location.host}/api/ws`
 
   function connect() {
-
     if (
       ws.value &&
       (ws.value.readyState === WebSocket.OPEN || ws.value.readyState === WebSocket.CONNECTING)
@@ -68,7 +66,6 @@ export function useWebSocket() {
     ws.value = socket
 
     socket.onopen = () => {
-
       if (ws.value !== socket) return
 
       isConnected.value = true
@@ -137,7 +134,6 @@ export function useWebSocket() {
             if (payload.online) {
               onlineUsers.value.add(payload.username)
             } else {
-              
               if (gameEnemy.value === payload.username) {
                 sendPayload('game:response', {
                   accepted: false,
@@ -249,15 +245,12 @@ export function useWebSocket() {
           default:
             break
         }
-      } catch (error) {
-      }
+      } catch (error) {}
     }
 
-    socket.onerror = () => {
-    }
+    socket.onerror = () => {}
 
     socket.onclose = (event) => {
-      
       if (ws.value !== socket) return
 
       isConnected.value = false
@@ -271,7 +264,6 @@ export function useWebSocket() {
 
     if (!socket) return
 
-    
     if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
       socket.close(1000, 'Cierre controlado por el usuario')
     }
